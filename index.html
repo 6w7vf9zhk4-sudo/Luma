@@ -1,0 +1,2094 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#170d32">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Luma">
+  <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
+  <meta name="luma-build" content="9"><title>Luma — время для себя</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+:root {
+  color-scheme: dark;
+  --bg: #100820;
+  --glass: rgba(255,255,255,.075);
+  --line: rgba(255,255,255,.15);
+  --muted: #c2b6dc;
+  --white: #fbf8ff;
+  --violet: #a78bfa;
+  --pink: #e0a6ff;
+  --primary: #a78bfa;
+  --primary-soft: rgba(167,139,250,.18);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  color: var(--white);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, system-ui, sans-serif;
+  background:
+    radial-gradient(ellipse at 12% 0%, #51258b 0, transparent 38%),
+    radial-gradient(ellipse at 95% 30%, #30216f 0, transparent 34%),
+    linear-gradient(150deg, #100820, #1b1038 55%, #10091f);
+  background-attachment: fixed;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,.025) 45%, transparent 62%);
+  z-index: -1;
+}
+
+.app {
+  max-width: 820px;
+  margin: auto;
+  padding: 18px 16px calc(90px + env(safe-area-inset-bottom));
+}
+
+/* Top */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 6px 2px 20px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 22px;
+  font-weight: 750;
+  letter-spacing: -.7px;
+}
+.logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+  background: linear-gradient(145deg, rgba(255,255,255,.36), rgba(180,130,255,.08));
+  border: 1px solid rgba(255,255,255,.35);
+  box-shadow: inset 0 1px 1px #ffffff70, 0 8px 28px #a855f755;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+}
+.pill {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.07);
+  padding: 8px 12px;
+  border-radius: 99px;
+  color: #e8ddff;
+  font-size: 12px;
+  backdrop-filter: blur(18px);
+}
+
+/* Glass cards */
+.glass {
+  background: linear-gradient(135deg, rgba(255,255,255,.115), rgba(255,255,255,.045));
+  border: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.13), 0 18px 50px rgba(4,0,20,.18);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 25px;
+}
+.section {
+  padding: 20px;
+  margin: 14px 0;
+}
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.section h2 {
+  font-size: 17px;
+  letter-spacing: -.3px;
+  font-weight: 700;
+}
+.tag {
+  font-size: 10px;
+  color: #d8c8ff;
+  background: #a78bfa20;
+  border: 1px solid #c3a5ff30;
+  padding: 5px 8px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+.notice {
+  font-size: 12px;
+  color: #bfb2da;
+  line-height: 1.5;
+  margin-top: 12px;
+}
+.muted { color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+/* Bottom nav */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, transparent, rgba(16,8,32,.92) 28%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  pointer-events: auto;
+}
+.nav-inner {
+  max-width: 420px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  padding: 6px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.06));
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 40px rgba(0,0,0,.35);
+}
+.nav-btn {
+  border: 0;
+  background: transparent;
+  color: #b8a9d3;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 10px 4px;
+  min-height: 52px;
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  transition: .2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+.nav-btn span { font-size: 18px; line-height: 1; }
+.nav-btn.active {
+  background: linear-gradient(120deg, #ffffff24, #b08aff33);
+  color: #fff;
+}
+
+/* Pages */
+.page { display: none !important; animation: fade .28s ease; }
+.page.active { display: block !important; }
+@keyframes fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Hero */
+.hero { margin-bottom: 8px; }
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #d1b9ff;
+  font-weight: 700;
+}
+.hero h1 {
+  font-size: clamp(30px, 7vw, 44px);
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  margin: 10px 0 10px;
+  font-weight: 750;
+}
+.hero h1 span {
+  background: linear-gradient(100deg, #fff, #d7b7ff 55%, #a78bfa);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Stats row */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 14px 0;
+}
+.stat-card {
+  padding: 14px 12px;
+  border-radius: 16px;
+  background: #ffffff0a;
+  border: 1px solid #ffffff18;
+  text-align: center;
+}
+.stat-card b {
+  display: block;
+  font-size: 22px;
+  margin-top: 4px;
+  color: #fff;
+}
+.stat-card span {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Forms */
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+}
+.field.full { grid-column: 1 / -1; }
+.field.date-time { min-width: 0; }
+label { font-size: 12px; color: #d8cbed; }
+input, select {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  font: inherit;
+  color: white;
+  background: rgba(13,6,30,.55);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 13px;
+  padding: 12px;
+  outline: none;
+}
+input:focus, select:focus {
+  border-color: #bba1ff;
+  box-shadow: 0 0 0 3px #a78bfa22;
+}
+input::placeholder { color: #82749f; }
+/* Date & time — no overflow on iOS/Android */
+input[type=date],
+input[type=time] {
+  color-scheme: dark;
+  font-size: 16px;
+  height: 48px;
+  padding: 10px 8px;
+  letter-spacing: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  overflow: hidden;
+  text-overflow: clip;
+}
+input[type=date]::-webkit-date-and-time-value,
+input[type=time]::-webkit-date-and-time-value {
+  text-align: left;
+  margin: 0;
+  min-width: 0;
+}
+input[type=date]::-webkit-calendar-picker-indicator,
+input[type=time]::-webkit-calendar-picker-indicator {
+  margin: 0 0 0 4px;
+  padding: 0;
+  opacity: 0.7;
+}
+
+.btn {
+  border: 0;
+  border-radius: 14px;
+  padding: 13px 16px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  color: #24113f;
+  background: linear-gradient(115deg, #e1c8ff, #a78bfa 60%, #d3a8ff);
+  box-shadow: 0 8px 24px #9a6cff35;
+  transition: transform .15s, filter .15s;
+}
+.btn:active { transform: scale(.98); }
+.btn.secondary {
+  background: rgba(255,255,255,.07);
+  color: #eee4ff;
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+.btn.small {
+  padding: 8px 12px;
+  font-size: 12px;
+  border-radius: 11px;
+}
+.btn.danger {
+  background: rgba(239,68,68,.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239,68,68,.3);
+  box-shadow: none;
+}
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.form-actions .btn:first-child { flex: 1; }
+
+/* Lists */
+.list { display: grid; gap: 10px; }
+.empty {
+  text-align: center;
+  padding: 28px 12px;
+  color: #b8a9d3;
+  font-size: 13px;
+}
+.orb {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 25%, #fff 0, #e7d6ff 8%, #bd91ff 28%, #7b4bd4 57%, #3a1c78 78%);
+  box-shadow: inset -9px -12px 22px #24104e88, inset 5px 5px 13px #fff9, 0 0 35px #ad77ff77;
+  position: relative;
+}
+.orb::after {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 9px;
+  border-radius: 50%;
+  background: #fff9;
+  transform: rotate(-35deg);
+  top: 12px;
+  left: 15px;
+  filter: blur(2px);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.045);
+  border-radius: 17px;
+}
+.item .timebox {
+  min-width: 68px;
+  text-align: center;
+  padding: 10px 6px;
+  border-radius: 13px;
+  background: rgba(167,139,250,.14);
+  border: 1px solid #c4a7ff25;
+}
+.item .timebox strong { display: block; font-size: 17px; letter-spacing: -.4px; }
+.item .timebox span { font-size: 10px; color: #c7b8e4; }
+.item .body { flex: 1; min-width: 0; }
+.item .body strong { display: block; font-size: 14px; overflow-wrap: anywhere; }
+.item .body span { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
+.item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.item-actions button {
+  font-size: 11px;
+  padding: 7px 9px;
+  border-radius: 10px;
+  border: 1px solid #ffffff20;
+  background: transparent;
+  color: #d7c9f1;
+  cursor: pointer;
+}
+.item-actions .done {
+  border-color: #8de4be55;
+  background: #2aa87620;
+  color: #c5ffe4;
+}
+
+/* Nutrition macros */
+.macro-row { margin-bottom: 12px; }
+.macro-row .label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 5px;
+  color: #d8cbed;
+}
+.bar {
+  height: 8px;
+  background: rgba(255,255,255,.1);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.bar > div {
+  height: 100%;
+  width: 0%;
+  border-radius: 99px;
+  background: var(--violet);
+  transition: width .4s;
+}
+.bar.prot > div { background: #60a5fa; }
+.bar.fat > div { background: #fbbf24; }
+.bar.carb > div { background: #34d399; }
+
+.water-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+/* Games menu */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.game-card {
+  padding: 22px 14px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 18px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.12);
+  transition: .2s;
+}
+.game-card:active { transform: scale(.98); }
+.game-card:hover { border-color: #c3a5ff60; background: rgba(167,139,250,.12); }
+.game-card .icon { font-size: 32px; margin-bottom: 8px; }
+.game-card h3 { font-size: 15px; margin-bottom: 4px; }
+.game-card p { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+.game-area { margin-top: 8px; }
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: #d1c2eb;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Reaction */
+.reaction-arena {
+  height: 130px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #ffffff19;
+  border-radius: 18px;
+  background: #0d061d66;
+  margin: 12px 0;
+  overflow: hidden;
+}
+.reaction-arena.waiting { background: linear-gradient(135deg, #25143f, #3a1c5a); }
+.reaction-arena.ready { background: linear-gradient(135deg, #18534d, #257b67); }
+.reaction-arena.early { background: linear-gradient(135deg, #5a2347, #87385c); }
+.reaction-arena button {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: 0;
+  color: white;
+  font: inherit;
+  font-weight: 700;
+  font-size: 17px;
+  cursor: pointer;
+}
+.scoreline {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin: 12px 0;
+  color: #d1c1ec;
+  font-size: 12px;
+}
+.scoreline b { color: #fff; font-size: 15px; margin-left: 4px; }
+
+/* Memory */
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 14px 0;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.memory-cell {
+  aspect-ratio: 1;
+  border: 1px solid #ffffff24;
+  background: #ffffff0b;
+  color: #fff;
+  border-radius: 13px;
+  font-size: 22px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.memory-cell.on, .memory-cell.matched {
+  background: #a78bfa55;
+  border-color: #e0caff;
+}
+.memory-cell.matched { opacity: .55; pointer-events: none; }
+
+/* Clicker / Tap */
+.tap-btn {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 0;
+  margin: 16px auto;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #24113f;
+  background: linear-gradient(145deg, #e1c8ff, #a78bfa);
+  box-shadow: 0 10px 30px #9a6cff45;
+  cursor: pointer;
+  user-select: none;
+}
+.tap-btn:active { transform: scale(.94); }
+
+/* Snake */
+#snakeCanvas {
+  display: block;
+  margin: 12px auto;
+  border-radius: 14px;
+  border: 1px solid rgba(167,139,250,.35);
+  background: rgba(0,0,0,.3);
+  max-width: 100%;
+}
+
+/* Themes */
+.theme-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.theme-swatch {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  border: 2px solid #ffffff40;
+  cursor: pointer;
+}
+.theme-swatch.active { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: calc(88px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translate(-50%, 16px);
+  opacity: 0;
+  pointer-events: none;
+  background: #f2e8ff;
+  color: #24123f;
+  border-radius: 14px;
+  padding: 12px 17px;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 10px 35px #0006;
+  transition: .25s;
+  max-width: calc(100% - 32px);
+  z-index: 100;
+}
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.footer {
+  text-align: center;
+  color: #8e7fae;
+  font-size: 11px;
+  line-height: 1.6;
+  margin-top: 18px;
+}
+
+@media (max-width: 430px) {
+  .app { padding-left: 12px; padding-right: 12px; }
+  .section { padding: 16px; }
+  .stats-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat-card b { font-size: 18px; }
+  .games-grid { gap: 10px; }
+}
+@media (max-width: 480px) {
+  .fields.rem-fields {
+    grid-template-columns: 1fr;
+  }
+  .fields.rem-fields .field.date-time {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 360px) {
+  .fields { grid-template-columns: 1fr; }
+  .field.full { grid-column: auto; }
+  .nav-btn { font-size: 10px; }
+  input[type=date], input[type=time] {
+    font-size: 16px;
+    height: 50px;
+  }
+}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <div class="brand"><div class="logo">✧</div><span>luma</span></div>
+      <span class="pill" id="topPill">v9 · время для себя</span>
+    </header>
+
+    <!-- HOME -->
+    <section class="page active" id="page-home">
+      <div class="hero">
+        <div class="eyebrow">YOUR GENTLE SPACE</div>
+        <h1>Меньше забывай.<br><span>Больше успевай.</span></h1>
+        <p class="muted" id="greeting">Добро пожаловать</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card glass"><span>ккал сегодня</span><b id="homeCal">0</b></div>
+        <div class="stat-card glass"><span>вода, мл</span><b id="homeWater">0</b></div>
+        <div class="stat-card glass"><span>напоминания</span><b id="homeRem">0</b></div>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>💧 Вода</h2><span class="tag" id="waterTag">0 / 2000</span></div>
+        <div class="bar"><div id="waterFill" style="background:linear-gradient(90deg,#67e8f9,#22d3ee)"></div></div>
+        <div class="water-btns">
+          <button class="btn secondary small" onclick="addWater(250)">+250 мл</button>
+          <button class="btn secondary small" onclick="addWater(500)">+500 мл</button>
+          <button class="btn secondary small" onclick="addWater(0)">Сброс</button>
+        </div>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Ближайшие напоминания</h2></div>
+        <div class="list" id="homeRemList">
+          <div class="empty"><div class="orb"></div>Пока пусто</div>
+        </div>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Быстрые игры</h2></div>
+        <div class="games-grid">
+          <div class="game-card" onclick="goTab('games'); startGame('reaction')">
+            <div class="icon">⚡</div>
+            <h3>Реакция</h3>
+            <p>Поймай зелёный свет</p>
+          </div>
+          <div class="game-card" onclick="goTab('games'); startGame('memory')">
+            <div class="icon">🧠</div>
+            <h3>Память</h3>
+            <p>Найди пары</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NUTRITION -->
+    <section class="page" id="page-nutrition">
+      <div class="hero">
+        <div class="eyebrow">NUTRITION</div>
+        <h1>Рацион<br><span>на сегодня</span></h1>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Цели</h2><span class="tag">НАСТРОЙ</span></div>
+        <div class="fields">
+          <div class="field"><label>Калории</label><input type="number" id="goalCal" value="2000" min="500"></div>
+          <div class="field"><label>Белки, г</label><input type="number" id="goalProt" value="120" min="20"></div>
+          <div class="field"><label>Жиры, г</label><input type="number" id="goalFat" value="70" min="10"></div>
+          <div class="field"><label>Углеводы, г</label><input type="number" id="goalCarb" value="250" min="50"></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" type="button" onclick="saveGoals()">Сохранить цели</button>
+        </div>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Прогресс</h2></div>
+        <div class="macro-row">
+          <div class="label"><span>Калории</span><span><b id="curCal">0</b> / <span id="lblCal">2000</span></span></div>
+          <div class="bar"><div id="fillCal"></div></div>
+        </div>
+        <div class="macro-row">
+          <div class="label"><span>Белки</span><span><b id="curProt">0</b> / <span id="lblProt">120</span> г</span></div>
+          <div class="bar prot"><div id="fillProt"></div></div>
+        </div>
+        <div class="macro-row">
+          <div class="label"><span>Жиры</span><span><b id="curFat">0</b> / <span id="lblFat">70</span> г</span></div>
+          <div class="bar fat"><div id="fillFat"></div></div>
+        </div>
+        <div class="macro-row">
+          <div class="label"><span>Углеводы</span><span><b id="curCarb">0</b> / <span id="lblCarb">250</span> г</span></div>
+          <div class="bar carb"><div id="fillCarb"></div></div>
+        </div>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Добавить приём пищи</h2></div>
+        <form id="mealForm" onsubmit="return false;">
+          <div class="fields">
+            <div class="field full"><label>Название</label><input id="mealName" placeholder="Овсянка с бананом" required maxlength="60"></div>
+            <div class="field"><label>Ккал</label><input type="number" id="mealCal" min="0" required></div>
+            <div class="field"><label>Белки</label><input type="number" id="mealProt" min="0" step="0.1"></div>
+            <div class="field"><label>Жиры</label><input type="number" id="mealFat" min="0" step="0.1"></div>
+            <div class="field"><label>Углеводы</label><input type="number" id="mealCarb" min="0" step="0.1"></div>
+            <div class="field full">
+              <label>Тип</label>
+              <select id="mealType">
+                <option value="breakfast">Завтрак</option>
+                <option value="lunch">Обед</option>
+                <option value="dinner">Ужин</option>
+                <option value="snack">Перекус</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn" type="submit" id="mealSubmitBtn">＋ Добавить</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Сегодня</h2><span class="tag" id="mealCount">0</span></div>
+        <div class="list" id="mealsList">
+          <div class="empty">Пока пусто</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REMINDERS -->
+    <section class="page" id="page-reminders">
+      <div class="hero">
+        <div class="eyebrow">REMINDERS</div>
+        <h1>Напоминания<br><span>мягко и вовремя</span></h1>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>✦ Новое напоминание</h2><span class="tag">БЫСТРО</span></div>
+        <form id="remForm" action="javascript:void(0)" onsubmit="event.preventDefault(); window.addReminderFromForm && addReminderFromForm(); return false;">
+          <div class="fields rem-fields">
+            <div class="field full"><label>О чём напомнить?</label><input id="remText" maxlength="120" placeholder="Выпить воды" required></div>
+            <div class="field date-time"><label>Дата</label><input id="remDate" type="date" required></div>
+            <div class="field date-time"><label>Время</label><input id="remTime" type="time" required></div>
+            <div class="field">
+              <label>Категория</label>
+              <select id="remCat">
+                <option>Личное</option>
+                <option>Учёба</option>
+                <option>Тренировка</option>
+                <option>Здоровье</option>
+                <option>Другое</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Повтор</label>
+              <select id="remRepeat">
+                <option value="none">Не повторять</option>
+                <option value="daily">Каждый день</option>
+                <option value="weekly">Каждую неделю</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn" type="button" id="remSubmitBtn" onclick="event.preventDefault(); window.addReminderFromForm && addReminderFromForm(); return false;">＋ Добавить</button>
+            <button class="btn secondary" type="button" id="notifyBtn">Включить уведомления</button>
+            <button class="btn secondary" type="button" id="testNotifBtn">Тест 3 сек</button>
+            <button class="btn secondary" type="button" onclick="quickReminder(15)">Через 15 сек</button>
+            <button class="btn secondary" type="button" onclick="quickReminder(60)">Через 1 мин</button>
+          </div>
+          <p class="notice" id="notifyInfo">Напоминания идут тем же способом, что и тест. Короткий срок после выхода часто срабатывает; длинный (много минут) телефон может заморозить — тогда придёт при следующем открытии Luma.</p>
+        </form>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Твои напоминания</h2><span class="tag" id="remCount">0</span></div>
+        <div class="list" id="remList">
+          <div class="empty"><div class="orb"></div>Добавь первое напоминание</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAMES -->
+    <section class="page" id="page-games">
+      <div class="hero">
+        <div class="eyebrow">PLAY</div>
+        <h1>Мини-игры<br><span>для внимания</span></h1>
+      </div>
+
+      <div id="gamesMenu">
+        <div class="games-grid">
+          <div class="game-card" onclick="startGame('reaction')">
+            <div class="icon">⚡</div>
+            <h3>Реакция</h3>
+            <p>Жди зелёный — жми</p>
+          </div>
+          <div class="game-card" onclick="startGame('memory')">
+            <div class="icon">🧠</div>
+            <h3>Память</h3>
+            <p>Найди все пары</p>
+          </div>
+          <div class="game-card" onclick="startGame('tap')">
+            <div class="icon">👆</div>
+            <h3>Кликер</h3>
+            <p>10 секунд нажатий</p>
+          </div>
+          <div class="game-card" onclick="startGame('snake')">
+            <div class="icon">🐍</div>
+            <h3>Змейка</h3>
+            <p>Стрелки или WASD</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="gameArea" class="glass section" style="display:none">
+        <button class="back-link" type="button" onclick="exitGame()">← К списку игр</button>
+        <div id="gameContent"></div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="page" id="page-settings">
+      <div class="hero">
+        <div class="eyebrow">SETTINGS</div>
+        <h1>Оформление<br><span>и данные</span></h1>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Тема</h2><span class="tag">ЦВЕТ</span></div>
+        <p class="notice" style="margin-top:0;margin-bottom:12px">Выбери фон приложения</p>
+        <div class="theme-row">
+          <button class="theme-swatch active" data-theme="violet" style="background:linear-gradient(135deg,#51258b,#100820)" aria-label="Фиолетовая"></button>
+          <button class="theme-swatch" data-theme="ocean" style="background:linear-gradient(135deg,#126b85,#071c35)" aria-label="Морская"></button>
+          <button class="theme-swatch" data-theme="rose" style="background:linear-gradient(135deg,#873b72,#250d2d)" aria-label="Розовая"></button>
+          <button class="theme-swatch" data-theme="forest" style="background:linear-gradient(135deg,#27634e,#0c201b)" aria-label="Зелёная"></button>
+          <button class="theme-swatch" data-theme="sunset" style="background:linear-gradient(135deg,#9a4a2a,#2a1010)" aria-label="Закат"></button>
+        </div>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Профиль</h2></div>
+        <div class="fields">
+          <div class="field full"><label>Имя</label><input id="profileName" maxlength="24" placeholder="Как к тебе обращаться"></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" type="button" id="saveProfile">Сохранить</button>
+        </div>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Уведомления</h2></div>
+        <div class="form-actions">
+          <button class="btn secondary" type="button" id="notifyBtn2">Включить уведомления</button>
+          <button class="btn secondary" type="button" id="testNotifBtn2">Тест через 3 сек</button>
+        </div>
+        <p class="notice" id="notifyStatus">Статус загружается…</p>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Данные</h2></div>
+        <div class="form-actions">
+          <button class="btn secondary" type="button" onclick="exportData()">Экспорт</button>
+          <button class="btn secondary" type="button" onclick="document.getElementById('importFile').click()">Импорт</button>
+          <button class="btn danger" type="button" onclick="clearData()">Очистить всё</button>
+        </div>
+        <input type="file" id="importFile" accept=".json" hidden>
+        <p class="notice">Всё хранится только на этом устройстве в браузере.</p>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>На главный экран</h2><span class="tag">PWA</span></div>
+        <p class="notice" style="margin-top:0">
+          <b>iPhone:</b> Safari → Поделиться → На экран «Домой».<br>
+          <b>Android:</b> Chrome → меню → Установить приложение / Добавить на главный экран.
+        </p>
+      </div>
+
+      <p class="footer">Luma · данные остаются на устройстве<br>Прототип без сервера</p>
+    </section>
+  </main>
+
+  <!-- Bottom navigation -->
+  <nav class="bottom-nav">
+    <div class="nav-inner">
+      <button type="button" class="nav-btn active" data-tab="home" onclick="window.goTab && goTab('home')"><span>🏠</span>Главная</button>
+      <button type="button" class="nav-btn" data-tab="nutrition" onclick="window.goTab && goTab('nutrition')"><span>🥗</span>Рацион</button>
+      <button type="button" class="nav-btn" data-tab="reminders" onclick="window.goTab && goTab('reminders')"><span>⏰</span>Планы</button>
+      <button type="button" class="nav-btn" data-tab="games" onclick="window.goTab && goTab('games')"><span>🎮</span>Игры</button>
+      <button type="button" class="nav-btn" data-tab="settings" onclick="window.goTab && goTab('settings')"><span>⚙️</span>Ещё</button>
+    </div>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+
+  
+<script>
+/* Independent tab switcher — works even if main app script fails */
+(function () {
+  function switchTab(name) {
+    if (!name) return;
+    name = String(name);
+    document.querySelectorAll('.nav-btn').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-tab') === name);
+    });
+    document.querySelectorAll('.page').forEach(function (pg) {
+      var on = pg.id === 'page-' + name;
+      pg.classList.toggle('active', on);
+      pg.style.display = on ? 'block' : 'none';
+    });
+    try { window.scrollTo(0, 0); } catch (e) {}
+    // optional hooks from main app
+    try {
+      if (name === 'home' && typeof renderHome === 'function') renderHome();
+      if (name === 'nutrition' && typeof renderNutrition === 'function') renderNutrition();
+      if (name === 'reminders') { if (typeof renderReminders === 'function') renderReminders(); if (typeof initRemDefaults === 'function') initRemDefaults(); }
+      if (name === 'games' && typeof exitGame === 'function') exitGame();
+      if (name === 'settings' && typeof updateNotifUI === 'function') updateNotifUI();
+    } catch (e) {}
+  }
+  window.goTab = switchTab;
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.nav-btn').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        switchTab(btn.getAttribute('data-tab'));
+      });
+    });
+  });
+  // capture phase too
+  document.addEventListener('click', function (e) {
+    var btn = e.target && e.target.closest && e.target.closest('.nav-btn');
+    if (!btn) return;
+    e.preventDefault();
+    switchTab(btn.getAttribute('data-tab'));
+  }, true);
+})();
+</script>
+
+<script>
+(() => {
+  /* --- NAV BOOTSTRAP (must work even if later code fails) --- */
+  window.goTab = function(name) {
+    try {
+      name = String(name || 'home');
+      document.querySelectorAll('.nav-btn').forEach(function(b) {
+        b.classList.toggle('active', b.getAttribute('data-tab') === name);
+      });
+      document.querySelectorAll('.page').forEach(function(p) {
+        var on = p.id === 'page-' + name;
+        p.classList.toggle('active', on);
+        p.style.display = on ? 'block' : 'none';
+      });
+      try { window.scrollTo(0, 0); } catch (e) {}
+      try {
+        if (name === 'home' && typeof renderHome === 'function') renderHome();
+        if (name === 'nutrition' && typeof renderNutrition === 'function') renderNutrition();
+        if (name === 'reminders') { if (typeof renderReminders === 'function') renderReminders(); if (typeof initRemDefaults === 'function') initRemDefaults(); }
+        if (name === 'games' && typeof exitGame === 'function') exitGame();
+        if (name === 'settings' && typeof updateNotifUI === 'function') updateNotifUI();
+      } catch (e) { console.error(e); }
+    } catch (e) { console.error('goTab', e); }
+  };
+  document.addEventListener('click', function(e) {
+    var btn = e.target && e.target.closest ? e.target.closest('.nav-btn') : null;
+    if (!btn) return;
+    var tab = btn.getAttribute('data-tab');
+    if (tab) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.goTab(tab);
+    }
+  }, true);
+
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const pad = n => String(n).padStart(2, '0');
+  const todayStr = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  };
+
+  const KEY = 'luma-v2';
+  const defaultData = () => ({
+    goals: { cal: 2000, prot: 120, fat: 70, carb: 250 },
+    meals: [],
+    water: { current: 0, goal: 2000, date: todayStr() },
+    reminders: [],
+    profile: { name: '' },
+    theme: 'violet',
+    stats: { tapBest: 0, reactionBest: null }
+  });
+
+  let data = load();
+  let toastT;
+  let remTimers = new Map();
+  let activeGame = null;
+  let gameCleanups = [];
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return defaultData();
+      return { ...defaultData(), ...JSON.parse(raw) };
+    } catch { return defaultData(); }
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(data)); }
+    catch { toast('Не удалось сохранить'); }
+  }
+
+  function toast(msg) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastT);
+    toastT = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  /* ----- Themes ----- */
+  const themes = {
+    violet: { a: '#51258b', b: '#30216f', c: '#100820' },
+    ocean:  { a: '#126b85', b: '#173b70', c: '#071c35' },
+    rose:   { a: '#873b72', b: '#55234f', c: '#250d2d' },
+    forest: { a: '#27634e', b: '#183f3b', c: '#0c201b' },
+    sunset: { a: '#9a4a2a', b: '#5a2a20', c: '#2a1010' }
+  };
+  function applyTheme(name) {
+    const t = themes[name] || themes.violet;
+    document.body.style.background =
+      `radial-gradient(ellipse at 12% 0%,${t.a} 0,transparent 38%),` +
+      `radial-gradient(ellipse at 95% 30%,${t.b} 0,transparent 34%),` +
+      `linear-gradient(150deg,${t.c},${t.b} 55%,${t.c})`;
+    document.querySelectorAll('.theme-swatch').forEach(b => {
+      b.classList.toggle('active', b.dataset.theme === name);
+    });
+    data.theme = name;
+    save();
+  }
+
+  /* ----- Navigation ----- */
+  function goTab(name) {
+    if (!name) return;
+    name = String(name);
+    document.querySelectorAll('.nav-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.tab === name);
+    });
+    document.querySelectorAll('.page').forEach(p => {
+      const on = p.id === 'page-' + name;
+      p.classList.toggle('active', on);
+      // force display for stubborn mobile webviews
+      p.style.display = on ? 'block' : 'none';
+    });
+    try {
+      if (name === 'home') renderHome();
+      if (name === 'nutrition') renderNutrition();
+      if (name === 'reminders') { renderReminders(); initRemDefaults(); }
+      if (name === 'games') { exitGame(); }
+      if (name === 'settings') updateNotifUI();
+    } catch (e) { console.error(e); }
+    try { window.scrollTo(0, 0); } catch {}
+  }
+  window.goTab = goTab;
+
+  // Delegation — works even if buttons re-rendered
+  document.addEventListener('click', (e) => {
+    const btn = e.target && e.target.closest && e.target.closest('.nav-btn');
+    if (!btn) return;
+    const tab = btn.dataset.tab;
+    if (tab) {
+      e.preventDefault();
+      goTab(tab);
+    }
+  });
+
+  /* ----- Home ----- */
+  function greeting() {
+    const h = new Date().getHours();
+    const name = data.profile.name ? ', ' + data.profile.name : '';
+    if (h < 5) return 'Доброй ночи' + name;
+    if (h < 12) return 'Доброе утро' + name;
+    if (h < 18) return 'Добрый день' + name;
+    return 'Добрый вечер' + name;
+  }
+
+  function resetWaterIfNeeded() {
+    if (data.water.date !== todayStr()) {
+      data.water.current = 0;
+      data.water.date = todayStr();
+      save();
+    }
+  }
+
+  function renderHome() {
+    resetWaterIfNeeded();
+    $('greeting').textContent = greeting() + '. Вот твоя сводка.';
+    const meals = data.meals.filter(m => m.date === todayStr());
+    const cal = meals.reduce((s, m) => s + (m.cal || 0), 0);
+    $('homeCal').textContent = Math.round(cal);
+    $('homeWater').textContent = data.water.current;
+    const active = data.reminders.filter(r => !r.done).length;
+    $('homeRem').textContent = active;
+
+    const pct = Math.min(100, (data.water.current / data.water.goal) * 100);
+    $('waterFill').style.width = pct + '%';
+    $('waterTag').textContent = `${data.water.current} / ${data.water.goal}`;
+
+    const list = $('homeRemList');
+    const upcoming = data.reminders
+      .filter(r => !r.done)
+      .sort((a, b) => a.when - b.when)
+      .slice(0, 3);
+    if (!upcoming.length) {
+      list.innerHTML = '<div class="empty"><div class="orb"></div>Нет активных напоминаний</div>';
+    } else {
+      list.innerHTML = '';
+      upcoming.forEach(r => list.appendChild(remItem(r, true)));
+    }
+  }
+
+  window.addWater = function(ml) {
+    resetWaterIfNeeded();
+    if (ml === 0) data.water.current = 0;
+    else data.water.current += ml;
+    save();
+    renderHome();
+    if (ml) toast('+' + ml + ' мл воды');
+  };
+
+  /* ----- Nutrition ----- */
+  function renderNutrition() {
+    const g = data.goals;
+    $('goalCal').value = g.cal;
+    $('goalProt').value = g.prot;
+    $('goalFat').value = g.fat;
+    $('goalCarb').value = g.carb;
+    $('lblCal').textContent = g.cal;
+    $('lblProt').textContent = g.prot;
+    $('lblFat').textContent = g.fat;
+    $('lblCarb').textContent = g.carb;
+
+    const meals = data.meals.filter(m => m.date === todayStr());
+    let cal = 0, prot = 0, fat = 0, carb = 0;
+    meals.forEach(m => {
+      cal += m.cal || 0; prot += m.prot || 0; fat += m.fat || 0; carb += m.carb || 0;
+    });
+    $('curCal').textContent = Math.round(cal);
+    $('curProt').textContent = Math.round(prot * 10) / 10;
+    $('curFat').textContent = Math.round(fat * 10) / 10;
+    $('curCarb').textContent = Math.round(carb * 10) / 10;
+    setBar('fillCal', cal, g.cal);
+    setBar('fillProt', prot, g.prot);
+    setBar('fillFat', fat, g.fat);
+    setBar('fillCarb', carb, g.carb);
+    $('mealCount').textContent = meals.length;
+
+    const list = $('mealsList');
+    const typeNames = { breakfast: 'Завтрак', lunch: 'Обед', dinner: 'Ужин', snack: 'Перекус' };
+    if (!meals.length) {
+      list.innerHTML = '<div class="empty">Пока пусто — добавь первый приём</div>';
+      return;
+    }
+    list.innerHTML = '';
+    meals.forEach(m => {
+      const el = document.createElement('div');
+      el.className = 'item';
+      el.innerHTML = `
+        <div class="body">
+          <strong>${esc(m.name)}</strong>
+          <span>${typeNames[m.type] || m.type} · ${m.cal} ккал</span>
+        </div>
+        <div class="item-actions">
+          <button type="button" data-del="${m.id}">Удалить</button>
+        </div>`;
+      el.querySelector('[data-del]').onclick = () => {
+        data.meals = data.meals.filter(x => x.id !== m.id);
+        save();
+        renderNutrition();
+        renderHome();
+        toast('Удалено');
+      };
+      list.appendChild(el);
+    });
+  }
+
+  function setBar(id, val, goal) {
+    $(id).style.width = Math.min(100, (val / Math.max(1, goal)) * 100) + '%';
+  }
+
+  window.saveGoals = function() {
+    data.goals = {
+      cal: +$('goalCal').value || 2000,
+      prot: +$('goalProt').value || 120,
+      fat: +$('goalFat').value || 70,
+      carb: +$('goalCarb').value || 250
+    };
+    save();
+    renderNutrition();
+    toast('Цели сохранены');
+  };
+
+  $('mealForm').addEventListener('submit', e => {
+    e.preventDefault();
+    data.meals.push({
+      id: 'm' + Date.now(),
+      name: $('mealName').value.trim(),
+      cal: +$('mealCal').value || 0,
+      prot: +$('mealProt').value || 0,
+      fat: +$('mealFat').value || 0,
+      carb: +$('mealCarb').value || 0,
+      type: $('mealType').value,
+      date: todayStr()
+    });
+    const cutoff = Date.now() - 60 * 86400000;
+    data.meals = data.meals.filter(m => new Date(m.date).getTime() > cutoff);
+    save();
+    e.target.reset();
+    renderNutrition();
+    renderHome();
+    toast('Приём пищи добавлен');
+  });
+
+  /* ----- Reminders ----- */
+  let remUserEdited = false;
+  function initRemDefaults(keepIfEdited) {
+    try {
+      const dateEl = document.getElementById('remDate');
+      const timeEl = document.getElementById('remTime');
+      if (!dateEl || !timeEl) return;
+      if (keepIfEdited === true && remUserEdited && dateEl.value && timeEl.value) return;
+      const next = new Date();
+      // Next full hour: 20:34 -> 21:00; 23:20 -> 00:00 next day
+      next.setHours(next.getHours() + 1, 0, 0, 0);
+      const yyyy = next.getFullYear();
+      const mm = String(next.getMonth() + 1).padStart(2, '0');
+      const dd = String(next.getDate()).padStart(2, '0');
+      const hh = String(next.getHours()).padStart(2, '0');
+      dateEl.min = todayStr();
+      dateEl.value = yyyy + '-' + mm + '-' + dd;
+      timeEl.value = hh + ':00';
+      remUserEdited = false;
+    } catch (e) { console.error('initRemDefaults', e); }
+  }
+  (function () {
+    const d = document.getElementById('remDate');
+    const t = document.getElementById('remTime');
+    if (d) d.addEventListener('change', () => { remUserEdited = true; });
+    if (t) t.addEventListener('change', () => { remUserEdited = true; });
+  })();
+  // keep defaults fresh while the app stays open and the user hasn't touched the fields
+  setInterval(() => initRemDefaults(true), 20000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) initRemDefaults(true); });
+  window.addEventListener('focus', () => initRemDefaults(true));
+  window.initRemDefaults = initRemDefaults;
+
+  function remItem(r, compact) {
+    const d = new Date(r.when);
+    const el = document.createElement('div');
+    el.className = 'item';
+    const timeHtml = `<div class="timebox"><strong>${pad(d.getHours())}:${pad(d.getMinutes())}</strong><span>${d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</span></div>`;
+    const sub = [
+      r.category || 'Личное',
+      r.repeat === 'daily' ? 'каждый день' : r.repeat === 'weekly' ? 'каждую неделю' : '',
+      r.fired ? '✓ отправлено' : (r.when < Date.now() ? 'время прошло' : 'ожидает')
+    ].filter(Boolean).join(' · ');
+    el.innerHTML = `
+      ${timeHtml}
+      <div class="body"><strong>${esc(r.text)}</strong><span>${sub}</span></div>
+      ${compact ? '' : `<div class="item-actions">
+        <button type="button" class="done" data-done="${r.id}">Выполнено</button>
+        <button type="button" data-del="${r.id}">Удалить</button>
+      </div>`}`;
+    if (!compact) {
+      el.querySelector('[data-done]')?.addEventListener('click', () => completeRem(r.id));
+      el.querySelector('[data-del]')?.addEventListener('click', () => deleteRem(r.id));
+    }
+    return el;
+  }
+
+  function renderReminders() {
+    const list = $('remList');
+    const items = data.reminders.filter(r => !r.done).sort((a, b) => a.when - b.when);
+    const n = items.length;
+    const word = n % 10 === 1 && n % 100 !== 11 ? 'напоминание' :
+      (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'напоминания' : 'напоминаний');
+    $('remCount').textContent = `${n} ${word}`;
+    if (!items.length) {
+      list.innerHTML = '<div class="empty"><div class="orb"></div>Добавь первое напоминание</div>';
+      return;
+    }
+    list.innerHTML = '';
+    items.forEach(r => list.appendChild(remItem(r, false)));
+  }
+
+  function completeRem(id) {
+    const r = data.reminders.find(x => x.id === id);
+    if (!r) return;
+    if (r.repeat === 'daily') {
+      r.when += 86400000;
+      while (r.when <= Date.now()) r.when += 86400000;
+      r.fired = false;
+      scheduleRem(r);
+    } else if (r.repeat === 'weekly') {
+      r.when += 7 * 86400000;
+      while (r.when <= Date.now()) r.when += 7 * 86400000;
+      r.fired = false;
+      scheduleRem(r);
+    } else {
+      r.done = true;
+      if (remTimers.has(id)) { clearTimeout(remTimers.get(id).t); remTimers.delete(id); }
+    }
+    save();
+    syncRemindersToSW();
+    renderReminders();
+    renderHome();
+    toast('Готово');
+  }
+
+  function deleteRem(id) {
+    if (remTimers.has(id)) { clearTimeout(remTimers.get(id).t); remTimers.delete(id); }
+    data.reminders = data.reminders.filter(r => r.id !== id);
+    save();
+    syncRemindersToSW();
+    renderReminders();
+    renderHome();
+    toast('Удалено');
+  }
+
+
+  function syncRemindersToSW() {
+    const payload = data.reminders
+      .filter(r => !r.done)
+      .map(r => ({ id: r.id, text: r.text, when: r.when, fired: !!r.fired, done: !!r.done }));
+    try {
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'SYNC_REMINDERS', reminders: payload });
+        navigator.serviceWorker.controller.postMessage({ type: 'CHECK_DUE' });
+      } else if (navigator.serviceWorker) {
+        navigator.serviceWorker.ready.then(reg => {
+          if (reg.active) {
+            reg.active.postMessage({ type: 'SYNC_REMINDERS', reminders: payload });
+            reg.active.postMessage({ type: 'CHECK_DUE' });
+          }
+        }).catch(() => {});
+      }
+    } catch {}
+  }
+
+  async function setupBackgroundSync() {
+    try {
+      if (!('serviceWorker' in navigator)) return;
+      const reg = await navigator.serviceWorker.register('./sw.js?v=10');
+      if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      reg.addEventListener('updatefound', () => {
+        const w = reg.installing;
+        if (!w) return;
+        w.addEventListener('statechange', () => {
+          if (w.state === 'installed' && navigator.serviceWorker.controller) {
+            // new version ready
+          }
+        });
+      });
+      await navigator.serviceWorker.ready;
+      // Periodic Background Sync (Chrome Android, installed PWA)
+      if (reg.periodicSync && 'periodicsync' in self) {
+        try {
+          const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
+          if (status.state === 'granted') {
+            await reg.periodicSync.register('luma-check', { minInterval: 15 * 60 * 1000 });
+          }
+        } catch {}
+      }
+      try {
+        if (reg.sync) await reg.sync.register('luma-check');
+      } catch {}
+      syncRemindersToSW();
+    } catch {}
+  }
+
+  function scheduleRem(r, opts) {
+    opts = opts || {};
+    if (r.fired || r.done) return;
+    const existing = remTimers.get(r.id);
+    // already scheduled for this exact time -> do nothing (prevents the 3s loop from hammering SW)
+    if (existing && existing.when === r.when) return;
+    if (existing) clearTimeout(existing.t);
+    remTimers.delete(r.id);
+    const delay = r.when - Date.now();
+    if (delay <= 0) {
+      fireRem(r.id);
+      return;
+    }
+    const t = setTimeout(() => {
+      remTimers.delete(r.id);
+      fireRem(r.id);
+    }, Math.min(Math.max(delay, 0), 2147480000));
+    remTimers.set(r.id, { t: t, when: r.when });
+
+    // Ask service worker to schedule once (helps on some Android Chrome)
+    if (!opts.silent) {
+      try {
+        if (navigator.serviceWorker) {
+          navigator.serviceWorker.ready.then(reg => {
+            const msg = {
+              type: 'SCHEDULE_ONE',
+              title: 'Luma напоминает',
+              body: r.text,
+              tag: 'luma-sw-' + r.id,
+              when: r.when
+            };
+            if (reg.active) reg.active.postMessage(msg);
+          }).catch(() => {});
+        }
+      } catch {}
+    }
+  }
+
+  function fireRem(id) {
+    const r = data.reminders.find(x => x.id === id);
+    if (!r || r.done) return;
+    if (r.fired) return;
+    try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch {}
+    toast('⏰ ' + r.text);
+    showSystemNotification('Luma напоминает', r.text, 'luma-' + id + '-' + Date.now());
+    r.fired = true;
+    r.firedAt = Date.now();
+    remTimers.delete(id);
+    save();
+    syncRemindersToSW();
+    try { renderReminders(); renderHome(); } catch (e) { console.error(e); }
+  }
+
+  function showSystemNotification(title, body, tag) {
+    const icon = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✧</text></svg>";
+    if (!('Notification' in window)) {
+      setNotifDebug('API уведомлений нет в этом браузере');
+      return false;
+    }
+    if (Notification.permission !== 'granted') {
+      setNotifDebug('Нет разрешения. Нажми «Включить уведомления».');
+      return false;
+    }
+    let ok = false;
+    const opts = {
+      body: body || '',
+      tag: tag || ('luma-' + Date.now()),
+      icon,
+      renotify: true,
+      silent: false,
+      requireInteraction: false
+    };
+    // Prefer SW — works better when tab/app is in background
+    try {
+      if (navigator.serviceWorker) {
+        navigator.serviceWorker.ready.then(reg => {
+          if (reg && reg.showNotification) {
+            reg.showNotification(title, opts).then(() => {
+              setNotifDebug('Уведомление отправлено ✓');
+            }).catch(err => {
+              setNotifDebug('SW notify: ' + (err && err.message ? err.message : String(err)));
+              try {
+                const n = new Notification(title, opts);
+                setTimeout(() => { try { n.close(); } catch {} }, 12000);
+              } catch {}
+            });
+          }
+        }).catch(() => {});
+        if (navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({
+            type: 'SHOW_NOTIFICATION',
+            title,
+            body: opts.body,
+            tag: opts.tag,
+            icon
+          });
+          ok = true;
+        }
+      }
+    } catch (err) {
+      setNotifDebug(String(err && err.message || err));
+    }
+    // Also try page Notification (when app is open)
+    try {
+      const n = new Notification(title, opts);
+      ok = true;
+      setTimeout(() => { try { n.close(); } catch {} }, 12000);
+    } catch (err) {
+      if (!ok) setNotifDebug('Notification error: ' + (err && err.message ? err.message : String(err)));
+    }
+    if (ok) setNotifDebug('Уведомление отправлено ✓');
+    return ok;
+  }
+
+  function setNotifDebug(msg) {
+    const info = $('notifyInfo');
+    const status = $('notifyStatus');
+    if (info) info.textContent = msg;
+    if (status) status.textContent = msg;
+  }
+
+  let checking = false;
+  function checkDue() {
+    if (checking) return;
+    checking = true;
+    try {
+      const now = Date.now();
+      data.reminders.forEach(r => {
+        if (r.done || r.fired) return;
+        if (r.when <= now) fireRem(r.id);
+        else scheduleRem(r, { silent: true });
+      });
+    } catch (e) { console.error('checkDue', e); }
+    checking = false;
+  }
+
+  function parseLocalDateTime(ds, ts) {
+    // Local timezone, no UTC shift
+    const dp = ds.split('-').map(Number);
+    const tp = ts.split(':').map(Number);
+    if (dp.length < 3 || tp.length < 2) return NaN;
+    return new Date(dp[0], dp[1] - 1, dp[2], tp[0], tp[1], 0, 0).getTime();
+  }
+
+  function addReminderFromForm() {
+    try {
+      const textEl = document.getElementById('remText');
+      const dateEl = document.getElementById('remDate');
+      const timeEl = document.getElementById('remTime');
+      const catEl = document.getElementById('remCat');
+      const repEl = document.getElementById('remRepeat');
+      if (!textEl || !dateEl || !timeEl) {
+        toast('Форма не найдена');
+        return false;
+      }
+      // ensure defaults if empty
+      if (!dateEl.value || !timeEl.value) initRemDefaults();
+      const textVal = (textEl.value || '').trim();
+      const ds = dateEl.value;
+      const ts = timeEl.value;
+      if (!textVal) {
+        toast('Напиши, о чём напомнить');
+        textEl.focus();
+        return false;
+      }
+      if (!ds || !ts) {
+        toast('Укажи дату и время');
+        initRemDefaults();
+        return false;
+      }
+      const when = parseLocalDateTime(ds, ts);
+      if (!Number.isFinite(when)) {
+        toast('Некорректная дата или время');
+        return false;
+      }
+      if (when <= Date.now()) {
+        toast('Это время уже прошло — выбери позже');
+        initRemDefaults();
+        return false;
+      }
+      const r = {
+        id: 'r' + Date.now() + '-' + Math.floor(Math.random() * 1e6),
+        text: textVal,
+        when: when,
+        fired: false,
+        done: false,
+        category: (catEl && catEl.value) || 'Личное',
+        repeat: (repEl && repEl.value) || 'none'
+      };
+      if (!Array.isArray(data.reminders)) data.reminders = [];
+      data.reminders.push(r);
+      save();
+      try { scheduleRem(r); } catch (e) { console.error(e); }
+      try { syncRemindersToSW(); } catch (e) {}
+      try { renderReminders(); } catch (e) {}
+      try { renderHome(); } catch (e) {}
+      textEl.value = '';
+      initRemDefaults();
+      const sec = Math.round((when - Date.now()) / 1000);
+      if (sec < 120) toast('Напоминание через ' + sec + ' сек');
+      else toast('Напоминание добавлено на ' + ds + ' ' + ts);
+      return true;
+    } catch (err) {
+      console.error(err);
+      toast('Ошибка: ' + (err && err.message ? err.message : 'не удалось сохранить'));
+      return false;
+    }
+  }
+  window.addReminderFromForm = addReminderFromForm;
+
+  const remFormEl = document.getElementById('remForm');
+  if (remFormEl) {
+    remFormEl.addEventListener('submit', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      addReminderFromForm();
+    });
+  }
+
+  async function requestNotif() {
+    if (!('Notification' in window)) {
+      toast('Браузер не поддерживает уведомления');
+      setNotifDebug('API не поддерживается');
+      return;
+    }
+    try {
+      if ('serviceWorker' in navigator) {
+        try {
+          const reg = await navigator.serviceWorker.register('./sw.js?v=10');
+          await navigator.serviceWorker.ready;
+          setNotifDebug('Service Worker готов');
+        } catch (e) {
+          setNotifDebug('SW не зарегистрирован (нужен HTTPS). Уведомления всё равно попробуем.');
+        }
+      }
+      let p = Notification.permission;
+      if (p !== 'granted') {
+        p = await Notification.requestPermission();
+      }
+      updateNotifUI();
+      if (p === 'granted') {
+        toast('Уведомления включены — сейчас проверка');
+        const ok = showSystemNotification('Luma', 'Работает! Так будут приходить напоминания.', 'luma-test-' + Date.now());
+        if (!ok) toast('Разрешение есть, но показ заблокирован (нужен HTTPS?)');
+      } else if (p === 'denied') {
+        toast('Запрещено. Разреши в настройках браузера/сайта');
+        setNotifDebug('Запрещено системой. Открой настройки сайта → Уведомления → Разрешить.');
+      } else {
+        toast('Разрешение не получено');
+      }
+    } catch (err) {
+      toast('Ошибка запроса разрешения');
+      setNotifDebug(String(err && err.message || err));
+    }
+  }
+
+  function testNotifIn3s() {
+    if (Notification.permission !== 'granted') {
+      toast('Сначала нажми «Включить уведомления»');
+      requestNotif();
+      return;
+    }
+    toast('Тест через 3 сек — можно выйти');
+    setTimeout(() => {
+      toast('⏰ Тест напоминания');
+      try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch {}
+      showSystemNotification('Luma — тест', 'Если видишь это — уведомления работают', 'luma-test-' + Date.now());
+    }, 3000);
+  }
+
+  function quickReminder(sec) {
+    if (Notification.permission !== 'granted') {
+      toast('Сначала включи уведомления');
+      requestNotif();
+      return;
+    }
+    const when = Date.now() + sec * 1000;
+    const r = {
+      id: (crypto.randomUUID ? crypto.randomUUID() : 'r' + Date.now()),
+      text: 'Быстрый тест (' + sec + ' сек)',
+      when,
+      fired: false,
+      done: false,
+      category: 'Личное',
+      repeat: 'none'
+    };
+    data.reminders.push(r);
+    save();
+    scheduleRem(r);
+    syncRemindersToSW();
+    renderReminders();
+    renderHome();
+    toast('Напоминание через ' + sec + ' сек — можно выйти');
+  }
+  window.quickReminder = quickReminder;
+
+  const remSubmitBtn = document.getElementById('remSubmitBtn');
+  if (remSubmitBtn) {
+    remSubmitBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      addReminderFromForm();
+    });
+  }
+  if ($('notifyBtn')) $('notifyBtn').onclick = requestNotif;
+  if ($('notifyBtn2')) $('notifyBtn2').onclick = requestNotif;
+  const testBtn = $('testNotifBtn');
+  if (testBtn) testBtn.onclick = testNotifIn3s;
+  const testBtn2 = $('testNotifBtn2');
+  if (testBtn2) testBtn2.onclick = testNotifIn3s;
+
+  function updateNotifUI() {
+    const info = $('notifyInfo');
+    const status = $('notifyStatus');
+    if (!('Notification' in window)) {
+      if (info) info.textContent = 'Этот браузер не поддерживает уведомления.';
+      if (status) status.textContent = 'Не поддерживается';
+      return;
+    }
+    const p = Notification.permission;
+    const map = {
+      granted: 'Уведомления включены ✓',
+      denied: 'Запрещены в настройках браузера',
+      default: 'Ещё не запрашивались'
+    };
+    if (info) info.textContent = map[p] + '. Фон: да (если процесс жив). Выключенный экран: часто да на Android. Полностью закрыто / глубокий сон iPhone: нужен push-сервер.';
+    if (status) status.textContent = map[p];
+  }
+
+  /* ----- Games ----- */
+  function startGame(name) {
+    exitGame();
+    activeGame = name;
+    $('gamesMenu').style.display = 'none';
+    $('gameArea').style.display = 'block';
+    const box = $('gameContent');
+    box.innerHTML = '';
+    if (name === 'reaction') initReaction(box);
+    else if (name === 'memory') initMemory(box);
+    else if (name === 'tap') initTap(box);
+    else if (name === 'snake') initSnake(box);
+  }
+  window.startGame = startGame;
+
+  function exitGame() {
+    gameCleanups.forEach(fn => { try { fn(); } catch {} });
+    gameCleanups = [];
+    activeGame = null;
+    if (window._snakeRAF) {
+      cancelAnimationFrame(window._snakeRAF);
+      window._snakeRAF = null;
+    }
+    $('gamesMenu').style.display = 'block';
+    $('gameArea').style.display = 'none';
+    $('gameContent').innerHTML = '';
+  }
+  window.exitGame = exitGame;
+
+  function initReaction(box) {
+    let state = 'idle', startAt = 0, waitT = null;
+    const best = data.stats.reactionBest;
+    box.innerHTML = `
+      <h2 style="margin-bottom:8px">⚡ Поймай сияние</h2>
+      <p class="muted" style="margin-bottom:12px">Жди зелёный цвет — потом жми как можно быстрее</p>
+      <div class="scoreline"><span>Последний <b id="lastR">—</b></span><span>Рекорд <b id="bestR">${best != null ? best + ' мс' : '—'}</b></span></div>
+      <div class="reaction-arena" id="arena"><button type="button" id="arenaBtn">Начать</button></div>
+      <p class="notice" id="rStatus" style="text-align:center">Готов?</p>`;
+    const arena = $('arena');
+    const btn = $('arenaBtn');
+    const status = $('rStatus');
+    gameCleanups.push(() => clearTimeout(waitT));
+
+    btn.onclick = () => {
+      if (state === 'idle' || state === 'done' || state === 'early') {
+        state = 'waiting';
+        arena.className = 'reaction-arena waiting';
+        btn.textContent = 'Жди…';
+        status.textContent = 'Не нажимай рано';
+        waitT = setTimeout(() => {
+          if (state !== 'waiting') return;
+          state = 'ready';
+          startAt = performance.now();
+          arena.className = 'reaction-arena ready';
+          btn.textContent = 'ЖМИ!';
+          status.textContent = 'Сейчас!';
+        }, 1200 + Math.random() * 2500);
+      } else if (state === 'waiting') {
+        clearTimeout(waitT);
+        state = 'early';
+        arena.className = 'reaction-arena early';
+        btn.textContent = 'Слишком рано';
+        status.textContent = 'Фальстарт — попробуй ещё';
+      } else if (state === 'ready') {
+        const ms = Math.round(performance.now() - startAt);
+        state = 'done';
+        arena.className = 'reaction-arena';
+        btn.textContent = 'Ещё раз';
+        $('lastR').textContent = ms + ' мс';
+        status.textContent = ms < 230 ? 'Молния! ⚡' : ms < 330 ? 'Хорошо' : 'Можно быстрее';
+        if (data.stats.reactionBest == null || ms < data.stats.reactionBest) {
+          data.stats.reactionBest = ms;
+          save();
+          $('bestR').textContent = ms + ' мс';
+          toast('Новый рекорд! ' + ms + ' мс');
+        }
+      }
+    };
+  }
+
+  function initMemory(box) {
+    const emojis = ['🍎','🍊','🍋','🍇','🍓','🍑','🥝','🫐'];
+    let cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+    let flipped = [], lock = false, matched = 0, moves = 0;
+    box.innerHTML = `
+      <h2 style="margin-bottom:8px;text-align:center">🧠 Память</h2>
+      <p class="muted" style="text-align:center;margin-bottom:8px">Ходов: <b id="memMoves">0</b> · Найдено: <b id="memFound">0</b>/8</p>
+      <div class="memory-grid" id="memGrid"></div>`;
+    const grid = $('memGrid');
+    cards.forEach((emoji, i) => {
+      const c = document.createElement('button');
+      c.type = 'button';
+      c.className = 'memory-cell';
+      c.textContent = '?';
+      c.dataset.emoji = emoji;
+      c.onclick = () => {
+        if (lock || c.classList.contains('on') || c.classList.contains('matched')) return;
+        c.classList.add('on');
+        c.textContent = emoji;
+        flipped.push(c);
+        if (flipped.length === 2) {
+          moves++;
+          $('memMoves').textContent = moves;
+          lock = true;
+          const [a, b] = flipped;
+          if (a.dataset.emoji === b.dataset.emoji) {
+            a.classList.add('matched');
+            b.classList.add('matched');
+            matched++;
+            $('memFound').textContent = matched;
+            flipped = [];
+            lock = false;
+            if (matched === 8) toast('Победа! ' + moves + ' ходов 🎉');
+          } else {
+            const t = setTimeout(() => {
+              a.classList.remove('on'); b.classList.remove('on');
+              a.textContent = '?'; b.textContent = '?';
+              flipped = []; lock = false;
+            }, 650);
+            gameCleanups.push(() => clearTimeout(t));
+          }
+        }
+      };
+      grid.appendChild(c);
+    });
+  }
+
+  function initTap(box) {
+    let score = 0, running = false, left = 10, timer = null;
+    box.innerHTML = `
+      <h2 style="margin-bottom:8px;text-align:center">👆 Кликер</h2>
+      <div class="scoreline"><span>Счёт <b id="tapScore">0</b></span><span>Время <b id="tapLeft">10</b> с</span></div>
+      <p class="muted" style="text-align:center">Рекорд: <b id="tapBest">${data.stats.tapBest}</b></p>
+      <button type="button" class="tap-btn" id="tapBtn">Старт</button>
+      <p class="notice" style="text-align:center" id="tapStatus">Кликай 10 секунд</p>`;
+    const btn = $('tapBtn');
+    gameCleanups.push(() => clearInterval(timer));
+    btn.onclick = () => {
+      if (!running) {
+        running = true; score = 0; left = 10;
+        $('tapScore').textContent = '0';
+        $('tapLeft').textContent = '10';
+        btn.textContent = 'Жми!';
+        $('tapStatus').textContent = 'Вперёд!';
+        timer = setInterval(() => {
+          left--;
+          $('tapLeft').textContent = left;
+          if (left <= 0) {
+            clearInterval(timer);
+            running = false;
+            btn.textContent = 'Ещё раз';
+            $('tapStatus').textContent = 'Результат: ' + score;
+            if (score > data.stats.tapBest) {
+              data.stats.tapBest = score;
+              save();
+              $('tapBest').textContent = score;
+              toast('Новый рекорд! 🏆');
+            }
+          }
+        }, 1000);
+      } else {
+        score++;
+        $('tapScore').textContent = score;
+      }
+    };
+  }
+
+  function initSnake(box) {
+    box.innerHTML = `
+      <h2 style="margin-bottom:8px;text-align:center">🐍 Змейка</h2>
+      <p class="muted" style="text-align:center">Счёт: <b id="snScore">0</b> · Рекорд: <b id="snBest">${localStorage.getItem('luma-snake') || 0}</b></p>
+      <canvas id="snakeCanvas" width="280" height="280"></canvas>
+      <p class="notice" style="text-align:center">Стрелки / WASD · Пробел — пауза</p>
+      <div style="text-align:center;margin-top:8px"><button class="btn secondary small" type="button" id="snRestart">Заново</button></div>`;
+    const canvas = $('snakeCanvas');
+    const ctx = canvas.getContext('2d');
+    const S = 14, COLS = 20, ROWS = 20;
+    let snake, dir, nextDir, food, score, alive, paused, last = 0;
+
+    function placeFood() {
+      let p;
+      do { p = { x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS) }; }
+      while (snake.some(s => s.x === p.x && s.y === p.y));
+      return p;
+    }
+    function reset() {
+      snake = [{ x: 10, y: 10 }];
+      dir = { x: 1, y: 0 };
+      nextDir = { ...dir };
+      food = placeFood();
+      score = 0; alive = true; paused = false;
+      $('snScore').textContent = '0';
+    }
+    function draw() {
+      ctx.fillStyle = 'rgba(0,0,0,.35)';
+      ctx.fillRect(0, 0, 280, 280);
+      ctx.fillStyle = '#f472b6';
+      ctx.beginPath();
+      ctx.roundRect(food.x * S + 2, food.y * S + 2, S - 4, S - 4, 4);
+      ctx.fill();
+      snake.forEach((s, i) => {
+        ctx.fillStyle = i === 0 ? '#e0a6ff' : '#a78bfa';
+        ctx.beginPath();
+        ctx.roundRect(s.x * S + 1, s.y * S + 1, S - 2, S - 2, 3);
+        ctx.fill();
+      });
+    }
+    function loop(ts) {
+      if (!alive || activeGame !== 'snake') return;
+      window._snakeRAF = requestAnimationFrame(loop);
+      if (paused) return;
+      if (ts - last < 110) return;
+      last = ts;
+      dir = { ...nextDir };
+      const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+      if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS || snake.some(s => s.x === head.x && s.y === head.y)) {
+        alive = false;
+        const best = +(localStorage.getItem('luma-snake') || 0);
+        if (score > best) {
+          localStorage.setItem('luma-snake', score);
+          $('snBest').textContent = score;
+          toast('Рекорд змейки! 🐍');
+        } else toast('Игра окончена · ' + score);
+        return;
+      }
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
+        score++;
+        $('snScore').textContent = score;
+        food = placeFood();
+      } else snake.pop();
+      draw();
+    }
+    function onKey(e) {
+      if (activeGame !== 'snake') return;
+      const k = e.key.toLowerCase();
+      if (k === 'arrowup' || k === 'w') { if (dir.y === 0) nextDir = { x: 0, y: -1 }; e.preventDefault(); }
+      else if (k === 'arrowdown' || k === 's') { if (dir.y === 0) nextDir = { x: 0, y: 1 }; e.preventDefault(); }
+      else if (k === 'arrowleft' || k === 'a') { if (dir.x === 0) nextDir = { x: -1, y: 0 }; e.preventDefault(); }
+      else if (k === 'arrowright' || k === 'd') { if (dir.x === 0) nextDir = { x: 1, y: 0 }; e.preventDefault(); }
+      else if (k === ' ') { paused = !paused; e.preventDefault(); }
+    }
+    document.addEventListener('keydown', onKey);
+    gameCleanups.push(() => document.removeEventListener('keydown', onKey));
+    $('snRestart').onclick = () => {
+      if (window._snakeRAF) cancelAnimationFrame(window._snakeRAF);
+      reset(); draw(); last = 0;
+      window._snakeRAF = requestAnimationFrame(loop);
+    };
+    reset(); draw();
+    window._snakeRAF = requestAnimationFrame(loop);
+  }
+
+  /* ----- Settings ----- */
+  document.querySelectorAll('.theme-swatch').forEach(b => {
+    b.onclick = () => applyTheme(b.dataset.theme);
+  });
+
+  $('profileName').value = data.profile.name || '';
+  $('saveProfile').onclick = () => {
+    data.profile.name = $('profileName').value.trim().slice(0, 24);
+    save();
+    renderHome();
+    toast('Профиль сохранён');
+  };
+
+  window.exportData = function() {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'luma-backup.json';
+    a.click();
+    toast('Экспортировано');
+  };
+
+  $('importFile').onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        data = { ...defaultData(), ...JSON.parse(ev.target.result) };
+        save();
+        applyTheme(data.theme);
+        renderHome();
+        renderNutrition();
+        renderReminders();
+        toast('Импортировано');
+      } catch { toast('Ошибка файла'); }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  window.clearData = function() {
+    if (!confirm('Удалить все данные?')) return;
+    data = defaultData();
+    save();
+    applyTheme('violet');
+    renderHome();
+    renderNutrition();
+    renderReminders();
+    toast('Очищено');
+  };
+
+  function esc(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  /* ----- Init ----- */
+  applyTheme(data.theme || 'violet');
+  initRemDefaults();
+  checkDue();
+  setInterval(checkDue, 5000);
+  document.addEventListener('visibilitychange', () => { checkDue(); });
+  window.addEventListener('focus', checkDue);
+  window.addEventListener('pageshow', checkDue);
+  updateNotifUI();
+  renderHome();
+  setupBackgroundSync();
+  function onLeaveBackground() {
+    syncRemindersToSW();
+    try {
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'CHECK_DUE' });
+      }
+    } catch {}
+  }
+  function onBackForeground() {
+    checkDue();
+    syncRemindersToSW();
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) onLeaveBackground();
+    else onBackForeground();
+  });
+  window.addEventListener('pagehide', onLeaveBackground);
+  window.addEventListener('pageshow', onBackForeground);
+  document.addEventListener('resume', onBackForeground); // some webviews
+})();
+  </script>
+</body>
+</html>
