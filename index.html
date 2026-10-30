@@ -671,6 +671,10 @@ input[type=time]::-webkit-calendar-picker-indicator {
           <button class="btn secondary small" onclick="addWater(500)">+500 мл</button>
           <button class="btn secondary small" onclick="addWater(0)">Сброс</button>
         </div>
+        <div class="water-btns">
+          <div class="field" style="flex:1;min-width:130px;margin:0"><input type="number" id="waterCustom" min="1" max="5000" step="1" inputmode="numeric" placeholder="Свой объём, мл"></div>
+          <button class="btn secondary small" type="button" onclick="addCustomWater()">＋ Добавить</button>
+        </div>
       </div>
 
       <div class="glass section">
@@ -740,6 +744,11 @@ input[type=time]::-webkit-calendar-picker-indicator {
       <div class="glass section">
         <div class="section-head"><h2>Добавить приём пищи</h2></div>
         <form id="mealForm" onsubmit="return false;">
+          <div style="margin-bottom:12px">
+            <div class="notice" style="margin:0 0 8px">Быстрый выбор: нажми на блюдо — подставятся средние значения на порцию (можно поправить)</div>
+            <div class="water-btns" id="mealPresets" style="margin-top:0"></div>
+            <div class="notice" id="presetHint" style="margin:8px 0 0"></div>
+          </div>
           <div class="fields">
             <div class="field full"><label>Название</label><input id="mealName" placeholder="Овсянка с бананом" required maxlength="60"></div>
             <div class="field"><label>Ккал</label><input type="number" id="mealCal" min="0" required></div>
@@ -899,6 +908,21 @@ input[type=time]::-webkit-calendar-picker-indicator {
       </div>
 
       <div class="glass section">
+        <div class="section-head"><h2>Push на все устройства</h2><span class="tag">NTFY</span></div>
+        <p class="notice" style="margin-top:0">Уведомления приходят, даже когда сайт закрыт. Установи бесплатное приложение ntfy (Google Play или App Store), нажми «+» и впиши тему ниже. Повтори на каждом устройстве.</p>
+        <div class="fields">
+          <div class="field full"><label>Тема (как пароль — никому не показывай)</label><input id="ntfyTopic" maxlength="64" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="нажми «Включить»"></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" type="button" id="ntfyToggle">Включить</button>
+          <button class="btn secondary" type="button" id="ntfyCopy">Копировать</button>
+          <button class="btn secondary" type="button" id="ntfyNew">Новая тема</button>
+          <button class="btn secondary" type="button" id="ntfyTest">Тест</button>
+        </div>
+        <p class="notice" id="ntfyStatus"></p>
+      </div>
+
+      <div class="glass section">
         <div class="section-head"><h2>Данные</h2></div>
         <div class="form-actions">
           <button class="btn secondary" type="button" onclick="exportData()">Экспорт</button>
@@ -1030,6 +1054,7 @@ input[type=time]::-webkit-calendar-picker-indicator {
     reminders: [],
     profile: { name: '' },
     theme: 'violet',
+    ntfy: { enabled: false, topic: '' },
     stats: { tapBest: 0, reactionBest: null }
   });
 
@@ -1169,6 +1194,16 @@ input[type=time]::-webkit-calendar-picker-indicator {
     if (ml) toast('+' + ml + ' мл воды');
   };
 
+  window.addCustomWater = function() {
+    const el = $('waterCustom');
+    const ml = Math.round(+el.value);
+    if (!Number.isFinite(ml) || ml < 1) { toast('Введи объём в мл'); el.focus(); return; }
+    if (ml > 5000) { toast('Не больше 5000 мл за раз'); return; }
+    window.addWater(ml);
+    el.value = '';
+  };
+  $('waterCustom').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); window.addCustomWater(); } });
+
   /* ----- Nutrition ----- */
   function renderNutrition() {
     const g = data.goals;
@@ -1261,6 +1296,47 @@ input[type=time]::-webkit-calendar-picker-indicator {
     renderHome();
     toast('Приём пищи добавлен');
   });
+
+  const MEAL_PRESETS = [
+    { n: 'Овсяная каша на воде', g: '250 г', c: 150, p: 5, f: 3, u: 27, t: 'breakfast' },
+    { n: 'Овсяная каша на молоке', g: '250 г', c: 215, p: 8, f: 7, u: 31, t: 'breakfast' },
+    { n: 'Гречневая каша', g: '200 г', c: 185, p: 7, f: 1.5, u: 38, t: 'lunch' },
+    { n: 'Рис варёный', g: '200 г', c: 260, p: 5.4, f: 0.6, u: 56, t: 'lunch' },
+    { n: 'Макароны варёные', g: '200 г', c: 316, p: 11.6, f: 1.8, u: 62, t: 'lunch' },
+    { n: 'Картофельное пюре', g: '200 г', c: 220, p: 4, f: 8, u: 32, t: 'dinner' },
+    { n: 'Куриная грудка варёная', g: '150 г', c: 248, p: 46, f: 5.4, u: 0, t: 'lunch' },
+    { n: 'Яйцо варёное', g: '1 шт', c: 78, p: 6.3, f: 5.3, u: 0.6, t: 'breakfast' },
+    { n: 'Омлет из 2 яиц', g: '150 г', c: 220, p: 14, f: 17, u: 2, t: 'breakfast' },
+    { n: 'Творог 5%', g: '150 г', c: 182, p: 26, f: 7.5, u: 2.7, t: 'snack' },
+    { n: 'Йогурт натуральный', g: '150 г', c: 90, p: 5, f: 5, u: 7, t: 'snack' },
+    { n: 'Банан', g: '1 шт', c: 105, p: 1.3, f: 0.4, u: 27, t: 'snack' },
+    { n: 'Яблоко', g: '1 шт', c: 95, p: 0.5, f: 0.3, u: 25, t: 'snack' },
+    { n: 'Бутерброд с сыром', g: '1 шт', c: 200, p: 9, f: 10, u: 18, t: 'breakfast' },
+    { n: 'Борщ', g: '300 г', c: 150, p: 6, f: 7, u: 15, t: 'lunch' },
+    { n: 'Куриный суп', g: '300 г', c: 120, p: 8, f: 4, u: 12, t: 'lunch' },
+    { n: 'Овощной салат с маслом', g: '200 г', c: 120, p: 2, f: 9, u: 8, t: 'dinner' }
+  ];
+  (function setupPresets() {
+    const box = $('mealPresets');
+    if (!box) return;
+    MEAL_PRESETS.forEach(m => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn secondary small';
+      b.textContent = m.n;
+      b.addEventListener('click', () => {
+        $('mealName').value = m.n + ' (' + m.g + ')';
+        $('mealCal').value = m.c;
+        $('mealProt').value = m.p;
+        $('mealFat').value = m.f;
+        $('mealCarb').value = m.u;
+        $('mealType').value = m.t;
+        $('presetHint').textContent = m.n + ' (' + m.g + '): ' + m.c + ' ккал · Б ' + m.p + ' · Ж ' + m.f + ' · У ' + m.u + ' — нажми «Добавить»';
+      });
+      box.appendChild(b);
+    });
+  })();
+  $('mealForm').addEventListener('reset', () => { setTimeout(() => { const h = $('presetHint'); if (h) h.textContent = ''; }, 0); });
 
   /* ----- Reminders ----- */
   let remUserEdited = false;
@@ -1377,6 +1453,7 @@ input[type=time]::-webkit-calendar-picker-indicator {
   function completeRem(id) {
     const r = data.reminders.find(x => x.id === id);
     if (!r) return;
+    ntfyCancel(r);
     if (r.repeat === 'daily') {
       r.when += 86400000;
       while (r.when <= Date.now()) r.when += 86400000;
@@ -1399,6 +1476,7 @@ input[type=time]::-webkit-calendar-picker-indicator {
   }
 
   function deleteRem(id) {
+    ntfyCancel(data.reminders.find(x => x.id === id));
     if (remTimers.has(id)) { clearTimeout(remTimers.get(id).t); remTimers.delete(id); }
     data.reminders = data.reminders.filter(r => r.id !== id);
     save();
@@ -1412,7 +1490,7 @@ input[type=time]::-webkit-calendar-picker-indicator {
   function syncRemindersToSW() {
     const payload = data.reminders
       .filter(r => !r.done)
-      .map(r => ({ id: r.id, text: r.text, when: r.when, fired: !!r.fired, done: !!r.done }));
+      .map(r => ({ id: r.id, text: r.text, when: r.when, fired: !!r.fired || ntfyCovers(r), done: !!r.done }));
     try {
       if (navigator.serviceWorker && navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({ type: 'SYNC_REMINDERS', reminders: payload });
@@ -1431,7 +1509,7 @@ input[type=time]::-webkit-calendar-picker-indicator {
   async function setupBackgroundSync() {
     try {
       if (!('serviceWorker' in navigator)) return;
-      const reg = await navigator.serviceWorker.register('./sw.js?v=10');
+      const reg = await navigator.serviceWorker.register('./sw.js?v=11');
       if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
       reg.addEventListener('updatefound', () => {
         const w = reg.installing;
@@ -1479,7 +1557,7 @@ input[type=time]::-webkit-calendar-picker-indicator {
     remTimers.set(r.id, { t: t, when: r.when });
 
     // Ask service worker to schedule once (helps on some Android Chrome)
-    if (!opts.silent) {
+    if (!opts.silent && !ntfyCovers(r)) {
       try {
         if (navigator.serviceWorker) {
           navigator.serviceWorker.ready.then(reg => {
@@ -1503,7 +1581,7 @@ input[type=time]::-webkit-calendar-picker-indicator {
     if (r.fired) return;
     try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch {}
     toast('⏰ ' + r.text);
-    showSystemNotification('Luma напоминает', r.text, 'luma-' + id + '-' + Date.now());
+    if (!ntfyCovers(r)) showSystemNotification('Luma напоминает', r.text, 'luma-' + id + '-' + Date.now());
     r.fired = true;
     r.firedAt = Date.now();
     remTimers.delete(id);
@@ -1580,6 +1658,120 @@ input[type=time]::-webkit-calendar-picker-indicator {
     if (status) status.textContent = msg;
   }
 
+  /* ----- ntfy push (works with the app closed, on every device) ----- */
+  const NTFY_URL = 'https://ntfy.sh/';
+  const NTFY_MAX_AHEAD = 3 * 86400 - 900; // ntfy schedules up to 3 days ahead
+  data.ntfy = Object.assign({ enabled: false, topic: '' }, data.ntfy || {});
+  const ntfyTopicOk = t => /^[-_A-Za-z0-9]{8,64}$/.test(t || '');
+  const ntfyOn = () => !!(data.ntfy && data.ntfy.enabled && ntfyTopicOk(data.ntfy.topic));
+  const ntfyCovers = r => ntfyOn() && !!r.ntfySeq && r.ntfyWhen === r.when;
+  const ntfyBusy = new Set();
+  const ntfyLastTry = new Map();
+
+  function ntfyGenTopic() {
+    const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
+    const a = new Uint8Array(20);
+    crypto.getRandomValues(a);
+    return 'luma-' + Array.from(a, b => chars[b % chars.length]).join('');
+  }
+
+  async function ntfySchedule(r) {
+    if (!ntfyOn() || r.done || r.fired || ntfyCovers(r) || ntfyBusy.has(r.id)) return false;
+    const secs = Math.floor(r.when / 1000);
+    const left = secs - Math.floor(Date.now() / 1000);
+    if (left < 12 || left > NTFY_MAX_AHEAD) return false;
+    const last = ntfyLastTry.get(r.id) || 0;
+    if (Date.now() - last < 60000) return false;
+    ntfyLastTry.set(r.id, Date.now());
+    ntfyBusy.add(r.id);
+    const seq = ('luma_' + r.id + '_' + secs).replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 64);
+    const url = NTFY_URL + data.ntfy.topic + '/' + seq +
+      '?at=' + secs + '&priority=4&tags=bell&title=' + encodeURIComponent('Luma напоминает');
+    try {
+      const res = await fetch(url, { method: 'POST', body: r.text });
+      if (res.ok) {
+        r.ntfySeq = seq;
+        r.ntfyWhen = r.when;
+        save();
+        syncRemindersToSW();
+        return true;
+      }
+    } catch (e) { /* offline: retry later */ }
+    finally { ntfyBusy.delete(r.id); }
+    return false;
+  }
+
+  function ntfyCancel(r, topicOverride) {
+    const seq = r && r.ntfySeq;
+    const topic = topicOverride || (data.ntfy && data.ntfy.topic);
+    if (r) { r.ntfySeq = null; r.ntfyWhen = null; }
+    if (!seq || !ntfyTopicOk(topic)) return;
+    try { fetch(NTFY_URL + topic + '/' + seq, { method: 'DELETE' }).catch(() => {}); } catch (e) {}
+  }
+
+  function ntfyCancelAll(topic) {
+    data.reminders.forEach(r => ntfyCancel(r, topic));
+  }
+
+  function renderNtfy() {
+    const inp = $('ntfyTopic');
+    if (!inp) return;
+    inp.value = data.ntfy.topic || '';
+    $('ntfyToggle').textContent = ntfyOn() ? 'Выключить' : 'Включить';
+    $('ntfyStatus').textContent = ntfyOn()
+      ? 'Включено. На каждом устройстве: приложение ntfy → «+» → тема выше. Напоминания не дольше чем на 3 дня вперёд уходят в push, остальные — когда подойдёт срок и сайт будет открыт.'
+      : 'Выключено.';
+  }
+
+  (function setupNtfyUi() {
+    if (!$('ntfyToggle')) return;
+    $('ntfyToggle').addEventListener('click', () => {
+      if (ntfyOn()) {
+        ntfyCancelAll();
+        data.ntfy.enabled = false;
+        save(); renderNtfy(); syncRemindersToSW();
+        toast('Push выключен');
+        return;
+      }
+      let t = ($('ntfyTopic').value || '').trim().replace(/[^-_A-Za-z0-9]/g, '');
+      if (!ntfyTopicOk(t)) t = ntfyGenTopic();
+      data.ntfy.topic = t;
+      data.ntfy.enabled = true;
+      save(); renderNtfy();
+      checkDue();
+      toast('Push включён. Подпишись на тему в ntfy');
+    });
+    $('ntfyTopic').addEventListener('change', () => {
+      const old = data.ntfy.topic;
+      const t = ($('ntfyTopic').value || '').trim().replace(/[^-_A-Za-z0-9]/g, '');
+      if (t === old) { renderNtfy(); return; }
+      ntfyCancelAll(old);
+      data.ntfy.topic = t;
+      if (!ntfyTopicOk(t)) data.ntfy.enabled = false;
+      save(); renderNtfy(); checkDue();
+    });
+    $('ntfyNew').addEventListener('click', () => {
+      ntfyCancelAll(data.ntfy.topic);
+      data.ntfy.topic = ntfyGenTopic();
+      save(); renderNtfy(); checkDue();
+      toast('Новая тема создана. Подпишись на неё в ntfy');
+    });
+    $('ntfyCopy').addEventListener('click', async () => {
+      const t = data.ntfy.topic;
+      if (!t) { toast('Сначала нажми «Включить»'); return; }
+      try { await navigator.clipboard.writeText(t); toast('Тема скопирована'); }
+      catch (e) { $('ntfyTopic').select(); toast('Скопируй тему вручную'); }
+    });
+    $('ntfyTest').addEventListener('click', async () => {
+      if (!ntfyTopicOk(data.ntfy.topic)) { toast('Сначала нажми «Включить»'); return; }
+      try {
+        const res = await fetch(NTFY_URL + data.ntfy.topic + '?priority=4&tags=white_check_mark&title=' + encodeURIComponent('Luma'), { method: 'POST', body: 'Тест: уведомления работают' });
+        toast(res.ok ? 'Тест отправлен — проверь приложение ntfy' : 'Сервер ntfy ответил ошибкой');
+      } catch (e) { toast('Нет связи с ntfy.sh (нужен интернет или VPN)'); }
+    });
+    renderNtfy();
+  })();
+
   let checking = false;
   function checkDue() {
     if (checking) return;
@@ -1589,7 +1781,10 @@ input[type=time]::-webkit-calendar-picker-indicator {
       data.reminders.forEach(r => {
         if (r.done || r.fired) return;
         if (r.when <= now) fireRem(r.id);
-        else scheduleRem(r, { silent: true });
+        else {
+          scheduleRem(r, { silent: true });
+          if (ntfyOn() && !ntfyCovers(r)) ntfySchedule(r);
+        }
       });
     } catch (e) { console.error('checkDue', e); }
     checking = false;
@@ -1652,6 +1847,7 @@ input[type=time]::-webkit-calendar-picker-indicator {
       data.reminders.push(r);
       save();
       try { scheduleRem(r); } catch (e) { console.error(e); }
+      try { if (ntfyOn()) ntfySchedule(r); } catch (e) {}
       try { syncRemindersToSW(); } catch (e) {}
       try { renderReminders(); } catch (e) {}
       try { renderHome(); } catch (e) {}
@@ -1687,7 +1883,7 @@ input[type=time]::-webkit-calendar-picker-indicator {
     try {
       if ('serviceWorker' in navigator) {
         try {
-          const reg = await navigator.serviceWorker.register('./sw.js?v=10');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=11');
           await navigator.serviceWorker.ready;
           setNotifDebug('Service Worker готов');
         } catch (e) {
