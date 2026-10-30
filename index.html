@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="13"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="14"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <style>
@@ -653,6 +653,28 @@ input[type=time]::-webkit-calendar-picker-indicator {
   margin-top: 18px;
 }
 
+.hero.center { text-align: center; }
+.footer { touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.norm-line { text-align: center; font-size: 12px; line-height: 1.5; color: var(--muted); margin: 6px 0 10px; }
+.norm-line b { color: inherit; }
+.norm-line .ok { color: #34d399; font-weight: 700; }
+.norm-line .no { color: #fbbf24; font-weight: 700; }
+.admin { position: fixed; inset: 0; z-index: 10050; display: none; overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--sheet-bg); }
+.admin.show { display: block; animation: fadeIn .3s ease both; }
+.admin-card { max-width: 620px; margin: 0 auto; padding: 22px 16px calc(40px + env(safe-area-inset-bottom)); }
+.admin-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.admin-top h2 { font-size: 26px; letter-spacing: -.6px; margin: 4px 0; }
+.admin-card .section { margin-top: 14px; }
+.admin-card .fields { grid-template-columns: 1fr 1fr; }
+.admin-card .field label { font-size: 12px; }
+.norm-group { border: 1px solid var(--line); border-radius: 16px; padding: 4px 12px; margin-bottom: 10px; background: rgba(255,255,255,.04); }
+.norm-group > summary { cursor: pointer; font-weight: 700; padding: 10px 0; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+.norm-group > summary::-webkit-details-marker { display: none; }
+.norm-group > summary small { font-weight: 500; color: var(--muted); }
+.norm-group .fields { padding: 4px 0 12px; }
+@keyframes shake { 0%,100% { transform: none; } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+.shake { animation: shake .35s ease; }
+
 @media (max-width: 430px) {
   .app { padding-left: 12px; padding-right: 12px; }
   .section { padding: 16px; }
@@ -722,7 +744,7 @@ body.noscroll { overflow: hidden; }
 .glass, input, select, .item, .stat-card, .nav-inner, .pill { transition: background .35s, border-color .35s, color .35s, box-shadow .35s; }
 .bar > div { transition: width .7s cubic-bezier(.2,.8,.2,1); }
 .hero h1 span { background-size: 200% 100%; animation: shimmer 6s linear infinite; background-image: linear-gradient(100deg, #fff, #d7b7ff 25%, #a78bfa 50%, #d7b7ff 75%, #fff); }
-.toast { z-index: 10001; }
+.toast { z-index: 10100; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; } }
 
 /* ===== Light mode ===== */
@@ -827,7 +849,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v13 · время для себя</span>
+      <span class="pill" id="topPill">v14 · время для себя</span>
     </header>
 
     <!-- HOME -->
@@ -1123,7 +1145,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
 
     <!-- SETTINGS -->
     <section class="page" id="page-settings">
-      <div class="hero">
+      <div class="hero center">
         <div class="eyebrow">SETTINGS</div>
         <h1>Оформление<br><span>и данные</span></h1>
       </div>
@@ -1200,7 +1222,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
         </p>
       </div>
 
-      <p class="footer">Luma · данные остаются на устройстве<br>Прототип без сервера</p>
+      <p class="footer" id="appFooter">Luma · данные остаются на устройстве<br>Прототип без сервера</p>
     </section>
   </main>
 
@@ -1296,53 +1318,70 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     </div>
   </div>
 
+  <!-- Sheet: admin password (hidden entry: tap the footer in «Ещё» 5 times) -->
+  <div class="sheet-back" id="sheetAdminPass" aria-hidden="true">
+    <div class="sheet" role="dialog" aria-modal="true" aria-label="Вход">
+      <div class="grab"></div>
+      <div class="sheet-head"><h3>🔒 Доступ</h3><button type="button" class="sheet-close" data-close aria-label="Закрыть">✕</button></div>
+      <div class="fields">
+        <div class="field full"><label>Пароль</label><input id="adminPass" type="password" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="••••"></div>
+      </div>
+      <div class="form-actions"><button class="btn" type="button" id="adminPassOk">Войти</button></div>
+    </div>
+  </div>
+
+  <!-- Admin panel -->
+  <div class="admin" id="adminPanel" aria-hidden="true">
+    <div class="admin-card">
+      <div class="admin-top">
+        <div><div class="eyebrow">ADMIN</div><h2>Админ-панель</h2></div>
+        <button class="btn secondary small" type="button" id="adminClose">Выйти</button>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Рекорды</h2><span class="tag">ИГРЫ</span></div>
+        <p class="notice" style="margin-top:0">Оставь поле пустым, чтобы убрать рекорд (для реакции и памяти).</p>
+        <div class="fields">
+          <div class="field"><label>⚡ Реакция, мс</label><input type="number" id="adRea" min="50" max="5000" inputmode="numeric"></div>
+          <div class="field"><label>👆 Кликер, нажатий</label><input type="number" id="adTap" min="0" max="999" inputmode="numeric"></div>
+          <div class="field"><label>🧠 Память, ходов</label><input type="number" id="adMemM" min="8" max="999" inputmode="numeric"></div>
+          <div class="field"><label>🧠 Память, время (сек)</label><input type="number" id="adMemT" min="1" max="9999" inputmode="numeric"></div>
+          <div class="field"><label>🐍 Змейка, очков</label><input type="number" id="adSnake" min="0" max="999" inputmode="numeric"></div>
+          <div class="field"><label>🔢 2048, очков</label><input type="number" id="ad2048" min="0" max="9999999" inputmode="numeric"></div>
+          <div class="field"><label>❌ Победы</label><input type="number" id="adTW" min="0" max="99999" inputmode="numeric"></div>
+          <div class="field"><label>❌ Ничьи</label><input type="number" id="adTD" min="0" max="99999" inputmode="numeric"></div>
+          <div class="field full"><label>❌ Поражения</label><input type="number" id="adTL" min="0" max="99999" inputmode="numeric"></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" type="button" id="adSaveRec">Сохранить рекорды</button>
+          <button class="btn danger" type="button" id="adResetRec">Сбросить все</button>
+        </div>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Время</h2><span class="tag">ИГРЫ</span></div>
+        <div class="fields">
+          <div class="field full"><label>👆 Длительность кликера, сек (5–60)</label><input type="number" id="adTapSec" min="5" max="60" inputmode="numeric"></div>
+        </div>
+        <p class="notice">После смены времени рекорд кликера стоит пересмотреть: за разное время результаты несравнимы.</p>
+        <div class="form-actions"><button class="btn" type="button" id="adSaveTime">Сохранить время</button></div>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Нормы по возрасту</h2><span class="tag">НОРМА</span></div>
+        <p class="notice" style="margin-top:0">Для каждой возрастной группы своя норма. Игроку она показывается в игре по возрасту из его профиля. Реакция и память — «не больше», остальное — «не меньше». Прогулка: пусто = считать автоматически.</p>
+        <div id="adNorms"></div>
+        <div class="form-actions">
+          <button class="btn" type="button" id="adSaveNorms">Сохранить нормы</button>
+          <button class="btn secondary" type="button" id="adResetNorms">Стандартные</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   
-<script>
-/* Independent tab switcher — works even if main app script fails */
-(function () {
-  function switchTab(name) {
-    if (!name) return;
-    name = String(name);
-    document.querySelectorAll('.nav-btn').forEach(function (b) {
-      b.classList.toggle('active', b.getAttribute('data-tab') === name);
-    });
-    document.querySelectorAll('.page').forEach(function (pg) {
-      var on = pg.id === 'page-' + name;
-      pg.classList.toggle('active', on);
-      pg.style.display = on ? 'block' : 'none';
-    });
-    try { window.scrollTo(0, 0); } catch (e) {}
-    // optional hooks from main app
-    try {
-      if (name === 'home' && typeof renderHome === 'function') renderHome();
-      if (name === 'nutrition' && typeof renderNutrition === 'function') renderNutrition();
-      if (name === 'reminders') { if (typeof renderReminders === 'function') renderReminders(); if (typeof initRemDefaults === 'function') initRemDefaults(); }
-      if (name === 'games' && typeof exitGame === 'function') exitGame();
-      if (name === 'settings' && typeof updateNotifUI === 'function') updateNotifUI();
-    } catch (e) {}
-  }
-  window.goTab = switchTab;
-  document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.nav-btn').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        switchTab(btn.getAttribute('data-tab'));
-      });
-    });
-  });
-  // capture phase too
-  document.addEventListener('click', function (e) {
-    var btn = e.target && e.target.closest && e.target.closest('.nav-btn');
-    if (!btn) return;
-    e.preventDefault();
-    switchTab(btn.getAttribute('data-tab'));
-  }, true);
-})();
-</script>
-
 <script>
 (() => {
   /* --- NAV BOOTSTRAP (must work even if later code fails) --- */
@@ -1387,6 +1426,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   };
 
   const KEY = 'luma-v2';
+  const defaultStats = () => ({ tapBest: 0, reactionBest: null, memoryMoves: null, memoryTime: null, snakeBest: 0, g2048Best: 0, ttt: { w: 0, l: 0, d: 0 } });
   const defaultData = () => ({
     goals: { cal: 2000, prot: 120, fat: 70, carb: 250 },
     meals: [],
@@ -1395,7 +1435,8 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     profile: { name: '', done: false },
     theme: 'violet',
     ntfy: { enabled: false, topic: '' },
-    stats: { tapBest: 0, reactionBest: null },
+    stats: defaultStats(),
+    admin: { tapSeconds: 10, norms: {} },
     customFoods: [],
     walks: [],
     mode: 'dark'
@@ -1407,12 +1448,35 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   let activeGame = null;
   let gameCleanups = [];
 
+  /* Приводит данные (из хранилища или импорта) к актуальной структуре */
+  function normalizeData(d) {
+    const base = defaultData();
+    d = { ...base, ...(d && typeof d === 'object' ? d : {}) };
+    d.stats = { ...base.stats, ...(d.stats || {}) };
+    d.stats.ttt = { ...base.stats.ttt, ...(d.stats.ttt || {}) };
+    d.admin = { ...base.admin, ...(d.admin || {}) };
+    if (!d.admin.norms || typeof d.admin.norms !== 'object') d.admin.norms = {};
+    d.admin.tapSeconds = Math.min(60, Math.max(5, Math.round(+d.admin.tapSeconds) || 10));
+    if (!d.profile || typeof d.profile !== 'object') d.profile = base.profile;
+    ['goals', 'water'].forEach(k => { if (!d[k] || typeof d[k] !== 'object') d[k] = base[k]; });
+    ['meals', 'reminders', 'customFoods', 'walks'].forEach(k => { if (!Array.isArray(d[k])) d[k] = []; });
+    return d;
+  }
   function load() {
+    let d;
     try {
       const raw = localStorage.getItem(KEY);
-      if (!raw) return defaultData();
-      return { ...defaultData(), ...JSON.parse(raw) };
-    } catch { return defaultData(); }
+      d = normalizeData(raw ? JSON.parse(raw) : null);
+    } catch { d = normalizeData(null); }
+    /* перенос рекордов из старых отдельных ключей */
+    try {
+      const sn = localStorage.getItem('luma-snake'), g = localStorage.getItem('luma-2048'), tt = localStorage.getItem('luma-ttt');
+      if (sn != null) { d.stats.snakeBest = Math.max(d.stats.snakeBest, +sn || 0); localStorage.removeItem('luma-snake'); }
+      if (g != null) { d.stats.g2048Best = Math.max(d.stats.g2048Best, +g || 0); localStorage.removeItem('luma-2048'); }
+      if (tt != null) { const o = JSON.parse(tt); d.stats.ttt = { w: +o.w || 0, l: +o.l || 0, d: +o.d || 0 }; localStorage.removeItem('luma-ttt'); }
+      localStorage.setItem(KEY, JSON.stringify(d));
+    } catch {}
+    return d;
   }
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(data)); }
@@ -1523,17 +1587,6 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     try { window.scrollTo(0, 0); } catch {}
   }
   window.goTab = goTab;
-
-  // Delegation — works even if buttons re-rendered
-  document.addEventListener('click', (e) => {
-    const btn = e.target && e.target.closest && e.target.closest('.nav-btn');
-    if (!btn) return;
-    const tab = btn.dataset.tab;
-    if (tab) {
-      e.preventDefault();
-      goTab(tab);
-    }
-  });
 
   /* ----- Home ----- */
   function greeting() {
@@ -2413,6 +2466,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   }
 
   function testNotifIn3s() {
+    if (!('Notification' in window)) { toast('Браузер не поддерживает уведомления'); return; }
     if (Notification.permission !== 'granted') {
       toast('Сначала нажми «Включить уведомления»');
       requestNotif();
@@ -2427,6 +2481,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   }
 
   function quickReminder(sec) {
+    if (!('Notification' in window)) { toast('Браузер не поддерживает уведомления'); return; }
     if (Notification.permission !== 'granted') {
       toast('Сначала включи уведомления');
       requestNotif();
@@ -2484,6 +2539,161 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     if (status) status.textContent = map[p];
   }
 
+  /* ----- Нормы по возрасту ----- */
+  const AGE_GROUPS = [
+    { id: '10-12', lo: 10, hi: 12, name: '10–12 лет' },
+    { id: '13-15', lo: 13, hi: 15, name: '13–15 лет' },
+    { id: '16-17', lo: 16, hi: 17, name: '16–17 лет' },
+    { id: '18-29', lo: 18, hi: 29, name: '18–29 лет' },
+    { id: '30-44', lo: 30, hi: 44, name: '30–44 года' },
+    { id: '45-59', lo: 45, hi: 59, name: '45–59 лет' },
+    { id: '60+',   lo: 60, hi: 200, name: '60+ лет' }
+  ];
+  /* Ориентировочные стартовые значения; в админ-панели меняются для каждой группы */
+  const DEFAULT_NORMS = {
+    '10-12': { reaction: 320, tap: 45, memory: 18, snake: 8,  g2048: 1500, walk: null },
+    '13-15': { reaction: 290, tap: 52, memory: 16, snake: 12, g2048: 2500, walk: null },
+    '16-17': { reaction: 270, tap: 58, memory: 15, snake: 15, g2048: 3000, walk: null },
+    '18-29': { reaction: 250, tap: 60, memory: 14, snake: 18, g2048: 3500, walk: null },
+    '30-44': { reaction: 265, tap: 55, memory: 15, snake: 15, g2048: 3000, walk: null },
+    '45-59': { reaction: 285, tap: 48, memory: 17, snake: 12, g2048: 2500, walk: null },
+    '60+':   { reaction: 320, tap: 40, memory: 20, snake: 8,  g2048: 1500, walk: null }
+  };
+  const NORM_FIELDS = [
+    { k: 'reaction', label: '⚡ Реакция, мс (не больше)' },
+    { k: 'tap', label: '👆 Кликер, нажатий (не меньше)' },
+    { k: 'memory', label: '🧠 Память, ходов (не больше)' },
+    { k: 'snake', label: '🐍 Змейка, очков (не меньше)' },
+    { k: 'g2048', label: '🔢 2048, очков (не меньше)' },
+    { k: 'walk', label: '🚶 Прогулка, мин/день (пусто = авто)' }
+  ];
+  const GAME_NORM = {
+    reaction: { dir: 'max', unit: 'мс', rec: () => data.stats.reactionBest },
+    tap:      { dir: 'min', unit: 'нажатий', rec: () => data.stats.tapBest },
+    memory:   { dir: 'max', unit: 'ходов', rec: () => data.stats.memoryMoves },
+    snake:    { dir: 'min', unit: 'очков', rec: () => data.stats.snakeBest },
+    g2048:    { dir: 'min', unit: 'очков', rec: () => data.stats.g2048Best }
+  };
+  function ageGroup(age) {
+    age = +age;
+    if (!(age > 0)) return null;
+    return AGE_GROUPS.find(g => age >= g.lo && age <= g.hi) || (age < 10 ? AGE_GROUPS[0] : AGE_GROUPS[AGE_GROUPS.length - 1]);
+  }
+  function getNorms(gid) { return Object.assign({}, DEFAULT_NORMS[gid], (data.admin.norms || {})[gid] || {}); }
+  function userGroup() { const pr = data.profile || {}; return pr.done ? ageGroup(pr.age) : null; }
+  function curNorm(k) { const g = userGroup(); if (!g) return null; const n = +getNorms(g.id)[k]; return n > 0 ? n : null; }
+  function normLineHTML(k) {
+    const g = userGroup();
+    if (!g) return 'Норма по возрасту появится, когда укажешь возраст: «Ещё» → «Параметры»';
+    const n = curNorm(k); if (!n) return '';
+    const m = GAME_NORM[k], rec = m.rec();
+    let html = 'Норма для ' + g.name + ': <b>' + (m.dir === 'max' ? '≤ ' : '≥ ') + n + ' ' + m.unit + '</b>';
+    if (rec != null && !(m.dir === 'min' && rec <= 0)) {
+      const ok = m.dir === 'max' ? rec <= n : rec >= n;
+      html += '<br>' + (ok ? '<span class="ok">Твой рекорд в пределах нормы ✓</span>' : '<span class="no">До нормы ещё ' + Math.abs(rec - n) + ' ' + m.unit + '</span>');
+    }
+    return html;
+  }
+  function updateNormLine(k) { const el = $('normLine'); if (el) el.innerHTML = normLineHTML(k); }
+  function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+  /* ----- Админ-панель (скрытая: 5 нажатий на подпись внизу «Ещё») ----- */
+  const ADMIN_PASS = '3232';
+  const adminEl = $('adminPanel');
+  const numOrNull = id => { const v = $(id).value.trim(); if (v === '') return null; const n = Math.round(+v); return Number.isFinite(n) && n >= 0 ? n : NaN; };
+  function fillAdmin() {
+    const st = data.stats;
+    $('adRea').value = st.reactionBest != null ? st.reactionBest : '';
+    $('adTap').value = st.tapBest || 0;
+    $('adMemM').value = st.memoryMoves != null ? st.memoryMoves : '';
+    $('adMemT').value = st.memoryTime != null ? st.memoryTime : '';
+    $('adSnake').value = st.snakeBest || 0;
+    $('ad2048').value = st.g2048Best || 0;
+    $('adTW').value = st.ttt.w; $('adTD').value = st.ttt.d; $('adTL').value = st.ttt.l;
+    $('adTapSec').value = data.admin.tapSeconds;
+    renderAdminNorms();
+  }
+  function renderAdminNorms() {
+    const mine = userGroup();
+    $('adNorms').innerHTML = AGE_GROUPS.map(g => {
+      const n = getNorms(g.id);
+      const inputs = NORM_FIELDS.map(f => '<div class="field"><label>' + f.label + '</label><input type="number" min="0" inputmode="numeric" data-g="' + g.id + '" data-k="' + f.k + '" value="' + (n[f.k] != null && n[f.k] !== '' ? n[f.k] : '') + '"' + (f.k === 'walk' ? ' placeholder="авто"' : '') + '></div>').join('');
+      return '<details class="norm-group"' + (mine && mine.id === g.id ? ' open' : '') + '><summary>' + g.name + '<small>' + (mine && mine.id === g.id ? 'твоя группа' : '') + '</small></summary><div class="fields">' + inputs + '</div></details>';
+    }).join('');
+  }
+  function openAdmin() {
+    closeSheets(true);
+    fillAdmin();
+    adminEl.classList.add('show'); adminEl.setAttribute('aria-hidden', 'false'); adminEl.scrollTop = 0;
+    document.body.classList.add('noscroll');
+  }
+  function closeAdmin() {
+    adminEl.classList.remove('show'); adminEl.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('noscroll');
+    try { renderHome(); renderWalk(); } catch {}
+  }
+  function tryAdminLogin() {
+    const inp = $('adminPass');
+    if (inp.value.trim() === ADMIN_PASS) { inp.value = ''; openAdmin(); toast('Админ-панель открыта'); }
+    else {
+      toast('Неверный пароль'); inp.value = '';
+      inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake'); inp.focus();
+    }
+  }
+  $('adminPassOk').onclick = tryAdminLogin;
+  $('adminPass').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); tryAdminLogin(); } });
+  $('adminClose').onclick = closeAdmin;
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && adminEl.classList.contains('show')) closeAdmin(); });
+  /* скрытый вход: 5 нажатий по подписи в «Ещё» */
+  (function () {
+    let taps = 0, tm = null;
+    $('appFooter').addEventListener('click', () => {
+      taps++; clearTimeout(tm); tm = setTimeout(() => { taps = 0; }, 2500);
+      if (taps >= 5) {
+        taps = 0; openSheet('sheetAdminPass');
+        setTimeout(() => { try { $('adminPass').focus(); } catch {} }, 350);
+      }
+    });
+  })();
+  $('adSaveRec').onclick = () => {
+    const v = { rea: numOrNull('adRea'), tap: numOrNull('adTap'), mm: numOrNull('adMemM'), mt: numOrNull('adMemT'), sn: numOrNull('adSnake'), g: numOrNull('ad2048'), w: numOrNull('adTW'), d: numOrNull('adTD'), l: numOrNull('adTL') };
+    if (Object.values(v).some(x => Number.isNaN(x))) { toast('Проверь числа: только целые, без минуса'); return; }
+    if (v.rea != null && v.rea < 50) { toast('Реакция быстрее 50 мс невозможна'); return; }
+    if ((v.mm == null) !== (v.mt == null)) { toast('Память: заполни и ходы, и время — или оба пустыми'); return; }
+    if (v.mm != null && v.mm < 8) { toast('Память: меньше 8 ходов не бывает'); return; }
+    const st = data.stats;
+    st.reactionBest = v.rea; st.tapBest = v.tap || 0; st.memoryMoves = v.mm; st.memoryTime = v.mt;
+    st.snakeBest = v.sn || 0; st.g2048Best = v.g || 0; st.ttt = { w: v.w || 0, d: v.d || 0, l: v.l || 0 };
+    save(); fillAdmin(); toast('Рекорды сохранены ✓');
+  };
+  $('adResetRec').onclick = () => {
+    if (!confirm('Сбросить все рекорды и статистику игр?')) return;
+    data.stats = defaultStats(); save(); fillAdmin(); toast('Рекорды сброшены');
+  };
+  $('adSaveTime').onclick = () => {
+    const n = Math.round(+$('adTapSec').value);
+    if (!(n >= 5 && n <= 60)) { toast('Время кликера — от 5 до 60 секунд'); return; }
+    data.admin.tapSeconds = n; save(); toast('Время сохранено ✓');
+  };
+  $('adSaveNorms').onclick = () => {
+    const out = {};
+    let bad = false;
+    document.querySelectorAll('#adNorms input').forEach(i => {
+      const g = i.dataset.g, k = i.dataset.k, raw = i.value.trim();
+      (out[g] = out[g] || {});
+      if (raw === '') { if (k === 'walk') out[g][k] = null; else bad = true; return; }
+      const n = Math.round(+raw);
+      if (!(n > 0)) { bad = true; return; }
+      out[g][k] = n;
+    });
+    if (bad) { toast('Заполни все нормы числами больше нуля (кроме прогулки)'); return; }
+    data.admin.norms = out; save(); toast('Нормы сохранены ✓');
+  };
+  $('adResetNorms').onclick = () => {
+    if (!confirm('Вернуть стандартные нормы для всех возрастов?')) return;
+    data.admin.norms = {}; save(); renderAdminNorms(); toast('Стандартные нормы возвращены');
+  };
+
   /* ----- Games ----- */
   function startGame(name) {
     exitGame();
@@ -2522,6 +2732,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       <h2 style="margin-bottom:8px">⚡ Поймай сияние</h2>
       <p class="muted" style="margin-bottom:12px">Жди зелёный цвет — потом жми как можно быстрее</p>
       <div class="scoreline"><span>Последний <b id="lastR">—</b></span><span>Рекорд <b id="bestR">${best != null ? best + ' мс' : '—'}</b></span></div>
+      <p class="norm-line" id="normLine">${normLineHTML('reaction')}</p>
       <div class="reaction-arena" id="arena"><button type="button" id="arenaBtn">Начать</button></div>
       <p class="notice" id="rStatus" style="text-align:center">Готов?</p>`;
     const arena = $('arena');
@@ -2555,12 +2766,14 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
         arena.className = 'reaction-arena';
         btn.textContent = 'Ещё раз';
         $('lastR').textContent = ms + ' мс';
-        status.textContent = ms < 230 ? 'Молния! ⚡' : ms < 330 ? 'Хорошо' : 'Можно быстрее';
+        const nr = curNorm('reaction');
+        status.textContent = nr ? (ms <= nr ? 'В пределах нормы для твоего возраста ✓' : 'Медленнее нормы на ' + (ms - nr) + ' мс — ещё раз') : (ms < 230 ? 'Молния! ⚡' : ms < 330 ? 'Хорошо' : 'Можно быстрее');
         if (data.stats.reactionBest == null || ms < data.stats.reactionBest) {
           data.stats.reactionBest = ms;
           save();
           $('bestR').textContent = ms + ' мс';
           toast('Новый рекорд! ' + ms + ' мс');
+          updateNormLine('reaction');
         }
       }
     };
@@ -2568,14 +2781,25 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
 
   function initMemory(box) {
     const emojis = ['🍎','🍊','🍋','🍇','🍓','🍑','🥝','🫐'];
-    let cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
-    let flipped = [], lock = false, matched = 0, moves = 0;
+    const cards = shuffle([...emojis, ...emojis]);
+    let flipped = [], lock = false, matched = 0, moves = 0, t0 = 0, tmr = null;
+    const recText = () => data.stats.memoryMoves != null ? data.stats.memoryMoves + ' ходов · ' + data.stats.memoryTime + ' с' : '—';
     box.innerHTML = `
       <h2 style="margin-bottom:8px;text-align:center">🧠 Память</h2>
-      <p class="muted" style="text-align:center;margin-bottom:8px">Ходов: <b id="memMoves">0</b> · Найдено: <b id="memFound">0</b>/8</p>
-      <div class="memory-grid" id="memGrid"></div>`;
+      <p class="muted" style="text-align:center;margin-bottom:4px">Ходов: <b id="memMoves">0</b> · Время: <b id="memTime">0</b> с · Найдено: <b id="memFound">0</b>/8</p>
+      <p class="muted" style="text-align:center;margin-bottom:4px">Рекорд: <b id="memBest">${recText()}</b></p>
+      <p class="norm-line" id="normLine">${normLineHTML('memory')}</p>
+      <div class="memory-grid" id="memGrid"></div>
+      <div class="game-bar"><button class="btn secondary small" type="button" id="memRestart">Заново</button></div>`;
+    $('memRestart').onclick = () => { clearInterval(tmr); initMemory(box); };
+    gameCleanups.push(() => clearInterval(tmr));
     const grid = $('memGrid');
-    cards.forEach((emoji, i) => {
+    const startTimer = () => {
+      if (tmr) return;
+      t0 = Date.now();
+      tmr = setInterval(() => { const el = $('memTime'); if (el) el.textContent = Math.floor((Date.now() - t0) / 1000); }, 500);
+    };
+    cards.forEach((emoji) => {
       const c = document.createElement('button');
       c.type = 'button';
       c.className = 'memory-cell';
@@ -2583,6 +2807,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       c.dataset.emoji = emoji;
       c.onclick = () => {
         if (lock || c.classList.contains('on') || c.classList.contains('matched')) return;
+        startTimer();
         c.classList.add('on');
         c.textContent = emoji;
         flipped.push(c);
@@ -2598,7 +2823,19 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
             $('memFound').textContent = matched;
             flipped = [];
             lock = false;
-            if (matched === 8) toast('Победа! ' + moves + ' ходов 🎉');
+            if (matched === 8) {
+              clearInterval(tmr);
+              const secs = Math.max(1, Math.round((Date.now() - t0) / 1000));
+              $('memTime').textContent = secs;
+              const st = data.stats;
+              const better = st.memoryMoves == null || moves < st.memoryMoves || (moves === st.memoryMoves && secs < (st.memoryTime == null ? Infinity : st.memoryTime));
+              if (better) {
+                st.memoryMoves = moves; st.memoryTime = secs; save();
+                $('memBest').textContent = recText();
+                toast('Новый рекорд! ' + moves + ' ходов, ' + secs + ' с 🏆');
+              } else toast('Победа! ' + moves + ' ходов, ' + secs + ' с 🎉');
+              updateNormLine('memory');
+            }
           } else {
             const t = setTimeout(() => {
               a.classList.remove('on'); b.classList.remove('on');
@@ -2614,20 +2851,22 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   }
 
   function initTap(box) {
-    let score = 0, running = false, left = 10, timer = null;
+    const dur = data.admin.tapSeconds || 10;
+    let score = 0, running = false, left = dur, timer = null;
     box.innerHTML = `
       <h2 style="margin-bottom:8px;text-align:center">👆 Кликер</h2>
-      <div class="scoreline"><span>Счёт <b id="tapScore">0</b></span><span>Время <b id="tapLeft">10</b> с</span></div>
+      <div class="scoreline"><span>Счёт <b id="tapScore">0</b></span><span>Время <b id="tapLeft">${dur}</b> с</span></div>
       <p class="muted" style="text-align:center">Рекорд: <b id="tapBest">${data.stats.tapBest}</b></p>
+      <p class="norm-line" id="normLine">${normLineHTML('tap')}</p>
       <button type="button" class="tap-btn" id="tapBtn">Старт</button>
-      <p class="notice" style="text-align:center" id="tapStatus">Кликай 10 секунд</p>`;
+      <p class="notice" style="text-align:center" id="tapStatus">Кликай ${dur} секунд</p>`;
     const btn = $('tapBtn');
     gameCleanups.push(() => clearInterval(timer));
     btn.onclick = () => {
       if (!running) {
-        running = true; score = 0; left = 10;
+        running = true; score = 0; left = dur;
         $('tapScore').textContent = '0';
-        $('tapLeft').textContent = '10';
+        $('tapLeft').textContent = dur;
         btn.textContent = 'Жми!';
         $('tapStatus').textContent = 'Вперёд!';
         timer = setInterval(() => {
@@ -2637,12 +2876,14 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
             clearInterval(timer);
             running = false;
             btn.textContent = 'Ещё раз';
-            $('tapStatus').textContent = 'Результат: ' + score;
+            const nt = curNorm('tap');
+            $('tapStatus').textContent = 'Результат: ' + score + (nt ? (score >= nt ? ' · в пределах нормы ✓' : ' · до нормы ещё ' + (nt - score)) : '');
             if (score > data.stats.tapBest) {
               data.stats.tapBest = score;
               save();
               $('tapBest').textContent = score;
               toast('Новый рекорд! 🏆');
+              updateNormLine('tap');
             }
           }
         }, 1000);
@@ -2656,7 +2897,8 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   function initSnake(box) {
     box.innerHTML = `
       <h2 style="margin-bottom:8px;text-align:center">🐍 Змейка</h2>
-      <p class="muted" style="text-align:center">Счёт: <b id="snScore">0</b> · Рекорд: <b id="snBest">${localStorage.getItem('luma-snake') || 0}</b></p>
+      <p class="muted" style="text-align:center">Счёт: <b id="snScore">0</b> · Рекорд: <b id="snBest">${data.stats.snakeBest || 0}</b></p>
+      <p class="norm-line" id="normLine">${normLineHTML('snake')}</p>
       <canvas id="snakeCanvas"></canvas>
       <p class="notice" style="text-align:center" id="snHint">Свайпай по полю или жми кнопки · на ПК: стрелки / WASD, пробел — пауза</p>
       <div class="dpad">
@@ -2735,11 +2977,11 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS || body.some(s => s.x === head.x && s.y === head.y)) {
         alive = false;
         try { navigator.vibrate && navigator.vibrate(120); } catch {}
-        const best = +(localStorage.getItem('luma-snake') || 0);
-        if (score > best) {
-          localStorage.setItem('luma-snake', score);
+        if (score > (data.stats.snakeBest || 0)) {
+          data.stats.snakeBest = score; save();
           $('snBest').textContent = score;
           toast('Рекорд змейки! 🐍');
+          updateNormLine('snake');
         } else toast('Игра окончена · ' + score);
         draw();
         return;
@@ -2824,10 +3066,11 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     const N = 4;
     const COLORS = { 0: ['rgba(255,255,255,.06)', '#fff'], 2: ['#e9dcff', '#3b1f6b'], 4: ['#d9c2ff', '#3b1f6b'], 8: ['#c29bff', '#fff'], 16: ['#a978ff', '#fff'], 32: ['#f08ad6', '#fff'], 64: ['#ec5fa8', '#fff'], 128: ['#fbbf24', '#3b2a00'], 256: ['#f59e0b', '#fff'], 512: ['#34d399', '#053b2a'], 1024: ['#22d3ee', '#04323b'], 2048: ['#fff27a', '#3b3300'] };
     let grid, score, over, won;
-    let best = +(localStorage.getItem('luma-2048') || 0);
+    let best = data.stats.g2048Best || 0;
     box.innerHTML = `
       <h2 style="margin-bottom:8px;text-align:center">🔢 2048</h2>
       <p class="muted" style="text-align:center">Счёт: <b id="gScore">0</b> · Рекорд: <b id="gBest">${best}</b></p>
+      <p class="norm-line" id="normLine">${normLineHTML('g2048')}</p>
       <div class="g2048" id="g2048"></div>
       <p class="notice" style="text-align:center">Свайпай по полю · на ПК: стрелки / WASD</p>
       <div class="game-bar"><button class="btn secondary small" type="button" id="gRestart">Заново</button></div>`;
@@ -2852,7 +3095,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
         board.appendChild(t);
       }
       $('gScore').textContent = score;
-      if (score > best) { best = score; localStorage.setItem('luma-2048', best); $('gBest').textContent = best; }
+      if (score > best) { best = score; data.stats.g2048Best = best; save(); $('gBest').textContent = best; updateNormLine('g2048'); }
     }
     function slideLine(line) {
       const a = line.filter(Boolean); const out = []; let gain = 0;
@@ -2921,7 +3164,8 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   /* ----- Крестики-нолики ----- */
   function initTTT(box) {
     const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    let b, over, level = 'hard', stats = JSON.parse(localStorage.getItem('luma-ttt') || '{"w":0,"l":0,"d":0}');
+    let b, over, level = 'hard';
+    const stats = data.stats.ttt;
     box.innerHTML = `
       <h2 style="margin-bottom:8px;text-align:center">❌ Крестики-нолики</h2>
       <div class="scoreline"><span>Победы <b id="tW">${stats.w}</b></span><span>Ничьи <b id="tD">${stats.d}</b></span><span>Поражения <b id="tL">${stats.l}</b></span></div>
@@ -2958,7 +3202,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       }
       return bestI[Math.floor(Math.random() * bestI.length)];
     }
-    function saveStats() { localStorage.setItem('luma-ttt', JSON.stringify(stats)); $('tW').textContent = stats.w; $('tD').textContent = stats.d; $('tL').textContent = stats.l; }
+    function saveStats() { save(); $('tW').textContent = stats.w; $('tD').textContent = stats.d; $('tL').textContent = stats.l; }
     function render() {
       grid.innerHTML = '';
       const w = winner(b);
@@ -3036,6 +3280,8 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     let walkMin = goal === 'lose' ? 45 : 30;
     if (a < 18) walkMin = 60;
     else if (a >= 65) walkMin = 30;
+    const gW = ageGroup(a), ow = gW ? +getNorms(gW.id).walk : 0;
+    if (ow > 0) walkMin = Math.round(ow);   /* норма, заданная в админ-панели */
     const walkKm = Math.round(walkMin * 5 / 60 * 10) / 10;
     let diff = 0;
     if (w < lo) diff = lo - w; else if (w > hi) diff = hi - w;
@@ -3415,7 +3661,8 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     const reader = new FileReader();
     reader.onload = ev => {
       try {
-        data = { ...defaultData(), ...JSON.parse(ev.target.result) };
+        data = normalizeData(JSON.parse(ev.target.result));
+        $('profileName').value = data.profile.name || '';
         save();
         applyTheme(data.theme);
         applyMode(data.mode);
