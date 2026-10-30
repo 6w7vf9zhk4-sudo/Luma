@@ -965,7 +965,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
 .off-save:active { background: var(--surface); }
 .footer { opacity: .6; }
 
-/* Luma v21: animated pets and pet care */
+/* Luma v22: enhanced pet motion and neutral weight history */
 .welcome-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(circle at 20% 15%,#5635a5 0,transparent 42%),linear-gradient(145deg,#120b29f5,#241344f5);backdrop-filter:blur(18px);transition:opacity .35s ease}
 .welcome-overlay.hide{opacity:0;pointer-events:none}
 .welcome-card{width:min(100%,430px);padding:28px;border:1px solid #ffffff2b;border-radius:28px;background:linear-gradient(145deg,#ffffff1b,#ffffff09);box-shadow:0 24px 80px #0007;color:#fff;text-align:center}
@@ -1005,6 +1005,32 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
 .pet-controls,.pet-food-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
 .pet-food-card{padding:12px;border:1px solid var(--bd);border-radius:15px;background:var(--surface);display:flex;align-items:center;gap:9px}.pet-food-card .food-icon{font-size:28px}.pet-food-card .food-copy{flex:1;min-width:0}.pet-food-card small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
 
+/* v22: richer motion cues for every companion and every care action */
+.pet-stage{isolation:isolate}
+.pet-stage:before{content:"";position:absolute;z-index:2;top:15px;right:18px;font-size:21px;opacity:0;pointer-events:none}
+.pet-stage.eating:before{content:"🍓  ✨  💛";opacity:1;animation:pet-float 1s ease-in-out infinite}
+.pet-stage.sleeping:before{content:"Z z z";opacity:.85;color:#a99bff;font-weight:800;letter-spacing:3px;animation:pet-zzz 2.4s ease-in-out infinite}
+.pet-stage.playing:before{content:"🎾  ✨  ⭐";opacity:1;animation:pet-play-bits .65s ease-in-out infinite alternate}
+.pet-stage.waking:before{content:"☀️  ✨";opacity:1;animation:pet-wake-bits .8s ease-out 1}
+.pet-stage.awake:before{content:"✦";opacity:.6;animation:pet-float 3s ease-in-out infinite}
+.pet-stage.eating .pet-avatar{animation:pet-eat-v22 .42s ease-in-out infinite alternate}
+.pet-stage.sleeping .pet-avatar{animation:pet-sleep-v22 3s ease-in-out infinite}
+.pet-stage.playing .pet-avatar{animation:pet-play-v22 .52s cubic-bezier(.3,.7,.3,1) infinite alternate}
+.pet-stage.waking .pet-avatar{animation:pet-wake-v22 .9s ease-out 1}
+.pet-stage.eating .pet-avatar.cat,.pet-stage.eating .pet-avatar.fox,.pet-stage.eating .pet-avatar.rabbit,.pet-stage.eating .pet-avatar.dog{transform-origin:50% 90%}
+.pet-stage.playing .pet-avatar.penguin,.pet-stage.playing .pet-avatar.turtle{animation-duration:.8s}
+.pet-stage.sleeping .pet-avatar.owl,.pet-stage.sleeping .pet-avatar.panda{animation-duration:3.6s}
+@keyframes pet-eat-v22{0%{transform:translateY(1px) rotate(-7deg) scale(.98)}50%{transform:translateY(4px) rotate(2deg) scale(1.04)}100%{transform:translateY(0) rotate(7deg) scale(1.01)}}
+@keyframes pet-sleep-v22{0%,100%{transform:translateY(7px) rotate(-4deg) scale(.97)}50%{transform:translateY(10px) rotate(4deg) scale(.94)}}
+@keyframes pet-play-v22{0%{transform:translateY(0) rotate(-14deg) scale(.98)}50%{transform:translateY(-17px) rotate(5deg) scale(1.06)}100%{transform:translateY(-5px) rotate(14deg) scale(1)}}
+@keyframes pet-wake-v22{0%{transform:translateY(9px) scale(.72) rotate(-8deg);filter:brightness(.8)}60%{transform:translateY(-12px) scale(1.14) rotate(7deg);filter:brightness(1.25)}100%{transform:translateY(0) scale(1) rotate(0);filter:brightness(1)}}
+@keyframes pet-float{0%,100%{transform:translateY(2px);opacity:.45}50%{transform:translateY(-9px);opacity:1}}
+@keyframes pet-zzz{0%{transform:translate(0,8px) scale(.8);opacity:0}35%{opacity:.9}100%{transform:translate(-15px,-16px) scale(1.1);opacity:0}}
+@keyframes pet-play-bits{from{transform:translateY(4px) rotate(-8deg)}to{transform:translateY(-7px) rotate(8deg)}}
+@keyframes pet-wake-bits{0%{transform:scale(.5) rotate(-15deg);opacity:0}60%{transform:scale(1.2) rotate(10deg);opacity:1}100%{transform:scale(1);opacity:0}}
+@media(prefers-reduced-motion:reduce){.pet-avatar,.pet-stage:before{animation:none!important}}
+.weight-history{display:grid;gap:10px}.weight-entry{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--bd);border-radius:13px;background:var(--surface)}.weight-entry small{color:var(--muted)}.weight-bars{height:90px;display:flex;align-items:end;gap:6px;padding:8px 4px;border-bottom:1px solid var(--bd)}.weight-bar{flex:1;min-width:8px;border-radius:7px 7px 2px 2px;background:linear-gradient(180deg,#b69cff,#7552c7);position:relative}.weight-bar span{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--muted);white-space:nowrap}
+
 
   </style>
 </head>
@@ -1021,7 +1047,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v21 · питомцы и забота</span>
+      <span class="pill" id="topPill">v22 · питомцы и история</span>
     </header>
 
     <!-- HOME -->
@@ -1400,6 +1426,18 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         </div>
       </div>
 
+      <div class="glass section" id="weightHistorySection">
+        <div class="section-head"><h2>📈 История веса</h2><span class="tag">Личные записи</span></div>
+        <p class="notice" style="margin-top:0">Можно сохранять измерения и смотреть изменения со временем. Это только журнал наблюдений — без оценки тела и целевого веса.</p>
+        <div class="fields">
+          <div class="field"><label for="weightLogValue">Вес, кг</label><input type="number" id="weightLogValue" min="25" max="300" step="0.1" inputmode="decimal" placeholder="Например, 50"></div>
+          <div class="field"><label for="weightLogDate">Дата</label><input type="date" id="weightLogDate"></div>
+        </div>
+        <div class="form-actions"><button class="btn" type="button" id="weightLogAdd">Добавить запись</button></div>
+        <div id="weightLogChart" class="weight-history"></div>
+        <div id="weightLogList" class="weight-history" style="margin-top:12px"></div>
+      </div>
+
       <div class="glass section">
         <div class="section-head"><h2>Уведомления</h2></div>
         <div class="form-actions">
@@ -1686,7 +1724,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     meals: [],
     water: { current: 0, goal: 2000, date: todayStr() },
     reminders: [],
-    profile: { name: '', done: false },
+    profile: { name: '', done: false, weightLog: [] },
     theme: 'violet',
     ntfy: { enabled: false, topic: '' },
     stats: defaultStats(),
@@ -1741,6 +1779,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     if (!d.titles.got || typeof d.titles.got !== 'object') d.titles.got = { rookie: 1 };
     if (!Array.isArray(d.rewards)) d.rewards = [];
     if (!d.profile || typeof d.profile !== 'object') d.profile = base.profile;
+    d.profile.weightLog = Array.isArray(d.profile.weightLog) ? d.profile.weightLog.filter(x => x && Number.isFinite(+x.kg) && +x.kg >= 25 && +x.kg <= 300 && /^\d{4}-\d{2}-\d{2}$/.test(String(x.date))).map(x => ({ kg: Math.round(+x.kg * 10) / 10, date: String(x.date) })).sort((a,b) => a.date.localeCompare(b.date)).slice(-60) : [];
     if (!d.cnt || !d.cnt.init) {
       d.cnt = { ...base.cnt, ...(d.cnt || {}), init: true };
       d.cnt.dist = (Array.isArray(d.walks) ? d.walks : []).reduce((a, w) => a + (+w.dist || 0), 0);
@@ -3322,7 +3361,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     save();
   }
   function petCare(action){petUpdateNeeds();const stage=$('petStage');if(action==='feed'){const p=PETS.find(x=>x.id===data.pets.active)||PETS[0];const foodId=p.food||'berry';if(!data.pets.food[foodId]){toast('Нет подходящей еды. Купи её в магазине еды.');return;}data.pets.food[foodId]--;data.pets.hunger=Math.min(100,data.pets.hunger+ (PET_FOODS.find(x=>x.id===foodId)?.gain||18));petAnim='eating';toast('Питомец поел '+(PET_FOODS.find(x=>x.id===foodId)?.name||'')+'!');}
-    else if(action==='sleep'){data.pets.mood='sleeping';data.pets.energy=Math.min(100,data.pets.energy+12);toast('Питомец отдыхает.');}
+    else if(action==='sleep'){data.pets.mood='sleeping';data.pets.energy=Math.min(100,data.pets.energy+12);petAnim='sleeping';toast('Питомец отдыхает.');}
     else if(action==='wake'){data.pets.mood='awake';data.pets.energy=Math.min(100,data.pets.energy+4);petAnim='waking';toast('Питомец проснулся!');}
     else if(action==='play'){if(data.pets.mood==='sleeping'){toast('Сначала разбуди питомца.');return;}if(data.pets.energy<10){toast('Питомец устал. Пусть отдохнёт.');return;}data.pets.energy=Math.max(0,data.pets.energy-12);data.pets.hunger=Math.max(0,data.pets.hunger-5);petAnim='playing';toast('Вы отлично поиграли!');}
     data.pets.updated=Date.now();save();renderPets();if(petAnim && petAnim!=='sleeping'){setTimeout(()=>{petAnim='';renderPets();},1400);}}
@@ -4775,6 +4814,21 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     let skipped = false; try { skipped = sessionStorage.getItem('luma-ob-skip') === '1'; } catch {}
     if (!prof().done && !skipped) openOnboard(false);
   }
+
+  /* ----- Weight journal: neutral tracking only, no target-weight advice ----- */
+  const weightToday = () => new Date().toISOString().slice(0,10);
+  function renderWeightLog(){
+    const chart=$('weightLogChart'), list=$('weightLogList'); if(!chart||!list)return;
+    const rows=(prof().weightLog||[]).slice(-10);
+    if(!rows.length){chart.innerHTML='<div class="empty">Пока нет записей. Добавь измерение, если хочешь вести историю.</div>';list.innerHTML='';return;}
+    const vals=rows.map(x=>x.kg), lo=Math.min(...vals), hi=Math.max(...vals), span=Math.max(1,hi-lo);
+    chart.innerHTML='<div class="weight-bars">'+rows.map(x=>'<div class="weight-bar" title="'+x.kg+' кг · '+x.date+'" style="height:'+Math.round(22+(x.kg-lo)/span*62)+'%"><span>'+x.date.slice(5)+'</span></div>').join('')+'</div><p class="notice">Последняя запись: <b>'+rows[rows.length-1].kg.toFixed(1)+' кг</b> · '+rows[rows.length-1].date+'</p>';
+    list.innerHTML=rows.slice().reverse().map((x,i)=>'<div class="weight-entry"><span><b>'+x.kg.toFixed(1)+' кг</b><br><small>'+x.date+'</small></span><button class="btn secondary small" type="button" data-weight-delete="'+(rows.length-1-i)+'">Удалить</button></div>').join('');
+  }
+  const weightDate=$('weightLogDate'); if(weightDate) weightDate.value=weightToday();
+  const weightAdd=$('weightLogAdd'); if(weightAdd) weightAdd.onclick=()=>{const kg=+$('weightLogValue').value,date=$('weightLogDate').value;if(!(kg>=25&&kg<=300)||!date){toast('Проверь вес и дату');return;}const arr=prof().weightLog||(prof().weightLog=[]);const ix=arr.findIndex(x=>x.date===date);if(ix>=0)arr[ix].kg=Math.round(kg*10)/10;else arr.push({kg:Math.round(kg*10)/10,date});arr.sort((a,b)=>a.date.localeCompare(b.date));arr.splice(60);$('weightLogValue').value='';save();renderWeightLog();toast('Запись сохранена');};
+  const weightList=$('weightLogList'); if(weightList) weightList.addEventListener('click',e=>{const b=e.target.closest('[data-weight-delete]');if(!b)return;const rows=(prof().weightLog||[]).slice(-10).reverse();const target=rows[+b.dataset.weightDelete];if(!target)return;prof().weightLog=prof().weightLog.filter(x=>x!==target);save();renderWeightLog();});
+  renderWeightLog();
 
   /* ----- Settings ----- */
   document.querySelectorAll('.theme-swatch').forEach(b => {
