@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="12"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="13"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <style>
@@ -776,13 +776,58 @@ html[data-mode="light"] .food-row { border-color: rgba(80,50,140,.16); }
 html[data-mode="light"] .food-row .kc { color: #5b2fb8; }
 html[data-mode="light"] .food-row:active { background: rgba(167,139,250,.35); }
 html[data-mode="light"] .theme-swatch { border-color: rgba(80,50,140,.3); }
+
+/* ===== v13: onboarding, plan, walk ===== */
+.nav-inner { grid-template-columns: repeat(6, 1fr); max-width: 480px; gap: 2px; padding: 5px; }
+.nav-btn { font-size: 10px; padding: 8px 2px; }
+@media (max-width: 360px) { .nav-btn { font-size: 9px; } .nav-btn span { font-size: 17px; } }
+.onboard { position: fixed; inset: 0; z-index: 10050; display: none; overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--sheet-bg); }
+.onboard.show { display: block; animation: fadeIn .3s ease both; }
+.onboard-card { max-width: 560px; margin: 0 auto; padding: 26px 18px calc(30px + env(safe-area-inset-bottom)); }
+.onboard-card h2 { font-size: 28px; letter-spacing: -.8px; margin: 8px 0 8px; }
+.choice-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.choice { padding: 14px 6px; border-radius: 16px; border: 1.5px solid var(--line); background: var(--card-fill); color: inherit; font: inherit; font-size: 13px; font-weight: 700; text-align: center; line-height: 1.3; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: transform .15s, border-color .2s, background .2s; }
+.choice span { display: block; font-size: 22px; margin-bottom: 4px; }
+.choice:active { transform: scale(.97); }
+.choice.on { border-color: #b999ff; background: rgba(167,139,250,.28); }
+.ob-preview { margin: 16px 0 6px; padding: 14px; border-radius: 16px; background: rgba(167,139,250,.12); border: 1px solid #c4a7ff30; font-size: 13px; line-height: 1.6; min-height: 20px; }
+.check { display: flex; align-items: flex-start; gap: 10px; margin: 14px 0 4px; font-size: 13px; color: inherit; line-height: 1.4; }
+.check input { width: 22px; height: 22px; min-width: 22px; padding: 0; margin: 0; accent-color: #a78bfa; }
+.plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tile { padding: 14px 12px; border-radius: 16px; background: var(--card-fill); border: 1px solid rgba(255,255,255,.12); min-width: 0; }
+.tile small { display: block; font-size: 11px; color: var(--muted); }
+.tile b { display: block; font-size: 22px; margin-top: 4px; letter-spacing: -.5px; }
+.tile.wide { grid-column: 1 / -1; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; margin-top: 6px; }
+.b-blue { background: rgba(96,165,250,.22); color: #93c5fd; }
+.b-green { background: rgba(52,211,153,.22); color: #6ee7b7; }
+.b-amber { background: rgba(251,191,36,.22); color: #fcd34d; }
+.b-red { background: rgba(248,113,113,.22); color: #fca5a5; }
+.advice { margin-top: 12px; display: grid; gap: 8px; }
+.advice div { font-size: 12.5px; line-height: 1.5; padding: 10px 12px; border-radius: 13px; background: rgba(251,191,36,.12); border: 1px solid rgba(251,191,36,.28); }
+.advice div.ok { background: rgba(52,211,153,.12); border-color: rgba(52,211,153,.28); }
+.geo-pill { font-size: 11px; padding: 5px 10px; border-radius: 99px; border: 1px solid var(--line); white-space: nowrap; }
+.geo-pill.ok { color: #6ee7b7; border-color: rgba(52,211,153,.4); }
+.geo-pill.bad { color: #fca5a5; border-color: rgba(248,113,113,.4); }
+.walk-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0 4px; }
+#routeCanvas { width: 100%; height: 220px; display: block; margin: 12px 0; border-radius: 16px; background: #150b2b; border: 1px solid rgba(167,139,250,.3); }
+.walk-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+.walk-actions .btn { padding: 16px; font-size: 16px; border-radius: 17px; }
+.walk-actions .full { grid-column: 1 / -1; }
+.bar.walkbar > div { background: linear-gradient(90deg, #34d399, #22d3ee); }
+.btn.big { padding: 17px; font-size: 17px; border-radius: 18px; }
+html[data-mode="light"] .tile { border-color: rgba(80,50,140,.14); background: rgba(255,255,255,.75); }
+html[data-mode="light"] .b-blue { color: #1d4ed8; } html[data-mode="light"] .b-green { color: #047857; } html[data-mode="light"] .b-amber { color: #92400e; } html[data-mode="light"] .b-red { color: #b91c1c; }
+html[data-mode="light"] .choice { border-color: rgba(80,50,140,.22); }
+html[data-mode="light"] .choice.on { border-color: #8b5cf6; background: rgba(139,92,246,.2); }
+html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"] .geo-pill.bad { color: #b91c1c; }
   </style>
 </head>
 <body>
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v12 · время для себя</span>
+      <span class="pill" id="topPill">v13 · время для себя</span>
     </header>
 
     <!-- HOME -->
@@ -811,6 +856,13 @@ html[data-mode="light"] .theme-swatch { border-color: rgba(80,50,140,.3); }
           <div class="field" style="flex:1;min-width:130px;margin:0"><input type="number" id="waterCustom" min="1" max="5000" step="1" inputmode="numeric" placeholder="Свой объём, мл"></div>
           <button class="btn secondary small" type="button" onclick="addCustomWater()">＋ Добавить</button>
         </div>
+      </div>
+
+      <div class="glass section" id="homeWalk">
+        <div class="section-head"><h2>🚶 Прогулка сегодня</h2><span class="tag" id="homeWalkTag">—</span></div>
+        <div class="bar walkbar"><div id="homeWalkFill"></div></div>
+        <p class="notice" id="homeWalkText"></p>
+        <div class="form-actions"><button class="btn secondary small" type="button" id="homeWalkBtn" onclick="goTab('walk')">Открыть</button></div>
       </div>
 
       <div class="glass section">
@@ -981,6 +1033,46 @@ html[data-mode="light"] .theme-swatch { border-color: rgba(80,50,140,.3); }
       </div>
     </section>
 
+    <!-- WALK -->
+    <section class="page" id="page-walk">
+      <div class="hero">
+        <div class="eyebrow">WALK</div>
+        <h1>Ходьба<br><span>твоя норма</span></h1>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Мой план</h2><button class="btn secondary small" type="button" onclick="openOnboard(true)">Изменить</button></div>
+        <div id="planBox"></div>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>📍 Прогулка</h2><span class="geo-pill" id="geoPill">GPS</span></div>
+        <p class="notice" id="geoMsg" style="margin:0 0 10px"></p>
+        <div class="form-actions" style="margin:0 0 10px"><button class="btn secondary small" type="button" id="geoAsk">📍 Разрешить геолокацию</button></div>
+        <div class="walk-stats">
+          <div class="tile"><small>Время</small><b id="wTime">00:00</b></div>
+          <div class="tile"><small>Пройдено</small><b id="wDist">0.00 км</b></div>
+          <div class="tile"><small>Средняя скорость</small><b id="wSpeed">0.0 км/ч</b></div>
+          <div class="tile"><small>Шаги ≈ · ккал ≈</small><b id="wSteps">0 · 0</b></div>
+        </div>
+        <canvas id="routeCanvas"></canvas>
+        <p class="notice" id="wAcc" style="margin:0 0 10px;text-align:center"></p>
+        <div class="walk-actions">
+          <button class="btn big full" type="button" id="walkStart">▶ Начать прогулку</button>
+          <button class="btn secondary" type="button" id="walkPause" style="display:none">⏸ Пауза</button>
+          <button class="btn danger" type="button" id="walkStop" style="display:none">■ Завершить</button>
+        </div>
+        <p class="notice">Расстояние считается по GPS прямо в телефоне, без серверов. Пока идёшь, держи Luma открытой: при блокировке экрана и сворачивании браузера (особенно на iPhone) GPS может не записываться. Экран будет не гаснуть, если телефон это поддерживает.</p>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Сегодня</h2><span class="tag" id="walkTodayTag">0 мин</span></div>
+        <div class="bar walkbar"><div id="walkTodayFill"></div></div>
+        <p class="notice" id="walkTodayText"></p>
+        <div class="list" id="walkList" style="margin-top:12px"></div>
+      </div>
+    </section>
+
     <!-- GAMES -->
     <section class="page" id="page-games">
       <div class="hero">
@@ -1061,6 +1153,7 @@ html[data-mode="light"] .theme-swatch { border-color: rgba(80,50,140,.3); }
         </div>
         <div class="form-actions">
           <button class="btn" type="button" id="saveProfile">Сохранить</button>
+          <button class="btn secondary" type="button" onclick="openOnboard(true)">Параметры: возраст, рост, вес, цель</button>
         </div>
       </div>
 
@@ -1117,10 +1210,48 @@ html[data-mode="light"] .theme-swatch { border-color: rgba(80,50,140,.3); }
       <button type="button" class="nav-btn active" data-tab="home" onclick="window.goTab && goTab('home')"><span>🏠</span>Главная</button>
       <button type="button" class="nav-btn" data-tab="nutrition" onclick="window.goTab && goTab('nutrition')"><span>🥗</span>Рацион</button>
       <button type="button" class="nav-btn" data-tab="reminders" onclick="window.goTab && goTab('reminders')"><span>⏰</span>Планы</button>
+      <button type="button" class="nav-btn" data-tab="walk" onclick="window.goTab && goTab('walk')"><span>🚶</span>Ходьба</button>
       <button type="button" class="nav-btn" data-tab="games" onclick="window.goTab && goTab('games')"><span>🎮</span>Игры</button>
       <button type="button" class="nav-btn" data-tab="settings" onclick="window.goTab && goTab('settings')"><span>⚙️</span>Ещё</button>
     </div>
   </nav>
+
+  <!-- Onboarding -->
+  <div class="onboard" id="onboard" aria-hidden="true">
+    <div class="onboard-card">
+      <div class="eyebrow">ЗНАКОМСТВО</div>
+      <h2 id="obTitle">Давай знакомиться</h2>
+      <p class="muted" style="margin-bottom:16px">Luma рассчитает твою норму калорий и сколько нужно гулять. Всё хранится только на этом устройстве.</p>
+      <div class="fields">
+        <div class="field full"><label>Как тебя зовут</label><input id="obName" maxlength="24" placeholder="Имя"></div>
+        <div class="field"><label>Пол</label><select id="obSex"><option value="m">Мужской</option><option value="f">Женский</option></select></div>
+        <div class="field"><label>Возраст, лет</label><input type="number" id="obAge" min="10" max="100" inputmode="numeric" placeholder="25"></div>
+        <div class="field"><label>Рост, см</label><input type="number" id="obHeight" min="100" max="230" inputmode="decimal" step="any" placeholder="175"></div>
+        <div class="field"><label>Вес, кг</label><input type="number" id="obWeight" min="25" max="300" inputmode="decimal" step="any" placeholder="70"></div>
+        <div class="field full"><label>Обычная активность</label>
+          <select id="obAct">
+            <option value="0">Сидячий образ жизни</option>
+            <option value="1" selected>Лёгкая (1–3 тренировки в неделю)</option>
+            <option value="2">Умеренная (3–5 тренировок в неделю)</option>
+            <option value="3">Высокая (6–7 тренировок в неделю)</option>
+            <option value="4">Очень высокая (тяжёлый физический труд)</option>
+          </select>
+        </div>
+      </div>
+      <p class="notice" style="margin:16px 0 8px">Твоя цель</p>
+      <div class="choice-row" id="goalChoice">
+        <button type="button" class="choice" data-goal="lose"><span>⬇️</span>Похудеть</button>
+        <button type="button" class="choice on" data-goal="keep"><span>⚖️</span>Остаться в весе</button>
+        <button type="button" class="choice" data-goal="gain"><span>⬆️</span>Набрать массу</button>
+      </div>
+      <div class="ob-preview" id="obPreview">Заполни возраст, рост и вес — здесь появится расчёт.</div>
+      <label class="check"><input type="checkbox" id="obGeo" checked><span>Разрешить доступ к геолокации, чтобы считать пройденный путь на прогулках</span></label>
+      <div class="form-actions">
+        <button class="btn" type="button" id="obSave">Сохранить и рассчитать</button>
+        <button class="btn secondary" type="button" id="obSkip">Позже</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Sheet: pick a dish -->
   <div class="sheet-back" id="sheetPick" aria-hidden="true">
@@ -1261,11 +1392,12 @@ html[data-mode="light"] .theme-swatch { border-color: rgba(80,50,140,.3); }
     meals: [],
     water: { current: 0, goal: 2000, date: todayStr() },
     reminders: [],
-    profile: { name: '' },
+    profile: { name: '', done: false },
     theme: 'violet',
     ntfy: { enabled: false, topic: '' },
     stats: { tapBest: 0, reactionBest: null },
     customFoods: [],
+    walks: [],
     mode: 'dark'
   });
 
@@ -1384,6 +1516,7 @@ html[data-mode="light"] .theme-swatch { border-color: rgba(80,50,140,.3); }
       if (name === 'home') renderHome();
       if (name === 'nutrition') renderNutrition();
       if (name === 'reminders') { renderReminders(); initRemDefaults(); }
+      if (name === 'walk') { renderWalk(); }
       if (name === 'games') { exitGame(); }
       if (name === 'settings') updateNotifUI();
     } catch (e) { console.error(e); }
@@ -1422,6 +1555,7 @@ html[data-mode="light"] .theme-swatch { border-color: rgba(80,50,140,.3); }
 
   function renderHome() {
     resetWaterIfNeeded();
+    try { renderHomeWalk(); } catch (e) { console.error(e); }
     $('greeting').textContent = greeting() + '. Вот твоя сводка.';
     const meals = data.meals.filter(m => m.date === todayStr());
     const cal = meals.reduce((s, m) => s + (m.cal || 0), 0);
@@ -2867,6 +3001,392 @@ html[data-mode="light"] .theme-swatch { border-color: rgba(80,50,140,.3); }
     reset();
   }
 
+
+  /* ================= Профиль, план и прогулки ================= */
+  const ACT = [1.2, 1.375, 1.55, 1.725, 1.9];
+  const GOAL_NAME = { lose: 'Похудеть', keep: 'Остаться в весе', gain: 'Набрать массу' };
+  const prof = () => data.profile || (data.profile = { name: '', done: false });
+
+  /* ИМТ: классификация ВОЗ; калории: формула Миффлина—Сан Жеора;
+     активность: рекомендации ВОЗ 2020 (взрослые 150–300 мин/нед, подростки 60 мин/день) */
+  function calcPlan(pr) {
+    const h = +pr.height, w = +pr.weight, a = +pr.age;
+    if (!(h >= 100 && w >= 25 && a >= 10)) return null;
+    const hm = h / 100, bmi = w / (hm * hm);
+    const lo = 18.5 * hm * hm, hi = 24.9 * hm * hm;
+    let cat, tone, suggest;
+    if (bmi < 16) { cat = 'Выраженный дефицит массы'; tone = 'blue'; suggest = 'gain'; }
+    else if (bmi < 18.5) { cat = 'Недостаточный вес'; tone = 'blue'; suggest = 'gain'; }
+    else if (bmi < 25) { cat = 'Норма'; tone = 'green'; suggest = 'keep'; }
+    else if (bmi < 30) { cat = 'Избыточный вес'; tone = 'amber'; suggest = 'lose'; }
+    else if (bmi < 35) { cat = 'Ожирение I степени'; tone = 'red'; suggest = 'lose'; }
+    else if (bmi < 40) { cat = 'Ожирение II степени'; tone = 'red'; suggest = 'lose'; }
+    else { cat = 'Ожирение III степени'; tone = 'red'; suggest = 'lose'; }
+    const goal = pr.goal || 'keep';
+    const bmr = 10 * w + 6.25 * h - 5 * a + (pr.sex === 'f' ? -161 : 5);
+    const tdee = bmr * (ACT[pr.activity] || ACT[1]);
+    let kcal = tdee;
+    if (goal === 'lose') kcal = Math.max(tdee * 0.85, pr.sex === 'f' ? 1200 : 1500);
+    if (goal === 'gain') kcal = tdee * 1.12;
+    kcal = Math.round(kcal / 10) * 10;
+    const ref = bmi >= 30 ? 25 * hm * hm : w;
+    const prot = Math.round(ref * (goal === 'keep' ? 1.5 : 1.8));
+    const fat = Math.max(Math.round(ref * 0.9), Math.round(kcal * 0.2 / 9));
+    const carb = Math.max(50, Math.round((kcal - prot * 4 - fat * 9) / 4));
+    let walkMin = goal === 'lose' ? 45 : 30;
+    if (a < 18) walkMin = 60;
+    else if (a >= 65) walkMin = 30;
+    const walkKm = Math.round(walkMin * 5 / 60 * 10) / 10;
+    let diff = 0;
+    if (w < lo) diff = lo - w; else if (w > hi) diff = hi - w;
+    const advice = [];
+    if (a < 18) advice.push('Тебе меньше 18: для подростков ИМТ оценивают по специальным таблицам, поэтому категория ориентировочная. Цели по весу лучше обсудить с врачом. Норма активности для подростков — в среднем 60 минут в день.');
+    if (goal === 'lose' && bmi < 18.5) advice.push('Сейчас вес ниже нормы, поэтому худеть не рекомендуется. Подойдёт «Остаться в весе» или «Набрать массу».');
+    if (goal === 'gain' && bmi >= 25) advice.push('При избыточном весе набор массы не рекомендуется. Подойдёт «Похудеть» или «Остаться в весе».');
+    if (goal === 'keep' && bmi < 18.5) advice.push('Вес ниже нормы: по ИМТ тебе больше подходит цель «Набрать массу».');
+    if (goal === 'keep' && bmi >= 25) advice.push('Вес выше нормы: по ИМТ тебе больше подходит цель «Похудеть».');
+    if (bmi >= 30 || bmi < 16) advice.push('При таком значении ИМТ стоит обсудить план питания и нагрузок с врачом.');
+    if (bmi >= 30 && goal === 'lose') advice.push('Начинай с коротких прогулок и увеличивай время постепенно.');
+    if (!advice.length) advice.push('Цель соответствует твоему ИМТ. Так держать!');
+    return { bmi, cat, tone, suggest, lo, hi, diff, bmr, tdee, kcal, prot, fat, carb, walkMin, walkKm, advice, ok: advice.length === 1 && advice[0].startsWith('Цель') };
+  }
+  const f1 = v => (Math.round(v * 10) / 10).toFixed(1);
+
+  function planHTML(pl, pr) {
+    const diffTxt = Math.abs(pl.diff) < 0.05 ? 'Твой вес в пределах нормы ✓' : (pl.diff > 0 ? 'До нормы не хватает ≈ ' + f1(pl.diff) + ' кг' : 'До нормы лишних ≈ ' + f1(-pl.diff) + ' кг');
+    const delta = (pl.kcal - pl.tdee) * 7 / 7700;
+    const dTxt = Math.abs(delta) < 0.05 ? '' : ' · ≈ ' + (delta > 0 ? '+' : '−') + f1(Math.abs(delta)) + ' кг в неделю';
+    return `
+      <div class="plan-grid">
+        <div class="tile"><small>Индекс массы тела</small><b>${f1(pl.bmi)}</b><span class="badge b-${pl.tone}">${pl.cat}</span></div>
+        <div class="tile"><small>Нормальный вес для твоего роста</small><b>${f1(pl.lo)}–${f1(pl.hi)} кг</b><small style="margin-top:6px">${diffTxt}</small></div>
+        <div class="tile"><small>Суточная норма · ${GOAL_NAME[pr.goal || 'keep']}</small><b>${pl.kcal} ккал</b><small style="margin-top:6px">Б ${pl.prot} · Ж ${pl.fat} · У ${pl.carb} г${dTxt}</small></div>
+        <div class="tile"><small>Гулять минимум, в день</small><b>${pl.walkMin} мин</b><small style="margin-top:6px">≈ ${pl.walkKm} км · ${pl.walkMin * 7} мин в неделю</small></div>
+      </div>
+      <div class="advice">${pl.advice.map(t => '<div class="' + (pl.ok ? 'ok' : '') + '">' + esc(t) + '</div>').join('')}</div>
+      <div class="form-actions"><button class="btn" type="button" id="applyGoals">Применить к рациону</button></div>
+      <p class="notice">Расчёты: ИМТ и категории — классификация ВОЗ; калории — формула Миффлина—Сан Жеора; активность — рекомендации ВОЗ (взрослым 150–300 мин умеренной активности в неделю, подросткам 60 мин в день). Это ориентир, а не медицинская рекомендация.</p>`;
+  }
+  function renderPlan() {
+    const box = $('planBox'); if (!box) return;
+    const pr = prof(); const pl = pr.done ? calcPlan(pr) : null;
+    if (!pl) {
+      box.innerHTML = '<div class="empty"><div class="orb"></div>Заполни параметры, и Luma рассчитает норму калорий и прогулок</div><div class="form-actions"><button class="btn" type="button" onclick="openOnboard(false)">Заполнить параметры</button></div>';
+      return;
+    }
+    box.innerHTML = planHTML(pl, pr);
+    $('applyGoals').onclick = () => applyPlanToGoals(pl);
+  }
+  function applyPlanToGoals(pl) {
+    data.goals = { cal: pl.kcal, prot: pl.prot, fat: pl.fat, carb: pl.carb };
+    save(); renderNutrition(); toast('Цели рациона обновлены ✓');
+  }
+
+  /* ----- Знакомство ----- */
+  let obGoal = 'keep', obEdit = false;
+  function obRead() {
+    return { name: $('obName').value.trim(), sex: $('obSex').value, age: +$('obAge').value, height: +$('obHeight').value, weight: +$('obWeight').value, activity: +$('obAct').value, goal: obGoal };
+  }
+  function obPreview() {
+    const pr = obRead(); const pl = calcPlan(pr); const box = $('obPreview');
+    if (!pl) { box.textContent = 'Заполни возраст, рост и вес — здесь появится расчёт.'; return; }
+    box.innerHTML = '<b>ИМТ ' + f1(pl.bmi) + ' — ' + pl.cat + '</b><br>Норма веса: ' + f1(pl.lo) + '–' + f1(pl.hi) + ' кг<br>По ИМТ тебе подходит цель: <b>' + GOAL_NAME[pl.suggest] + '</b><br>Суточная норма: <b>' + pl.kcal + ' ккал</b> · гулять минимум <b>' + pl.walkMin + ' мин/день</b>';
+  }
+  function setGoalUI(g) {
+    obGoal = g;
+    document.querySelectorAll('#goalChoice .choice').forEach(b => b.classList.toggle('on', b.dataset.goal === g));
+  }
+  function openOnboard(edit) {
+    obEdit = !!edit;
+    const pr = prof();
+    $('obTitle').textContent = obEdit ? 'Мои параметры' : 'Давай знакомиться';
+    $('obSkip').textContent = obEdit ? 'Отмена' : 'Позже';
+    $('obName').value = pr.name || '';
+    $('obSex').value = pr.sex || 'm';
+    $('obAge').value = pr.age || ''; $('obHeight').value = pr.height || ''; $('obWeight').value = pr.weight || '';
+    $('obAct').value = String(pr.activity != null ? pr.activity : 1);
+    setGoalUI(pr.goal || 'keep');
+    obPreview();
+    const el = $('onboard'); el.classList.add('show'); el.setAttribute('aria-hidden', 'false'); el.scrollTop = 0;
+    document.body.classList.add('noscroll');
+  }
+  function closeOnboard() {
+    const el = $('onboard'); el.classList.remove('show'); el.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('noscroll');
+  }
+  window.openOnboard = openOnboard;
+  ['obName', 'obSex', 'obAge', 'obHeight', 'obWeight', 'obAct'].forEach(id => { $(id).addEventListener('input', obPreview); $(id).addEventListener('change', obPreview); });
+  document.querySelectorAll('#goalChoice .choice').forEach(b => b.addEventListener('click', () => { setGoalUI(b.dataset.goal); obPreview(); }));
+  $('obSkip').onclick = () => { try { sessionStorage.setItem('luma-ob-skip', '1'); } catch {} closeOnboard(); renderHome(); };
+  $('obSave').onclick = () => {
+    const v = obRead();
+    if (!(v.age >= 10 && v.age <= 100)) { toast('Укажи возраст от 10 до 100'); $('obAge').focus(); return; }
+    if (!(v.height >= 100 && v.height <= 230)) { toast('Рост должен быть от 100 до 230 см'); $('obHeight').focus(); return; }
+    if (!(v.weight >= 25 && v.weight <= 300)) { toast('Вес должен быть от 25 до 300 кг'); $('obWeight').focus(); return; }
+    const first = !prof().done;
+    data.profile = Object.assign({}, prof(), v, { done: true });
+    if (!v.name) data.profile.name = prof().name || '';
+    $('profileName').value = data.profile.name || '';
+    save();
+    const pl = calcPlan(data.profile);
+    if (first && pl) applyPlanToGoals(pl);
+    closeOnboard();
+    if ($('obGeo').checked) askGeo(true);
+    renderHome(); goTab('walk');
+    toast(first ? 'Готово! Цели рациона рассчитаны ✓' : 'Параметры сохранены ✓');
+  };
+
+  /* ----- Геолокация ----- */
+  const geoOK = () => !!(navigator.geolocation);
+  const secureOK = () => window.isSecureContext !== false;
+  let geoState = 'unknown';
+  function geoErrText(e) {
+    if (!secureOK()) return 'Геолокация работает только на страницах с HTTPS. Сейчас страница открыта не по HTTPS (например, как файл) — размести сайт на бесплатном хостинге (Netlify, GitHub Pages).';
+    if (!e) return '';
+    if (e.code === 1) return 'Доступ к геолокации запрещён. Разреши его: Safari на iPhone — Настройки → Конфиденциальность → Службы геолокации → Safari; Chrome на Android — значок замка рядом с адресом → Разрешения → Геолокация.';
+    if (e.code === 2) return 'Не удалось определить местоположение. Выйди на открытое место и проверь, что GPS включён.';
+    if (e.code === 3) return 'Время ожидания GPS истекло. Попробуй ещё раз на открытом месте.';
+    return 'Ошибка геолокации.';
+  }
+  function renderGeo() {
+    const pill = $('geoPill'), msg = $('geoMsg'), ask = $('geoAsk'); if (!pill) return;
+    pill.className = 'geo-pill';
+    if (!geoOK()) { pill.textContent = 'Нет GPS'; pill.classList.add('bad'); msg.textContent = 'Этот браузер не поддерживает геолокацию.'; ask.style.display = 'none'; return; }
+    if (!secureOK()) { pill.textContent = 'Нужен HTTPS'; pill.classList.add('bad'); msg.textContent = geoErrText(); ask.style.display = 'none'; return; }
+    ask.style.display = '';
+    if (geoState === 'granted') { pill.textContent = '✓ Разрешено'; pill.classList.add('ok'); msg.textContent = 'Геолокация разрешена. Можно начинать прогулку.'; ask.style.display = 'none'; }
+    else if (geoState === 'denied') { pill.textContent = '✕ Запрещено'; pill.classList.add('bad'); msg.textContent = geoErrText({ code: 1 }); }
+    else { pill.textContent = 'Не разрешено'; msg.textContent = 'Чтобы считать путь, Luma нужен доступ к геолокации. Нажми кнопку и подтверди в окне браузера.'; }
+  }
+  function askGeo(silent) {
+    if (!geoOK() || !secureOK()) { if (!silent) toast(!secureOK() ? 'Нужна страница с HTTPS' : 'Геолокация недоступна'); renderGeo(); return; }
+    navigator.geolocation.getCurrentPosition(pos => {
+      geoState = 'granted'; renderGeo();
+      if (!silent) toast('Геолокация разрешена ✓ (точность ≈ ' + Math.round(pos.coords.accuracy) + ' м)');
+    }, err => {
+      if (err.code === 1) geoState = 'denied';
+      renderGeo(); $('geoMsg').textContent = geoErrText(err);
+      if (!silent) toast('Не удалось получить доступ');
+    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+  }
+  $('geoAsk').onclick = () => askGeo(false);
+  try {
+    if (navigator.permissions && navigator.permissions.query) {
+      navigator.permissions.query({ name: 'geolocation' }).then(st => {
+        geoState = st.state; renderGeo();
+        st.onchange = () => { geoState = st.state; renderGeo(); };
+      }).catch(() => {});
+    }
+  } catch {}
+
+  /* ----- Трекер прогулки ----- */
+  const W = { running: false, paused: false, startTs: 0, activeMs: 0, segStart: 0, dist: 0, points: [], last: null, watch: null, acc: null, lastSave: 0 };
+  const WKEY = 'luma-walk-active';
+  let wake = null, hiddenAt = 0;
+  const rad = x => x * Math.PI / 180;
+  function haversine(a, b) {
+    const R = 6371000, dLa = rad(b.la - a.la), dLo = rad(b.lo - a.lo);
+    const q = Math.sin(dLa / 2) ** 2 + Math.cos(rad(a.la)) * Math.cos(rad(b.la)) * Math.sin(dLo / 2) ** 2;
+    return 2 * R * Math.asin(Math.min(1, Math.sqrt(q)));
+  }
+  const thin = (arr, max) => { if (arr.length <= max) return arr.map(p => ({ la: p.la, lo: p.lo })); const st = arr.length / max, out = []; for (let i = 0; i < max; i++) { const p = arr[Math.floor(i * st)]; out.push({ la: p.la, lo: p.lo }); } const l = arr[arr.length - 1]; out.push({ la: l.la, lo: l.lo }); return out; };
+  const elapsed = () => W.activeMs + (W.running && !W.paused ? Date.now() - W.segStart : 0);
+  const fmtTime = ms => { const t = Math.floor(ms / 1000), h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), sec = t % 60; return (h ? h + ':' + pad(m) : pad(m)) + ':' + pad(sec); };
+  const stepLen = () => ((+prof().height || 170) * 0.415) / 100;
+  function kcalFor(distM, ms) {
+    if (ms < 1000) return 0;
+    const kmh = (distM / 1000) / (ms / 3600000);
+    const met = kmh < 3.2 ? 2.5 : kmh < 4.8 ? 3.3 : kmh < 5.6 ? 3.8 : kmh < 6.5 ? 4.8 : kmh < 8 ? 7 : 9;
+    return Math.round(met * (+prof().weight || 70) * ms / 3600000);
+  }
+  function persistWalk(force) {
+    const now = Date.now();
+    if (!force && now - W.lastSave < 8000) return;
+    W.lastSave = now;
+    try {
+      localStorage.setItem(WKEY, JSON.stringify({ startTs: W.startTs, activeMs: W.activeMs, segStart: W.segStart, running: W.running && !W.paused, dist: W.dist, pts: thin(W.points, 400), seen: now }));
+    } catch {}
+  }
+  function clearPersisted() { try { localStorage.removeItem(WKEY); } catch {} }
+  async function lockScreen() { try { if ('wakeLock' in navigator && !wake) { wake = await navigator.wakeLock.request('screen'); wake.addEventListener('release', () => { wake = null; }); } } catch {} }
+  function unlockScreen() { try { wake && wake.release(); } catch {} wake = null; }
+
+  function onFix(pos) {
+    const c = pos.coords, acc = c.accuracy || 999, t = pos.timestamp || Date.now();
+    W.acc = acc; updateAcc();
+    if (!W.running || W.paused) return;
+    if (geoState !== 'granted') { geoState = 'granted'; renderGeo(); }
+    if (acc > 40) return;
+    const p = { la: c.latitude, lo: c.longitude, t: t, a: acc };
+    if (!W.last) { W.last = p; W.points.push(p); persistWalk(); updateWalkUI(); drawRoute(W.points); return; }
+    const d = haversine(W.last, p), dt = (t - W.last.t) / 1000;
+    if (dt <= 0) return;
+    if (d < Math.max(5, acc * 0.6)) return;   /* шум GPS на месте */
+    if (d / dt > 8.5) return;                   /* скачок GPS */
+    W.dist += d; W.last = p; W.points.push(p);
+    persistWalk(); updateWalkUI(); drawRoute(W.points);
+  }
+  function onGeoErr(err) {
+    if (err.code === 1) { geoState = 'denied'; renderGeo(); toast('Нет доступа к геолокации'); $('geoMsg').textContent = geoErrText(err); stopWatch(); if (W.running && !W.paused) pauseWalk(); }
+    else { W.acc = null; $('wAcc').textContent = err.code === 3 ? 'GPS долго не отвечает…' : 'Сигнал GPS потерян, ищу…'; }
+  }
+  function startWatch() {
+    stopWatch();
+    W.last = null;
+    W.watch = navigator.geolocation.watchPosition(onFix, onGeoErr, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
+  }
+  function stopWatch() { if (W.watch != null) { try { navigator.geolocation.clearWatch(W.watch); } catch {} W.watch = null; } }
+
+  function startWalk() {
+    if (!geoOK()) { toast('Геолокация не поддерживается'); return; }
+    if (!secureOK()) { toast('Нужна страница с HTTPS'); renderGeo(); return; }
+    Object.assign(W, { running: true, paused: false, startTs: Date.now(), activeMs: 0, segStart: Date.now(), dist: 0, points: [], last: null, acc: null });
+    startWatch(); lockScreen(); persistWalk(true); updateWalkUI(); drawRoute([]);
+    toast('Прогулка началась 🚶');
+  }
+  function pauseWalk() {
+    if (!W.running) return;
+    if (!W.paused) { W.activeMs += Date.now() - W.segStart; W.paused = true; stopWatch(); unlockScreen(); persistWalk(true); }
+    else { W.paused = false; W.segStart = Date.now(); startWatch(); lockScreen(); persistWalk(true); }
+    updateWalkUI();
+  }
+  function stopWalk() {
+    if (!W.running) return;
+    if (!W.paused) W.activeMs += Date.now() - W.segStart;
+    stopWatch(); unlockScreen();
+    const ms = W.activeMs, dist = W.dist, pts = thin(W.points, 200);
+    Object.assign(W, { running: false, paused: false });
+    clearPersisted();
+    if (ms < 30000 && dist < 30) { toast('Слишком короткая прогулка — не сохранена'); updateWalkUI(); drawRoute([]); return; }
+    const d = new Date(W.startTs);
+    data.walks.push({ id: 'w' + W.startTs, date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, start: W.startTs, ms: ms, dist: Math.round(dist), steps: Math.round(dist / stepLen()), kcal: kcalFor(dist, ms), pts: pts });
+    const cutoff = Date.now() - 90 * 86400000;
+    data.walks = data.walks.filter(x => x.start > cutoff);
+    save();
+    toast('Прогулка сохранена: ' + f1(dist / 1000).replace('.0', '') + ' км, ' + Math.max(1, Math.round(ms / 60000)) + ' мин ✓');
+    renderWalk(); renderHome();
+  }
+  $('walkStart').onclick = startWalk;
+  $('walkPause').onclick = pauseWalk;
+  $('walkStop').onclick = () => { if (!W.running) return; if ((elapsed() < 30000 && W.dist < 30) || confirm('Завершить и сохранить прогулку?')) stopWalk(); };
+
+  function updateAcc() {
+    const el = $('wAcc'); if (!el) return;
+    if (!W.running) { el.textContent = ''; return; }
+    if (W.paused) { el.textContent = 'Пауза'; return; }
+    if (W.acc == null) { el.textContent = 'Ищу сигнал GPS…'; return; }
+    const q = W.acc <= 10 ? 'отличная' : W.acc <= 25 ? 'хорошая' : W.acc <= 40 ? 'средняя' : 'слабая (точки не учитываются)';
+    el.textContent = 'Точность GPS: ≈ ' + Math.round(W.acc) + ' м · ' + q + (W.last ? '' : ' · жду первую точку');
+  }
+  function updateWalkUI() {
+    const ms = elapsed();
+    $('wTime').textContent = fmtTime(ms);
+    $('wDist').textContent = (W.dist / 1000).toFixed(2) + ' км';
+    $('wSpeed').textContent = ms > 5000 && W.dist > 0 ? f1((W.dist / 1000) / (ms / 3600000)) + ' км/ч' : '0.0 км/ч';
+    $('wSteps').textContent = Math.round(W.dist / stepLen()) + ' · ' + kcalFor(W.dist, ms);
+    const st = $('walkStart'), pa = $('walkPause'), sp = $('walkStop');
+    st.style.display = W.running ? 'none' : '';
+    pa.style.display = sp.style.display = W.running ? '' : 'none';
+    pa.textContent = W.paused ? '▶ Продолжить' : '⏸ Пауза';
+    updateAcc();
+    updateTodayBar();
+  }
+  setInterval(() => { if (W.running && !W.paused && $('page-walk').classList.contains('active')) updateWalkUI(); }, 1000);
+
+  function drawRoute(points) {
+    const cv = $('routeCanvas'); if (!cv) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    const w = cv.clientWidth || 320, h = cv.clientHeight || 220;
+    if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+    const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,.05)'; ctx.lineWidth = 1;
+    for (let x = 0; x < w; x += 28) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+    for (let y = 0; y < h; y += 28) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+    if (!points || !points.length) {
+      ctx.fillStyle = '#b8a9d3'; ctx.font = '13px system-ui, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('Маршрут появится, когда начнётся движение', w / 2, h / 2); return;
+    }
+    const la0 = points.reduce((s, p) => s + p.la, 0) / points.length, lo0 = points.reduce((s, p) => s + p.lo, 0) / points.length;
+    const kx = Math.cos(rad(la0)) * 111320, ky = 110540;
+    const xy = points.map(p => [(p.lo - lo0) * kx, -(p.la - la0) * ky]);
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    xy.forEach(([x, y]) => { minX = Math.min(minX, x); maxX = Math.max(maxX, x); minY = Math.min(minY, y); maxY = Math.max(maxY, y); });
+    const spanX = Math.max(60, maxX - minX), spanY = Math.max(60, maxY - minY), pad2 = 22;
+    const sc = Math.min((w - pad2 * 2) / spanX, (h - pad2 * 2) / spanY);
+    const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+    const P = ([x, y]) => [w / 2 + (x - cx) * sc, h / 2 + (y - cy) * sc];
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.lineWidth = 4; ctx.strokeStyle = '#a78bfa';
+    ctx.beginPath(); xy.forEach((q, i) => { const [x, y] = P(q); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+    const dot = (q, col) => { const [x, y] = P(q); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x, y, 8, 0, 7); ctx.fill(); ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, 5.5, 0, 7); ctx.fill(); };
+    dot(xy[0], '#34d399'); if (xy.length > 1) dot(xy[xy.length - 1], '#f472b6');
+  }
+
+  function todayWalkMs() {
+    const t = todayStr();
+    return data.walks.filter(x => x.date === t).reduce((s, x) => s + x.ms, 0) + (W.running ? elapsed() : 0);
+  }
+  function normMin() { const pl = prof().done ? calcPlan(prof()) : null; return pl ? pl.walkMin : 30; }
+  function updateTodayBar() {
+    const min = Math.floor(todayWalkMs() / 60000), norm = normMin();
+    const pct = Math.min(100, min / norm * 100);
+    const f = $('walkTodayFill'); if (f) f.style.width = pct + '%';
+    const tg = $('walkTodayTag'); if (tg) tg.textContent = min + ' / ' + norm + ' мин';
+    const tx = $('walkTodayText');
+    if (tx) tx.textContent = min >= norm ? 'Дневная норма выполнена 🎉' : 'Осталось ещё ' + (norm - min) + ' мин, чтобы выполнить минимум на сегодня.';
+  }
+  function renderWalkList() {
+    const list = $('walkList'); if (!list) return;
+    const arr = data.walks.slice().sort((a, b) => b.start - a.start).slice(0, 12);
+    if (!arr.length) { list.innerHTML = '<div class="empty" style="padding:14px">Прогулок пока нет</div>'; return; }
+    list.innerHTML = '';
+    arr.forEach(x => {
+      const d = new Date(x.start), el = document.createElement('div');
+      el.className = 'item';
+      el.innerHTML = `<div class="timebox"><strong>${pad(d.getHours())}:${pad(d.getMinutes())}</strong><span>${d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</span></div>
+        <div class="body"><strong>${(x.dist / 1000).toFixed(2)} км · ${Math.max(1, Math.round(x.ms / 60000))} мин</strong><span>≈ ${x.steps} шагов · ${x.kcal} ккал · ${f1((x.dist / 1000) / (x.ms / 3600000))} км/ч</span></div>
+        <div class="item-actions"><button type="button" data-route>Маршрут</button><button type="button" data-del>Удалить</button></div>`;
+      el.querySelector('[data-route]').onclick = () => { if (W.running) { toast('Сначала заверши текущую прогулку'); return; } drawRoute(x.pts || []); try { $('routeCanvas').scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch {} };
+      el.querySelector('[data-del]').onclick = () => { if (!confirm('Удалить эту прогулку?')) return; data.walks = data.walks.filter(y => y.id !== x.id); save(); renderWalk(); renderHome(); };
+      list.appendChild(el);
+    });
+  }
+  function renderWalk() {
+    renderPlan(); renderGeo(); renderWalkList(); updateWalkUI();
+    if (!W.running) drawRoute([]); else drawRoute(W.points);
+  }
+  function renderHomeWalk() {
+    const tag = $('homeWalkTag'), fill = $('homeWalkFill'), txt = $('homeWalkText'), btn = $('homeWalkBtn');
+    if (!tag) return;
+    if (!prof().done) { tag.textContent = '—'; fill.style.width = '0%'; txt.textContent = 'Заполни параметры (возраст, рост, вес, цель), и Luma рассчитает нормы.'; btn.textContent = 'Заполнить параметры'; btn.onclick = () => openOnboard(false); return; }
+    const min = Math.floor(todayWalkMs() / 60000), norm = normMin();
+    tag.textContent = min + ' / ' + norm + ' мин';
+    fill.style.width = Math.min(100, min / norm * 100) + '%';
+    txt.textContent = W.running ? 'Прогулка идёт…' : (min >= norm ? 'Дневная норма выполнена 🎉' : 'Осталось ' + (norm - min) + ' мин до минимума на сегодня.');
+    btn.textContent = W.running ? 'К прогулке' : 'Начать прогулку'; btn.onclick = () => goTab('walk');
+  }
+
+  /* восстановление незавершённой прогулки после закрытия страницы */
+  (function restoreWalk() {
+    try {
+      const raw = localStorage.getItem(WKEY); if (!raw) return;
+      const o = JSON.parse(raw);
+      if (!o || !o.startTs || Date.now() - o.seen > 12 * 3600000) { clearPersisted(); return; }
+      const ms = o.activeMs + (o.running ? Math.max(0, o.seen - o.segStart) : 0);
+      Object.assign(W, { running: true, paused: true, startTs: o.startTs, activeMs: ms, segStart: Date.now(), dist: o.dist || 0, points: (o.pts || []).map(p => ({ la: p.la, lo: p.lo, t: 0, a: 0 })), last: null });
+    } catch { clearPersisted(); }
+  })();
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { hiddenAt = Date.now(); if (W.running && !W.paused) persistWalk(true); }
+    else if (W.running && !W.paused) { lockScreen(); if (hiddenAt && Date.now() - hiddenAt > 15000) toast('Пока Luma была свёрнута, GPS мог не записываться'); }
+  });
+  window.addEventListener('pagehide', () => { if (W.running) persistWalk(true); });
+
+  function maybeOnboard() {
+    let skipped = false; try { skipped = sessionStorage.getItem('luma-ob-skip') === '1'; } catch {}
+    if (!prof().done && !skipped) openOnboard(false);
+  }
+
   /* ----- Settings ----- */
   document.querySelectorAll('.theme-swatch').forEach(b => {
     b.onclick = () => applyTheme(b.dataset.theme);
@@ -2940,6 +3460,7 @@ html[data-mode="light"] .theme-swatch { border-color: rgba(80,50,140,.3); }
   window.addEventListener('pageshow', checkDue);
   updateNotifUI();
   renderHome();
+  maybeOnboard();
   setupBackgroundSync();
   function onLeaveBackground() {
     syncRemindersToSW();
