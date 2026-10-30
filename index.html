@@ -2,17 +2,18 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#170d32">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="15"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="18"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icon-192.png">
+  <meta name="mobile-web-app-capable" content="yes">
   <style>
 :root {
   color-scheme: dark;
@@ -874,13 +875,49 @@ html[data-mode="light"] .b-blue { color: #1d4ed8; } html[data-mode="light"] .b-g
 html[data-mode="light"] .choice { border-color: rgba(80,50,140,.22); }
 html[data-mode="light"] .choice.on { border-color: #8b5cf6; background: rgba(139,92,246,.2); }
 html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"] .geo-pill.bad { color: #b91c1c; }
+
+/* ===== v18 ===== */
+:focus-visible { outline: 2px solid #fbbf24; outline-offset: 2px; }
+.week-chart { display: flex; align-items: flex-end; gap: 8px; height: 130px; margin-top: 10px; }
+.wk-col { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; }
+.wk-bar { width: 100%; border-radius: 8px 8px 4px 4px; background: linear-gradient(180deg, var(--violet), rgba(167,139,250,.3)); min-height: 3px; transition: height .4s ease; }
+.wk-col.today .wk-bar { background: linear-gradient(180deg, #fbbf24, #f59e0b); }
+.wk-col small { font-size: 10px; color: var(--muted); }
+.wk-col b { font-size: 10px; font-weight: 700; }
+.title-chip.admin { color: #dbeafe; border-color: #60a5fa; background: linear-gradient(100deg,#1e3a8a,#2563eb 55%,#1e40af); box-shadow: 0 0 12px rgba(96,165,250,.4); }
+.title-chip.creator { position: relative; }
+html[data-theme="creator"] body::after {
+  content: ""; position: fixed; inset: -20%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(1.5px 1.5px at 12% 18%, rgba(255,255,255,.9), transparent),
+    radial-gradient(1px 1px at 27% 64%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1.5px 1.5px at 44% 32%, rgba(253,230,138,.9), transparent),
+    radial-gradient(1px 1px at 63% 12%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1.5px 1.5px at 78% 58%, rgba(255,255,255,.9), transparent),
+    radial-gradient(1px 1px at 91% 36%, rgba(253,230,138,.8), transparent),
+    radial-gradient(1px 1px at 35% 86%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1.5px 1.5px at 84% 90%, rgba(255,255,255,.8), transparent),
+    radial-gradient(40% 30% at 20% 25%, rgba(0,255,200,.20), transparent 70%),
+    radial-gradient(35% 28% at 80% 20%, rgba(160,80,255,.30), transparent 70%),
+    radial-gradient(45% 30% at 60% 80%, rgba(255,200,80,.16), transparent 70%);
+  animation: aurora 22s ease-in-out infinite alternate;
+}
+html[data-theme="creator"][data-mode="light"] body::after { opacity: .55; }
+@keyframes aurora { 0% { transform: translate3d(-3%,-2%,0) scale(1); } 100% { transform: translate3d(3%,2%,0) scale(1.08); } }
+.logo.fr-creator { animation: floaty 5s ease-in-out infinite, crownGlow 4s ease-in-out infinite; }
+@keyframes crownGlow {
+  0%,100% { box-shadow: 0 0 0 2px #fde68a, 0 0 0 4px #a78bfa, 0 0 20px #fbbf24aa, 0 0 34px #8b5cf666; }
+  50% { box-shadow: 0 0 0 2px #67e8f9, 0 0 0 4px #fbbf24, 0 0 24px #a78bfaaa, 0 0 38px #22d3ee66; }
+}
+.logo svg, .si-ico svg { width: 70%; height: 70%; display: block; }
+.si-ico svg { width: 30px; height: 30px; }
   </style>
 </head>
 <body>
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v15 · время для себя</span>
+      <span class="pill" id="topPill">v18 · время для себя</span>
     </header>
 
     <!-- HOME -->
@@ -907,6 +944,16 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
         <div class="stat-card glass"><span>ккал сегодня</span><b id="homeCal">0</b></div>
         <div class="stat-card glass"><span>вода, мл</span><b id="homeWater">0</b></div>
         <div class="stat-card glass"><span>напоминания</span><b id="homeRem">0</b></div>
+      </div>
+
+      <div class="glass section" id="weekCard">
+        <div class="section-head"><h2>📊 Неделя</h2><span class="tag" id="weekAvg">—</span></div>
+        <div class="chips-row" id="weekTabs">
+          <button type="button" class="chip on" data-wk="cal">🍽 Ккал</button>
+          <button type="button" class="chip" data-wk="water">💧 Вода</button>
+          <button type="button" class="chip" data-wk="walk">🚶 Ходьба</button>
+        </div>
+        <div class="week-chart" id="weekChart" role="img" aria-label="График за 7 дней"></div>
       </div>
 
       <div class="glass section">
@@ -1247,7 +1294,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
 
       <div class="glass section">
         <div class="section-head"><h2>Push на все устройства</h2><span class="tag">NTFY</span></div>
-        <p class="notice" style="margin-top:0">Уведомления приходят, даже когда сайт закрыт. Установи бесплатное приложение ntfy (Google Play или App Store), нажми «+» и впиши тему ниже. Повтори на каждом устройстве.</p>
+        <p class="notice" style="margin-top:0">Уведомления приходят, даже когда сайт закрыт. Тексты напоминаний проходят через публичный сервер ntfy.sh, поэтому не пиши в них паспортные данные и пароли. Установи бесплатное приложение ntfy (Google Play или App Store), нажми «+» и впиши тему ниже. Повтори на каждом устройстве.</p>
         <div class="fields">
           <div class="field full"><label>Тема (как пароль — никому не показывай)</label><input id="ntfyTopic" maxlength="64" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="нажми «Включить»"></div>
         </div>
@@ -1268,7 +1315,8 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
           <button class="btn danger" type="button" onclick="clearData()">Очистить всё</button>
         </div>
         <input type="file" id="importFile" accept=".json" hidden>
-        <p class="notice">Всё хранится только на этом устройстве в браузере.</p>
+        <p class="notice">Всё хранится только на этом устройстве в браузере. Делай экспорт раз в пару недель: если очистить данные браузера, они пропадут.</p>
+        <p class="notice" id="backupInfo"></p>
       </div>
 
       <div class="glass section">
@@ -1279,19 +1327,19 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · данные остаются на устройстве<br>Прототип без сервера</p>
+      <p class="footer" id="appFooter">Luma · v18 · данные остаются на устройстве</p>
     </section>
   </main>
 
   <!-- Bottom navigation -->
   <nav class="bottom-nav">
     <div class="nav-inner">
-      <button type="button" class="nav-btn active" data-tab="home" onclick="window.goTab && goTab('home')"><span>🏠</span>Главная</button>
-      <button type="button" class="nav-btn" data-tab="nutrition" onclick="window.goTab && goTab('nutrition')"><span>🥗</span>Рацион</button>
-      <button type="button" class="nav-btn" data-tab="reminders" onclick="window.goTab && goTab('reminders')"><span>⏰</span>Планы</button>
-      <button type="button" class="nav-btn" data-tab="walk" onclick="window.goTab && goTab('walk')"><span>🚶</span>Ходьба</button>
-      <button type="button" class="nav-btn" data-tab="games" onclick="window.goTab && goTab('games')"><span>🎮</span>Игры</button>
-      <button type="button" class="nav-btn" data-tab="settings" onclick="window.goTab && goTab('settings')"><span>⚙️</span>Ещё</button>
+      <button type="button" class="nav-btn active" data-tab="home" onclick="window.goTab && goTab('home')"><span aria-hidden="true">🏠</span>Главная</button>
+      <button type="button" class="nav-btn" data-tab="nutrition" onclick="window.goTab && goTab('nutrition')"><span aria-hidden="true">🥗</span>Рацион</button>
+      <button type="button" class="nav-btn" data-tab="reminders" onclick="window.goTab && goTab('reminders')"><span aria-hidden="true">⏰</span>Планы</button>
+      <button type="button" class="nav-btn" data-tab="walk" onclick="window.goTab && goTab('walk')"><span aria-hidden="true">🚶</span>Ходьба</button>
+      <button type="button" class="nav-btn" data-tab="games" onclick="window.goTab && goTab('games')"><span aria-hidden="true">🎮</span>Игры</button>
+      <button type="button" class="nav-btn" data-tab="settings" onclick="window.goTab && goTab('settings')"><span aria-hidden="true">⚙️</span>Ещё</button>
     </div>
   </nav>
 
@@ -1375,113 +1423,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     </div>
   </div>
 
-  <!-- Sheet: admin password (hidden entry: tap the footer in «Ещё» 5 times) -->
-  <div class="sheet-back" id="sheetAdminPass" aria-hidden="true">
-    <div class="sheet" role="dialog" aria-modal="true" aria-label="Вход">
-      <div class="grab"></div>
-      <div class="sheet-head"><h3>🔒 Доступ</h3><button type="button" class="sheet-close" data-close aria-label="Закрыть">✕</button></div>
-      <div class="fields">
-        <div class="field full"><label>Пароль</label><input id="adminPass" type="password" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="••••"></div>
-      </div>
-      <div class="form-actions"><button class="btn" type="button" id="adminPassOk">Войти</button></div>
-    </div>
-  </div>
-
-  <!-- Admin panel -->
-  <div class="admin" id="adminPanel" aria-hidden="true">
-    <div class="admin-card">
-      <div class="admin-top">
-        <div><div class="eyebrow">ADMIN</div><h2>Админ-панель</h2></div>
-        <button class="btn secondary small" type="button" id="adminClose">Выйти</button>
-      </div>
-
-      <div class="glass section">
-        <div class="section-head"><h2>Монеты</h2><span class="tag" id="adBal">0 ✧</span></div>
-        <div class="fields">
-          <div class="field full"><label>Сумма, ✧</label><input type="number" id="adCoinAmt" min="0" inputmode="numeric" placeholder="1000"></div>
-        </div>
-        <div class="form-actions">
-          <button class="btn" type="button" id="adCoinAdd">＋ Добавить</button>
-          <button class="btn secondary" type="button" id="adCoinSub">− Списать</button>
-          <button class="btn secondary" type="button" id="adCoinSet">= Установить</button>
-        </div>
-        <p class="notice">Быстро добавить:</p>
-        <div class="chips-row" id="adQuick">
-          <button class="btn secondary small" type="button" data-q="100">+100</button>
-          <button class="btn secondary small" type="button" data-q="1000">+1 000</button>
-          <button class="btn secondary small" type="button" data-q="10000">+10 000</button>
-          <button class="btn secondary small" type="button" data-q="100000">+100 000</button>
-          <button class="btn secondary small" type="button" data-q="1000000">+1 000 000</button>
-        </div>
-        <div class="fields">
-          <div class="field"><label>Множитель наград (1–1000)</label><input type="number" id="adMult" min="1" max="1000" inputmode="numeric"></div>
-          <div class="field"><label>Серия дней</label><input type="number" id="adStreak" min="0" max="9999" inputmode="numeric"></div>
-        </div>
-        <div class="form-actions"><button class="btn" type="button" id="adSaveMisc">Сохранить множитель и серию</button></div>
-        <p class="notice">Добавленные здесь монеты считаются заработанными — от них открываются звания «Богач», «Магнат» и другие.</p>
-      </div>
-
-      <div class="glass section">
-        <div class="section-head"><h2>Звания и магазин</h2><span class="tag">ДОСТУП</span></div>
-        <p class="notice" style="margin-top:0">Звание «Создатель» хранится только в этом браузере и попадает в экспорт данных: чтобы оно было на другом устройстве, перенеси туда бэкап или открой админ-панель и там.</p>
-        <div class="form-actions">
-          <button class="btn" type="button" id="adCreator">Создатель: …</button>
-          <button class="btn secondary" type="button" id="adAllTitles">Открыть все звания</button>
-          <button class="btn secondary" type="button" id="adNoTitles">Закрыть все звания</button>
-          <button class="btn secondary" type="button" id="adAllShop">Открыть весь магазин</button>
-          <button class="btn danger" type="button" id="adResetShop">Сбросить покупки</button>
-        </div>
-      </div>
-
-      <div class="glass section">
-        <div class="section-head"><h2>Цены магазина</h2><span class="tag">✧</span></div>
-        <details class="norm-group"><summary>Показать цены<small>изменить</small></summary><div class="fields" id="adPrices"></div></details>
-        <div class="form-actions">
-          <button class="btn" type="button" id="adSavePrices">Сохранить цены</button>
-          <button class="btn secondary" type="button" id="adResetPrices">Стандартные</button>
-        </div>
-      </div>
-
-      <div class="glass section">
-        <div class="section-head"><h2>Рекорды</h2><span class="tag">ИГРЫ</span></div>
-        <p class="notice" style="margin-top:0">Оставь поле пустым, чтобы убрать рекорд (для реакции и памяти).</p>
-        <div class="fields">
-          <div class="field"><label>⚡ Реакция, мс</label><input type="number" id="adRea" min="50" max="5000" inputmode="numeric"></div>
-          <div class="field"><label>👆 Кликер, нажатий</label><input type="number" id="adTap" min="0" max="999" inputmode="numeric"></div>
-          <div class="field"><label>🧠 Память, ходов</label><input type="number" id="adMemM" min="8" max="999" inputmode="numeric"></div>
-          <div class="field"><label>🧠 Память, время (сек)</label><input type="number" id="adMemT" min="1" max="9999" inputmode="numeric"></div>
-          <div class="field"><label>🐍 Змейка, очков</label><input type="number" id="adSnake" min="0" max="999" inputmode="numeric"></div>
-          <div class="field"><label>🔢 2048, очков</label><input type="number" id="ad2048" min="0" max="9999999" inputmode="numeric"></div>
-          <div class="field"><label>❌ Победы</label><input type="number" id="adTW" min="0" max="99999" inputmode="numeric"></div>
-          <div class="field"><label>❌ Ничьи</label><input type="number" id="adTD" min="0" max="99999" inputmode="numeric"></div>
-          <div class="field full"><label>❌ Поражения</label><input type="number" id="adTL" min="0" max="99999" inputmode="numeric"></div>
-        </div>
-        <div class="form-actions">
-          <button class="btn" type="button" id="adSaveRec">Сохранить рекорды</button>
-          <button class="btn danger" type="button" id="adResetRec">Сбросить все</button>
-        </div>
-      </div>
-
-      <div class="glass section">
-        <div class="section-head"><h2>Время</h2><span class="tag">ИГРЫ</span></div>
-        <div class="fields">
-          <div class="field full"><label>👆 Длительность кликера, сек (5–60)</label><input type="number" id="adTapSec" min="5" max="60" inputmode="numeric"></div>
-        </div>
-        <p class="notice">После смены времени рекорд кликера стоит пересмотреть: за разное время результаты несравнимы.</p>
-        <div class="form-actions"><button class="btn" type="button" id="adSaveTime">Сохранить время</button></div>
-      </div>
-
-      <div class="glass section">
-        <div class="section-head"><h2>Нормы по возрасту</h2><span class="tag">НОРМА</span></div>
-        <p class="notice" style="margin-top:0">Для каждой возрастной группы своя норма. Игроку она показывается в игре по возрасту из его профиля. Реакция и память — «не больше», остальное — «не меньше». Прогулка: пусто = считать автоматически.</p>
-        <div id="adNorms"></div>
-        <div class="form-actions">
-          <button class="btn" type="button" id="adSaveNorms">Сохранить нормы</button>
-          <button class="btn secondary" type="button" id="adResetNorms">Стандартные</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div class="admin" id="adminPanel" aria-hidden="true"></div>
 
   <div class="coin-pop" id="coinPop" aria-live="polite"></div>
   <div class="toast" id="toast"></div>
@@ -1531,6 +1473,84 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   };
 
   const KEY = 'luma-v2';
+  const BUILD = '18';
+  /* ----- Роли и пароли: хранятся только хеши (SHA-256, соль, 4000 итераций) ----- */
+  function sha256(str) {
+    const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+    const b = new TextEncoder().encode(str), l = b.length, n = ((l + 9 + 63) >> 6) << 6, m = new Uint8Array(n);
+    m.set(b); m[l] = 0x80;
+    const dv = new DataView(m.buffer); dv.setUint32(n - 4, (l * 8) >>> 0); dv.setUint32(n - 8, Math.floor(l * 8 / 4294967296));
+    let h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372, h3 = 0xa54ff53a, h4 = 0x510e527f, h5 = 0x9b05688c, h6 = 0x1f83d9ab, h7 = 0x5be0cd19;
+    const w = new Uint32Array(64), r = (x, k) => (x >>> k) | (x << (32 - k));
+    for (let o = 0; o < n; o += 64) {
+      for (let i = 0; i < 16; i++) w[i] = dv.getUint32(o + i * 4);
+      for (let i = 16; i < 64; i++) { const a = w[i - 15], c = w[i - 2]; w[i] = (w[i - 16] + (r(a, 7) ^ r(a, 18) ^ (a >>> 3)) + w[i - 7] + (r(c, 17) ^ r(c, 19) ^ (c >>> 10))) >>> 0; }
+      let a = h0, bb = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
+      for (let i = 0; i < 64; i++) {
+        const t1 = (h + (r(e, 6) ^ r(e, 11) ^ r(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + w[i]) >>> 0;
+        const t2 = ((r(a, 2) ^ r(a, 13) ^ r(a, 22)) + ((a & bb) ^ (a & c) ^ (bb & c))) >>> 0;
+        h = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = bb; bb = a; a = (t1 + t2) >>> 0;
+      }
+      h0 = (h0 + a) >>> 0; h1 = (h1 + bb) >>> 0; h2 = (h2 + c) >>> 0; h3 = (h3 + d) >>> 0; h4 = (h4 + e) >>> 0; h5 = (h5 + f) >>> 0; h6 = (h6 + g) >>> 0; h7 = (h7 + h) >>> 0;
+    }
+    return [h0, h1, h2, h3, h4, h5, h6, h7].map(x => x.toString(16).padStart(8, '0')).join('');
+  }
+  const AUTH_SALT = { admin: 'luma.adm.q7#v1', creator: 'luma.crt.k2!v1' };
+  /* токен доступа выводится из пароля; сам пароль в коде не хранится */
+  function authToken(role, pw) { let h = sha256(AUTH_SALT[role] + '|' + pw); for (let i = 0; i < 4000; i++) h = sha256(h + AUTH_SALT[role]); return h; }
+  const authCheck = (role, tok) => typeof tok === 'string' && tok.length === 64 && sha256('v|' + tok + '|' + role) === AUTH_VERIFY[role];
+  const AUTH_VERIFY = { admin: '4a4100653fc1cc6aee0ccbd57a294abb7414f3a9ffc27d306faf26ccf523615b', creator: '92311f78b41023fc19e1ac1489673564d44d2b823928879bc5a42c797df1b004' };
+  let ROLE = { admin: false, creator: false };
+  const rolesOf = d => ({ admin: !!(d && d.auth && authCheck('admin', d.auth.a)), creator: !!(d && d.auth && authCheck('creator', d.auth.c)) });
+  const SPECIAL_IDS = ['th_creator', 'av_creator', 'fr_creator', 'bd_creator', 'sn_aurora', 'bd_admin'];
+  /* роль нельзя получить правкой хранилища или импортом: нужен токен, выводимый из пароля */
+  function enforceRoles(d) {
+    ROLE = rolesOf(d);
+    const t = d.titles, e = d.equip;
+    if (!ROLE.creator) {
+      t.creator = false; delete t.got.creator; if (t.active === 'creator') t.active = 'rookie';
+      d.admin.mult = 1;
+      ['th_creator', 'av_creator', 'fr_creator', 'bd_creator', 'sn_aurora'].forEach(id => { delete d.owned[id]; });
+      if (d.theme === 'creator') d.theme = 'violet';
+      if (e.avatar === 'av_creator') e.avatar = null;
+      if (e.frame === 'fr_creator') e.frame = null;
+      if (e.badge === 'bd_creator') e.badge = null;
+      if (e.snake === 'aurora') e.snake = 'def';
+    }
+    if (!ROLE.admin) {
+      delete t.got.admin; if (t.active === 'admin') t.active = 'rookie';
+      if (e.badge === 'bd_admin') e.badge = null;
+    }
+  }
+  /* приводит списки из хранилища/импорта к безопасному виду (строки, числа, id без спецсимволов) */
+  function cleanData(d) {
+    const sid = v => String(v == null ? '' : v).replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64) || ('x' + Math.random().toString(36).slice(2, 10));
+    const num = (v, lo, hi) => { v = +v; if (!Number.isFinite(v)) return lo; return Math.min(hi, Math.max(lo, v)); };
+    const str = (v, n) => String(v == null ? '' : v).slice(0, n);
+    const dt = v => /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : todayStr();
+    const list = (arr, fn, cap) => { const seen = new Set(), out = []; (Array.isArray(arr) ? arr : []).forEach(x => { if (!x || typeof x !== 'object' || out.length >= cap) return; const y = fn(x); if (seen.has(y.id)) return; seen.add(y.id); out.push(y); }); return out; };
+    d.meals = list(d.meals, m => ({ id: sid(m.id), name: str(m.name, 80), cal: num(m.cal, 0, 20000), prot: num(m.prot, 0, 5000), fat: num(m.fat, 0, 5000), carb: num(m.carb, 0, 5000), type: ['breakfast', 'lunch', 'dinner', 'snack'].includes(m.type) ? m.type : 'snack', date: dt(m.date) }), 3000);
+    d.customFoods = list(d.customFoods, f => ({ id: sid(f.id), n: str(f.n, 60), w: num(f.w, 1, 10000) || 100, c: num(f.c, 0, 2000), p: num(f.p, 0, 500), f: num(f.f, 0, 500), u: num(f.u, 0, 500), t: str(f.t, 20) }), 1000);
+    d.reminders = list(d.reminders, r => ({
+      id: sid(r.id), text: str(r.text, 200), when: num(r.when, 0, 8.64e15), fired: !!r.fired, done: !!r.done, firedAt: num(r.firedAt, 0, 8.64e15),
+      category: str(r.category, 30) || 'Личное', repeat: ['daily', 'weekly'].includes(r.repeat) ? r.repeat : 'none',
+      ntfySeq: r.ntfySeq ? sid(r.ntfySeq) : null, ntfyWhen: r.ntfyWhen ? num(r.ntfyWhen, 0, 8.64e15) : null
+    }), 1000);
+    d.walks = list(d.walks, w => ({
+      id: sid(w.id), date: dt(w.date), start: num(w.start, 0, 8.64e15), ms: num(w.ms, 0, 864e5), dist: num(w.dist, 0, 1e6), steps: num(w.steps, 0, 5e6), kcal: num(w.kcal, 0, 1e5),
+      pts: (Array.isArray(w.pts) ? w.pts : []).slice(0, 400).filter(p => p && Number.isFinite(+p.la) && Number.isFinite(+p.lo)).map(p => ({ la: +p.la, lo: +p.lo }))
+    }), 500);
+    d.rewards = list(d.rewards, r => ({ id: sid(r.id), name: str(r.name, 40), price: num(r.price, 1, 1e7), count: num(r.count, 0, 1e6) }), 200);
+    const wt = d.water; wt.current = num(wt.current, 0, 100000); wt.goal = num(wt.goal, 500, 10000) || 2000; wt.date = dt(wt.date);
+    if (typeof d.profile.name !== 'string') d.profile.name = '';
+    d.profile.name = d.profile.name.slice(0, 24);
+    const h = {}; if (d.hist && typeof d.hist === 'object') Object.keys(d.hist).sort().slice(-120).forEach(k => { if (/^\d{4}-\d{2}-\d{2}$/.test(k)) h[k] = num(d.hist[k], 0, 100000); }); d.hist = h;
+    const au = d.auth && typeof d.auth === 'object' ? d.auth : {}; d.auth = { a: typeof au.a === 'string' ? au.a.slice(0, 64) : null, c: typeof au.c === 'string' ? au.c.slice(0, 64) : null };
+    const g = d.admin.grant; d.admin.grant = (g && typeof g === 'object') ? { date: dt(g.date), sum: num(g.sum, 0, 1e9) } : { date: '', sum: 0 };
+    d.lastExport = num(d.lastExport, 0, 8.64e15);
+    if (typeof d.theme !== 'string') d.theme = 'violet';
+  }
+
   const defaultStats = () => ({ tapBest: 0, reactionBest: null, memoryMoves: null, memoryTime: null, snakeBest: 0, g2048Best: 0, ttt: { w: 0, l: 0, d: 0 } });
   const defaultData = () => ({
     goals: { cal: 2000, prot: 120, fat: 70, carb: 250 },
@@ -1541,7 +1561,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     theme: 'violet',
     ntfy: { enabled: false, topic: '' },
     stats: defaultStats(),
-    admin: { tapSeconds: 10, norms: {}, prices: {}, mult: 1 },
+    admin: { tapSeconds: 10, norms: {}, prices: {}, mult: 1, grant: { date: '', sum: 0 } },
     coins: { bal: 0, earned: 0, spent: 0 },
     inv: { life: 0, undo: 0, hint: 0, slow: 0 },
     owned: {},
@@ -1553,7 +1573,10 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     rewards: [],
     customFoods: [],
     walks: [],
-    mode: 'dark'
+    mode: 'dark',
+    auth: { a: null, c: null },
+    hist: {},
+    lastExport: 0
   });
 
   let data = load();
@@ -1587,6 +1610,8 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     }
     ['goals', 'water'].forEach(k => { if (!d[k] || typeof d[k] !== 'object') d[k] = base[k]; });
     ['meals', 'reminders', 'customFoods', 'walks'].forEach(k => { if (!Array.isArray(d[k])) d[k] = []; });
+    cleanData(d);
+    enforceRoles(d);
     return d;
   }
   function load() {
@@ -1628,7 +1653,8 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     neon:   { a: '#8a1fa8', b: '#2a1170', c: '#0b0420' },
     gold:   { a: '#8a6a12', b: '#4a3410', c: '#1c1405' },
     cosmos: { a: '#1f3a9a', b: '#3a1a6e', c: '#050818' },
-    sakura: { a: '#a8456f', b: '#5e2a5a', c: '#2a0f24' }
+    sakura: { a: '#a8456f', b: '#5e2a5a', c: '#2a0f24' },
+    creator: { a: '#5b21b6', b: '#0e7490', c: '#07041a' }
   };
   const lightThemes = {
     violet: { a: '#e3d1ff', b: '#d6defe', c: '#f6f1ff' },
@@ -1639,7 +1665,8 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     neon:   { a: '#f3c6ff', b: '#d9d0ff', c: '#fbf0ff' },
     gold:   { a: '#fbe7a6', b: '#f1dcc0', c: '#fff9e8' },
     cosmos: { a: '#c9d4ff', b: '#e0cdf8', c: '#f1f3ff' },
-    sakura: { a: '#fbc6dc', b: '#ecd0ee', c: '#fff0f6' }
+    sakura: { a: '#fbc6dc', b: '#ecd0ee', c: '#fff0f6' },
+    creator: { a: '#d8c4ff', b: '#bdeaf5', c: '#f4f0ff' }
   };
   const effMode = () => {
     const m = data.mode || 'dark';
@@ -1651,6 +1678,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     const set = eff === 'light' ? lightThemes : themes;
     const t = set[data.theme] || set.violet;
     document.documentElement.setAttribute('data-mode', eff);
+    document.documentElement.setAttribute('data-theme', data.theme);
     document.body.style.background =
       `radial-gradient(ellipse at 12% 0%,${t.a} 0,transparent 38%),` +
       `radial-gradient(ellipse at 95% 30%,${t.b} 0,transparent 34%),` +
@@ -1660,7 +1688,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     if (mt) mt.setAttribute('content', eff === 'light' ? '#f6f1ff' : '#170d32');
   }
   function applyTheme(name) {
-    data.theme = themes[name] ? name : 'violet';
+    data.theme = (themes[name] && (name !== 'creator' || ROLE.creator)) ? name : 'violet';
     document.querySelectorAll('.theme-swatch').forEach(b => {
       b.classList.toggle('active', b.dataset.theme === data.theme);
     });
@@ -1704,6 +1732,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     name = String(name);
     document.querySelectorAll('.nav-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.tab === name);
+      if (b.dataset.tab === name) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
     });
     document.querySelectorAll('.page').forEach(p => {
       const on = p.id === 'page-' + name;
@@ -1717,7 +1746,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       if (name === 'reminders') { renderReminders(); initRemDefaults(); }
       if (name === 'walk') { renderWalk(); }
       if (name === 'games') { exitGame(); }
-      if (name === 'settings') updateNotifUI();
+      if (name === 'settings') { updateNotifUI(); renderBackupInfo(); }
       if (name === 'shop') renderShop();
     } catch (e) { console.error(e); }
     try { window.scrollTo(0, 0); } catch {}
@@ -1736,6 +1765,8 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
 
   function resetWaterIfNeeded() {
     if (data.water.date !== todayStr()) {
+      if (data.water.current > 0 && data.water.date) data.hist[data.water.date] = data.water.current;
+      const ks = Object.keys(data.hist).sort(); while (ks.length > 120) delete data.hist[ks.shift()];
       data.water.current = 0;
       data.water.date = todayStr();
       save();
@@ -1758,6 +1789,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     $('waterFill').style.width = pct + '%';
     $('waterTag').textContent = `${data.water.current} / ${data.water.goal}`;
 
+    try { renderWeek(); } catch (e) { console.error(e); }
     const list = $('homeRemList');
     const upcoming = data.reminders
       .filter(r => !r.done)
@@ -1771,10 +1803,49 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     }
   }
 
+
+  /* ----- Неделя: график за 7 дней ----- */
+  let weekMode = 'cal';
+  function weekData(mode) {
+    const out = [], now = new Date(), names = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      const ds = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+      let v = 0;
+      if (mode === 'cal') v = data.meals.filter(m => m.date === ds).reduce((s, m) => s + (m.cal || 0), 0);
+      else if (mode === 'water') v = ds === todayStr() ? data.water.current : (data.hist[ds] || 0);
+      else v = data.walks.filter(w => w.date === ds).reduce((s, w) => s + (w.ms || 0), 0) / 60000;
+      out.push({ v: Math.round(v), label: names[d.getDay()], today: i === 0 });
+    }
+    return out;
+  }
+  function renderWeek() {
+    const chart = $('weekChart'); if (!chart) return;
+    document.querySelectorAll('#weekTabs [data-wk]').forEach(b => b.classList.toggle('on', b.dataset.wk === weekMode));
+    const unit = { cal: 'ккал', water: 'мл', walk: 'мин' }[weekMode];
+    const days = weekData(weekMode), max = Math.max(1, ...days.map(x => x.v));
+    const active = days.filter(x => x.v > 0), avg = active.length ? Math.round(active.reduce((s, x) => s + x.v, 0) / active.length) : 0;
+    $('weekAvg').textContent = avg ? 'в среднем ' + fmtN(avg) + ' ' + unit : 'нет данных';
+    chart.innerHTML = days.map(x => '<div class="wk-col' + (x.today ? ' today' : '') + '"><b>' + (x.v ? fmtN(x.v) : '') + '</b><div class="wk-bar" style="height:' + Math.max(3, Math.round(x.v / max * 78)) + '%"></div><small>' + x.label + '</small></div>').join('');
+  }
+  (function () { const t = $('weekTabs'); if (t) t.addEventListener('click', e => { const b = e.target.closest('[data-wk]'); if (!b) return; weekMode = b.dataset.wk; renderWeek(); }); })();
+
+  /* ----- Бэкап ----- */
+  function renderBackupInfo() {
+    const el = $('backupInfo'); if (!el) return;
+    el.textContent = data.lastExport ? 'Последний экспорт: ' + new Date(data.lastExport).toLocaleDateString('ru-RU') : 'Экспорт ещё не делали.';
+  }
+  function backupNudge() {
+    const days = data.lastExport ? (Date.now() - data.lastExport) / 86400000 : 0;
+    const hasData = data.meals.length || data.walks.length || data.coins.earned > 100;
+    if (hasData && ((data.lastExport && days > 14) || (!data.lastExport && (data.streak.best || 0) >= 7))) setTimeout(() => toast('💾 Давно не было бэкапа: «Ещё» → «Экспорт»'), 5000);
+  }
+
   window.addWater = function(ml) {
     resetWaterIfNeeded();
     if (ml === 0) data.water.current = 0;
-    else data.water.current += ml;
+    else data.water.current = Math.min(100000, data.water.current + ml);
+    data.hist[todayStr()] = data.water.current;
     save();
     if (ml > 0 && data.water.current >= data.water.goal && data.daily.water !== todayStr()) {
       data.daily.water = todayStr(); data.cnt.waterDays++;
@@ -2212,7 +2283,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   async function setupBackgroundSync() {
     try {
       if (!('serviceWorker' in navigator)) return;
-      const reg = await navigator.serviceWorker.register('./sw.js?v=11');
+      const reg = await navigator.serviceWorker.register('./sw.js?v=' + BUILD);
       if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
       reg.addEventListener('updatefound', () => {
         const w = reg.installing;
@@ -2586,7 +2657,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     try {
       if ('serviceWorker' in navigator) {
         try {
-          const reg = await navigator.serviceWorker.register('./sw.js?v=11');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=' + BUILD);
           await navigator.serviceWorker.ready;
           setNotifDebug('Service Worker готов');
         } catch (e) {
@@ -2702,8 +2773,8 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     n = Math.round(n);
     if (!n) return 0;
     if (n > 0 && !opts.raw) n = Math.max(1, Math.round(n * (data.admin.mult || 1)));
-    data.coins.bal = Math.max(0, data.coins.bal + n);
-    if (n > 0) data.coins.earned += n;
+    data.coins.bal = Math.min(1e12, Math.max(0, data.coins.bal + n));
+    if (n > 0 && !opts.noEarn) data.coins.earned = Math.min(1e12, data.coins.earned + n);
     save(); updateWallet();
     if (opts.pop) coinPop((n > 0 ? '+' : '') + fmtN(n) + ' ✧' + (opts.pop === true ? '' : ' · ' + opts.pop));
     checkTitles();
@@ -2782,15 +2853,25 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     { id: 'mem_def', kind: 'mem', free: true, name: 'Фрукты', icon: '🍎', desc: 'Стандартные карточки' },
     { id: 'ttt_def', kind: 'ttt', free: true, name: 'Классика', icon: '❌', desc: 'Крестики и нолики' }
   ];
+
+  const SPECIAL_SVG = '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fde68a"/><stop offset=".55" stop-color="#f59e0b"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs><path d="M32 3l7.5 21.5L61 32l-21.5 7.5L32 61l-7.5-21.5L3 32l21.5-7.5z" fill="url(#spg)"/><circle cx="32" cy="32" r="5" fill="#fff"/></svg>';
+  const SPECIAL = [
+    { id: 'th_creator', role: 'creator', kind: 'theme', name: 'Аврора Создателя', icon: '🌌', theme: 'creator', sw: 'linear-gradient(135deg,#00ffc8,#7a2cff 55%,#07041a)', desc: 'Эксклюзивный анимированный фон со звёздами' },
+    { id: 'av_creator', role: 'creator', kind: 'avatar', name: 'Звезда Создателя', icon: '✦', svg: SPECIAL_SVG, desc: 'Эксклюзивный аватар' },
+    { id: 'fr_creator', role: 'creator', kind: 'frame', name: 'Корона Создателя', icon: '👑', cls: 'fr-creator', desc: 'Эксклюзивная переливающаяся рамка' },
+    { id: 'bd_creator', role: 'creator', kind: 'badge', name: 'Печать Создателя', icon: '⚜️', desc: 'Эксклюзивный значок у имени' },
+    { id: 'sn_aurora', role: 'creator', kind: 'snake', name: 'Аврора-змейка', icon: '🌠', skin: 'aurora', desc: 'Эксклюзивная змейка' },
+    { id: 'bd_admin', role: 'admin', kind: 'badge', name: 'Щит администратора', icon: '🛡️', desc: 'Значок администратора' }
+  ];
   const LOTTERY = { id: 'lottery', price: 60 };
   const priceOf = it => {
     const v = data.admin.prices && data.admin.prices[it.id];
     return (v !== undefined && v !== null && v !== '' && Number.isFinite(+v)) ? Math.max(0, Math.round(+v)) : it.price;
   };
-  const findItem = id => SHOP.concat(DEFAULT_ITEMS).find(i => i.id === id);
+  const findItem = id => SHOP.concat(DEFAULT_ITEMS, SPECIAL).find(i => i.id === id);
   const SKIN_LABEL = { snake: 'Змейка', t2048: '2048', mem: 'Память', ttt: 'Крестики-нолики' };
 
-  function isOwned(it) { return !!it.free || !!data.owned[it.id]; }
+  function isOwned(it) { if (it.role) return it.role === 'creator' ? ROLE.creator : (ROLE.admin || ROLE.creator); return !!it.free || !!data.owned[it.id]; }
   function isOn(it) {
     const e = data.equip;
     switch (it.kind) {
@@ -2831,7 +2912,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   function syncThemeSwatches() {
     const row = document.querySelector('.theme-row'); if (!row) return;
     row.querySelectorAll('[data-extra]').forEach(x => x.remove());
-    SHOP.filter(i => i.kind === 'theme' && data.owned[i.id]).forEach(i => {
+    SHOP.concat(SPECIAL).filter(i => i.kind === 'theme' && isOwned(i)).forEach(i => {
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'theme-swatch' + (data.theme === i.theme ? ' active' : '');
       b.dataset.theme = i.theme; b.dataset.extra = '1'; b.style.background = i.sw; b.setAttribute('aria-label', i.name);
@@ -2845,6 +2926,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     if (sk === 'neon') return i === 0 ? '#b6ff5c' : '#39ff88';
     if (sk === 'fire') return i === 0 ? '#fff27a' : 'hsl(' + Math.max(0, 40 - i * 3) + ' 95% 55%)';
     if (sk === 'rainbow') return 'hsl(' + ((i * 28) % 360) + ' 90% 65%)';
+    if (sk === 'aurora') return i === 0 ? '#fde68a' : 'hsl(' + ((i * 14 + 150) % 360) + ' 90% 66%)';
     return i === 0 ? '#e0a6ff' : '#a78bfa';
   }
   const memPack = () => { const it = data.equip.mem !== 'def' && findItem(data.equip.mem); return it && it.pack ? it.pack : null; };
@@ -2900,20 +2982,24 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     T('Магазин', 'sh20', '🧺', 'Коллекционер', 'Купи 20 вещей', () => data.cnt.bought, 20),
     T('Магазин', 'lot20', '🎰', 'Азартный', 'Сыграй в лотерею 20 раз', () => data.cnt.lottery, 20)
   ];
-  const CREATOR = { grp: 'Особое', id: 'creator', icon: '🛠️', name: 'Создатель', desc: 'Автор Luma. Выдаётся только через админ-панель', cur: () => data.titles.creator ? 1 : 0, goal: 1 };
-  const titleById = id => id === 'creator' ? CREATOR : TITLES.find(t => t.id === id);
+  const CREATOR = { grp: 'Особое', id: 'creator', icon: '🛠️', name: 'Создатель', desc: 'Автор Luma. Открывается только через панель создателя', cur: () => ROLE.creator ? 1 : 0, goal: 1 };
+  const ADMIN_T = { grp: 'Особое', id: 'admin', icon: '🛡️', name: 'Администратор', desc: 'Выдаётся через админ-панель', cur: () => ROLE.admin ? 1 : 0, goal: 1 };
+  const titleById = id => id === 'creator' ? CREATOR : id === 'admin' ? ADMIN_T : TITLES.find(t => t.id === id);
   function activeTitle() {
     const t = titleById(data.titles.active);
     return (t && data.titles.got[t.id]) ? t : TITLES[0];
   }
-  const titleChip = t => '<span class="title-chip' + (t.id === 'creator' ? ' creator' : '') + '">' + t.icon + ' ' + t.name + '</span>';
+  const titleChip = t => '<span class="title-chip' + (t.id === 'creator' ? ' creator' : t.id === 'admin' ? ' admin' : '') + '">' + t.icon + ' ' + t.name + '</span>';
   function checkTitles() {
     const tg = data.titles; if (!tg.got) tg.got = {};
     const fresh = [];
     TITLES.forEach(t => { if (!tg.got[t.id] && t.cur() >= t.goal) { tg.got[t.id] = Date.now(); fresh.push(t); } });
     let changed = fresh.length > 0;
-    if (tg.creator) { if (!tg.got.creator) { tg.got.creator = Date.now(); changed = true; } }
-    else if (tg.got.creator) { delete tg.got.creator; if (tg.active === 'creator') tg.active = 'rookie'; changed = true; }
+    [['creator', ROLE.creator], ['admin', ROLE.admin]].forEach(([id, on]) => {
+      if (on) { if (!tg.got[id]) { tg.got[id] = Date.now(); changed = true; } }
+      else if (tg.got[id]) { delete tg.got[id]; if (tg.active === id) tg.active = 'rookie'; changed = true; }
+    });
+    tg.creator = ROLE.creator;
     if (changed) {
       save(); updateWallet();
       const shown = fresh.filter(t => t.id !== 'rookie');
@@ -2935,14 +3021,15 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     const logo = document.querySelector('.logo');
     if (logo) {
       const av = findItem(data.equip.avatar), fr = findItem(data.equip.frame);
-      logo.textContent = av ? av.icon : '✧';
+      if (av && av.svg) logo.innerHTML = av.svg; else logo.textContent = av ? av.icon : '✧';
       logo.className = 'logo' + (fr && fr.cls ? ' ' + fr.cls : '');
     }
   }
 
   /* ----- страница магазина ----- */
   let shopTab = 'theme';
-  const SHOP_TABS = [['theme', '🎨 Темы'], ['skin', '🎮 Скины'], ['boost', '⚡ Бонусы'], ['badge', '🌟 Значки'], ['look', '🦊 Облик'], ['rewards', '🎁 Награды'], ['lottery', '🎰 Лотерея'], ['titles', '🏅 Звания']];
+  const SHOP_TABS_BASE = [['theme', '🎨 Темы'], ['skin', '🎮 Скины'], ['boost', '⚡ Бонусы'], ['badge', '🌟 Значки'], ['look', '🦊 Облик'], ['rewards', '🎁 Награды'], ['lottery', '🎰 Лотерея'], ['titles', '🏅 Звания']];
+  const shopTabs = () => (ROLE.admin || ROLE.creator) ? SHOP_TABS_BASE.concat([['special', '🔐 Особое']]) : SHOP_TABS_BASE;
   let lastSpin = '';
   function openShop(tab) { if (tab) shopTab = tab; goTab('shop'); }
   window.openShop = openShop;
@@ -2950,6 +3037,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   function itemCard(it) {
     const owned = isOwned(it), on = owned && isOn(it);
     let ico = it.icon, act;
+    if (it.svg) ico = it.svg;
     if (it.kind === 'theme') ico = '<span style="width:30px;height:30px;border-radius:50%;background:' + it.sw + ';display:block;border:2px solid rgba(255,255,255,.5)"></span>';
     if (it.inv) {
       act = '<button class="btn small" type="button" data-act="buy" data-id="' + it.id + '">' + fmtN(priceOf(it)) + ' ✧</button>';
@@ -2959,7 +3047,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     else if (on && ['badge', 'avatar', 'frame'].includes(it.kind)) act = '<button class="btn secondary small" type="button" data-act="unequip" data-kind="' + it.kind + '">Снять</button>';
     else if (on) act = '<button class="btn secondary small" type="button" disabled>✓ Выбрано</button>';
     else act = '<button class="btn secondary small" type="button" data-act="equip" data-id="' + it.id + '">' + (it.kind === 'theme' ? 'Применить' : 'Выбрать') + '</button>';
-    return '<div class="shop-item' + (on ? ' mine' : '') + '"><div class="si-ico">' + ico + '</div><div class="si-body"><b>' + it.name + '</b><small>' + (owned && !it.free ? 'Куплено · ' : '') + it.desc + '</small></div><div class="si-act">' + act + '</div></div>';
+    return '<div class="shop-item' + (on ? ' mine' : '') + '"><div class="si-ico">' + ico + '</div><div class="si-body"><b>' + it.name + '</b><small>' + (owned && !it.free && !it.role ? 'Куплено · ' : '') + it.desc + '</small></div><div class="si-act">' + act + '</div></div>';
   }
   function shopTabHTML() {
     const list = k => SHOP.filter(i => (Array.isArray(k) ? k.includes(i.kind) : i.kind === k));
@@ -2974,13 +3062,14 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
         '<div class="glass section" style="margin-top:12px"><div class="fields"><div class="field full"><label>Название награды</label><input id="rwName" maxlength="40" placeholder="Например: серия в кино"></div><div class="field full"><label>Цена, ✧</label><input type="number" id="rwPrice" min="1" inputmode="numeric" placeholder="500"></div></div><div class="form-actions"><button class="btn" type="button" data-act="rwadd">＋ Добавить награду</button></div></div>';
     }
     if (shopTab === 'lottery') return '<div class="shop-sub">Лотерея</div><div class="glass section"><p class="notice" style="margin-top:0">За ' + priceOf(LOTTERY) + ' ✧ получишь случайный приз: монеты, бонус, а иногда и целый скин, тему или значок бесплатно.</p>' + (lastSpin ? '<div class="spin-res">' + lastSpin + '</div>' : '') + '<div class="form-actions"><button class="btn big" type="button" data-act="spin">🎰 Крутить · ' + priceOf(LOTTERY) + ' ✧</button></div></div>';
+    if (shopTab === 'special') return '<div class="shop-sub">Только для тебя</div>' + SPECIAL.filter(isOwned).map(itemCard).join('');
     if (shopTab === 'titles') {
-      const got = data.titles.got, all = (data.titles.creator ? [CREATOR] : []).concat(TITLES);
+      const got = data.titles.got, all = (ROLE.creator ? [CREATOR] : []).concat(ROLE.admin ? [ADMIN_T] : [], TITLES);
       let html = '<div class="shop-sub">Открыто ' + all.filter(t => got[t.id]).length + ' из ' + all.length + '</div>', grp = '';
       all.forEach(t => {
         if (t.grp !== grp) { grp = t.grp; html += '<div class="shop-sub">' + grp + '</div>'; }
         const has = !!got[t.id], cur = Math.min(t.goal, Math.floor(t.cur())), act = data.titles.active === t.id;
-        html += '<div class="shop-item' + (has ? '' : ' locked') + (act ? ' mine' : '') + '"><div class="si-ico">' + (has ? t.icon : '🔒') + '</div><div class="si-body"><b>' + (t.id === 'creator' ? titleChip(t) : t.name) + '</b><small>' + t.desc + '</small>' +
+        html += '<div class="shop-item' + (has ? '' : ' locked') + (act ? ' mine' : '') + '"><div class="si-ico">' + (has ? t.icon : '🔒') + '</div><div class="si-body"><b>' + (t.id === 'creator' || t.id === 'admin' ? titleChip(t) : t.name) + '</b><small>' + t.desc + '</small>' +
           (!has && t.goal > 1 ? '<div class="bar mini"><div style="width:' + Math.round(cur / t.goal * 100) + '%"></div></div><small>' + fmtN(cur) + ' / ' + fmtN(t.goal) + '</small>' : '') + '</div><div class="si-act">' +
           (has ? (act ? '<button class="btn secondary small" type="button" disabled>✓ Выбрано</button>' : '<button class="btn small" type="button" data-act="title" data-id="' + t.id + '">Выбрать</button>') : '') + '</div></div>';
       });
@@ -2990,7 +3079,8 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   }
   function renderShop() {
     const tabs = $('shopTabs'), body = $('shopBody'); if (!tabs || !body) return;
-    tabs.innerHTML = SHOP_TABS.map(t => '<button type="button" class="chip' + (t[0] === shopTab ? ' on' : '') + '" data-st="' + t[0] + '">' + t[1] + '</button>').join('');
+    if (shopTab === 'special' && !(ROLE.admin || ROLE.creator)) shopTab = 'theme';
+    tabs.innerHTML = shopTabs().map(t => '<button type="button" class="chip' + (t[0] === shopTab ? ' on' : '') + '" data-st="' + t[0] + '">' + t[1] + '</button>').join('');
     body.innerHTML = shopTabHTML();
     updateWallet();
   }
@@ -3018,10 +3108,10 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
       const act = b.dataset.act, id = b.dataset.id, it = id ? findItem(id) : null;
       if (act === 'buy' && it) buyItem(it);
-      else if (act === 'equip' && it) { equipItem(it); renderShop(); syncThemeSwatches(); toast('Выбрано: ' + it.name); }
+      else if (act === 'equip' && it && isOwned(it)) { equipItem(it); renderShop(); syncThemeSwatches(); toast('Выбрано: ' + it.name); }
       else if (act === 'unequip') { data.equip[b.dataset.kind] = null; save(); updateWallet(); renderShop(); }
       else if (act === 'spin') spinLottery();
-      else if (act === 'title') { data.titles.active = id; save(); updateWallet(); renderShop(); }
+      else if (act === 'title' && data.titles.got[id]) { data.titles.active = id; save(); updateWallet(); renderShop(); }
       else if (act === 'rwadd') {
         const name = $('rwName').value.trim(), price = Math.round(+$('rwPrice').value);
         if (!name) { toast('Напиши название награды'); return; }
@@ -3096,159 +3186,265 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   function updateNormLine(k) { const el = $('normLine'); if (el) el.innerHTML = normLineHTML(k); }
   function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
-  /* ----- Админ-панель (скрытая: 5 нажатий на подпись внизу «Ещё») ----- */
-  const ADMIN_PASS = '3232';
+  /* ----- Панели: админ (урезанная, с лимитами) и создатель (полная). Разметка строится только после входа ----- */
   const adminEl = $('adminPanel');
-  const numOrNull = id => { const v = $(id).value.trim(); if (v === '') return null; const n = Math.round(+v); return Number.isFinite(n) && n >= 0 ? n : NaN; };
-  function fillAdmin() {
-    const st = data.stats;
-    $('adRea').value = st.reactionBest != null ? st.reactionBest : '';
-    $('adTap').value = st.tapBest || 0;
-    $('adMemM').value = st.memoryMoves != null ? st.memoryMoves : '';
-    $('adMemT').value = st.memoryTime != null ? st.memoryTime : '';
-    $('adSnake').value = st.snakeBest || 0;
-    $('ad2048').value = st.g2048Best || 0;
-    $('adTW').value = st.ttt.w; $('adTD').value = st.ttt.d; $('adTL').value = st.ttt.l;
-    $('adTapSec').value = data.admin.tapSeconds;
-    $('adMult').value = data.admin.mult; $('adStreak').value = data.streak.count;
-    $('adCreator').textContent = 'Создатель: ' + (data.titles.creator ? 'включено ✓' : 'выключено');
-    updateWallet();
-    renderAdminNorms(); renderAdminPrices();
+  const ADMIN_LIM = { grant: 500, day: 2000, priceMin: 10, priceMax: 5000 };
+  const LOCK_KEY = 'luma-lk';
+  const lockLeft = () => { try { const o = JSON.parse(localStorage.getItem(LOCK_KEY) || '{}'); return Math.max(0, (o.until || 0) - Date.now()); } catch { return 0; } };
+  const lockFail = () => { try { const o = JSON.parse(localStorage.getItem(LOCK_KEY) || '{}'); o.n = (o.n || 0) + 1; if (o.n >= 5) o.until = Date.now() + Math.min(3600000, 60000 * Math.pow(2, o.n - 5)); localStorage.setItem(LOCK_KEY, JSON.stringify(o)); } catch {} };
+  const lockClear = () => { try { localStorage.removeItem(LOCK_KEY); } catch {} };
+  const panelCan = r => r === 'creator' ? ROLE.creator : (r === 'admin' ? ROLE.admin : false);
+
+  function grantRole(role, tok) {
+    data.auth = data.auth || { a: null, c: null };
+    data.auth[role === 'admin' ? 'a' : 'c'] = tok;
+    const had = !!data.titles.got[role];
+    ROLE = rolesOf(data);
+    save(); checkTitles();
+    if (!had && data.titles.got[role]) { data.titles.active = role; save(); setTimeout(() => toast(role === 'creator' ? '🛠️ Тебе выдано звание «Создатель»' : '🛡️ Тебе выдано звание «Администратор»'), 700); }
+    syncThemeSwatches(); updateWallet();
   }
-  function renderAdminNorms() {
+  function revokeRole(role) {
+    data.auth[role === 'admin' ? 'a' : 'c'] = null;
+    enforceRoles(data); save(); applyTheme(data.theme); syncThemeSwatches(); checkTitles(); updateWallet();
+  }
+
+  function askPassword(role) {
+    closeSheets(true);
+    const old = $('sheetAuth'); if (old) old.remove();
+    const back = document.createElement('div');
+    back.className = 'sheet-back'; back.id = 'sheetAuth'; back.setAttribute('aria-hidden', 'true');
+    back.innerHTML = '<div class="sheet" role="dialog" aria-modal="true" aria-label="Вход"><div class="grab"></div><div class="sheet-head"><h3>🔒 Доступ</h3><button type="button" class="sheet-close" data-close aria-label="Закрыть">✕</button></div><div class="fields"><div class="field full"><label>Пароль</label><input id="authPw" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="40"></div></div><div class="form-actions"><button class="btn" type="button" id="authOk">Войти</button></div></div>';
+    document.body.appendChild(back);
+    const drop = () => { closeSheets(); setTimeout(() => back.remove(), 350); };
+    back.addEventListener('click', e => { if (e.target === back || e.target.closest('[data-close]')) drop(); });
+    const inp = back.querySelector('#authPw');
+    const go = () => {
+      const left = lockLeft();
+      if (left) { toast('Слишком много попыток. Подожди ' + Math.ceil(left / 60000) + ' мин.'); inp.value = ''; return; }
+      const pw = inp.value; inp.value = '';
+      if (!pw) return;
+      if (authCheck(role, authToken(role, pw))) {
+        lockClear(); grantRole(role, authToken(role, pw)); drop(); setTimeout(() => openPanel(role), 120);
+      } else {
+        lockFail(); toast('Неверный пароль');
+        inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake'); inp.focus();
+      }
+    };
+    back.querySelector('#authOk').onclick = go;
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); go(); } });
+    openSheet('sheetAuth');
+    setTimeout(() => { try { inp.focus(); } catch {} }, 350);
+  }
+
+  const grantLeft = () => { const g = data.admin.grant; return g && g.date === todayStr() ? Math.max(0, ADMIN_LIM.day - g.sum) : ADMIN_LIM.day; };
+  const pSec = (title, tag, inner) => '<div class="glass section"><div class="section-head"><h2>' + title + '</h2>' + (tag ? '<span class="tag">' + tag + '</span>' : '') + '</div>' + inner + '</div>';
+  const pNum = (id, label, val, min, max) => '<div class="field"><label>' + label + '</label><input type="number" id="' + id + '" min="' + min + '" max="' + max + '" inputmode="numeric" value="' + (val == null ? '' : val) + '"></div>';
+  function normsHTML() {
     const mine = userGroup();
-    $('adNorms').innerHTML = AGE_GROUPS.map(g => {
+    return AGE_GROUPS.map(g => {
       const n = getNorms(g.id);
       const inputs = NORM_FIELDS.map(f => '<div class="field"><label>' + f.label + '</label><input type="number" min="0" inputmode="numeric" data-g="' + g.id + '" data-k="' + f.k + '" value="' + (n[f.k] != null && n[f.k] !== '' ? n[f.k] : '') + '"' + (f.k === 'walk' ? ' placeholder="авто"' : '') + '></div>').join('');
       return '<details class="norm-group"' + (mine && mine.id === g.id ? ' open' : '') + '><summary>' + g.name + '<small>' + (mine && mine.id === g.id ? 'твоя группа' : '') + '</small></summary><div class="fields">' + inputs + '</div></details>';
     }).join('');
   }
   const PRICE_ITEMS = () => SHOP.concat([{ id: 'lottery', name: 'Лотерея (один спин)', icon: '🎰', price: LOTTERY.price }]);
-  function renderAdminPrices() {
-    $('adPrices').innerHTML = PRICE_ITEMS().map(i => '<div class="field"><label>' + i.icon + ' ' + i.name + '</label><input type="number" min="0" inputmode="numeric" data-pid="' + i.id + '" value="' + priceOf(i) + '"></div>').join('');
+  const pricesHTML = cr => PRICE_ITEMS().map(i => '<div class="field"><label>' + i.icon + ' ' + i.name + '</label><input type="number" min="' + (cr ? 0 : ADMIN_LIM.priceMin) + '" max="' + (cr ? 1000000 : ADMIN_LIM.priceMax) + '" inputmode="numeric" data-pid="' + i.id + '" value="' + priceOf(i) + '"></div>').join('');
+
+  function panelHTML(role) {
+    const cr = role === 'creator', st = data.stats;
+    let h = '<div class="admin-card"><div class="admin-top"><div><div class="eyebrow">' + (cr ? 'CREATOR' : 'ADMIN') + '</div><h2>' + (cr ? 'Панель создателя' : 'Админ-панель') + '</h2></div><button class="btn secondary small" type="button" data-ad="close">Выйти</button></div>';
+    /* монеты */
+    if (cr) {
+      h += pSec('Монеты', '<span id="adBal">' + fmtN(data.coins.bal) + ' ✧</span>',
+        '<div class="fields"><div class="field full"><label>Сумма, ✧</label><input type="number" id="adCoinAmt" min="0" max="1000000000" inputmode="numeric" placeholder="1000"></div></div>' +
+        '<div class="form-actions"><button class="btn" type="button" data-ad="coinadd">＋ Добавить</button><button class="btn secondary" type="button" data-ad="coinsub">− Списать</button><button class="btn secondary" type="button" data-ad="coinset">= Установить</button></div>' +
+        '<p class="notice">Быстро добавить:</p><div class="chips-row">' + [1000, 10000, 100000, 1000000].map(q => '<button class="btn secondary small" type="button" data-ad="quick" data-q="' + q + '">+' + fmtN(q) + '</button>').join('') + '</div>' +
+        '<p class="notice">Монеты создателя считаются заработанными — от них открываются звания «Богач», «Магнат» и другие.</p>');
+      h += pSec('Награды и серия', '', '<div class="fields">' + pNum('adMult', 'Множитель наград (1–1000)', data.admin.mult, 1, 1000) + pNum('adStreak', 'Серия дней', data.streak.count, 0, 9999) + '</div><div class="form-actions"><button class="btn" type="button" data-ad="misc">Сохранить</button></div>');
+    } else {
+      h += pSec('Монеты', '<span id="adBal">' + fmtN(data.coins.bal) + ' ✧</span>',
+        '<div class="fields"><div class="field full"><label>Сумма, ✧ (до ' + fmtN(ADMIN_LIM.grant) + ' за раз)</label><input type="number" id="adCoinAmt" min="1" max="' + ADMIN_LIM.grant + '" inputmode="numeric" placeholder="100"></div></div>' +
+        '<div class="form-actions"><button class="btn" type="button" data-ad="coinadd">＋ Выдать</button></div>' +
+        '<div class="chips-row">' + [50, 100, 500].map(q => '<button class="btn secondary small" type="button" data-ad="quick" data-q="' + q + '">+' + q + '</button>').join('') + '</div>' +
+        '<p class="notice">Лимит выдачи: ' + fmtN(ADMIN_LIM.day) + ' ✧ в день. Осталось сегодня: <b id="adLeft">' + fmtN(grantLeft()) + '</b> ✧. Выданные монеты не идут в «заработанные» и не открывают звания.</p>');
+    }
+    /* особое (только создатель) */
+    if (cr) {
+      h += pSec('Эксклюзив создателя', 'ТОЛЬКО ТЫ',
+        '<p class="notice" style="margin-top:0">Фон, аватар, рамка, значок и скин змейки видны только пока активна роль создателя.</p>' +
+        SPECIAL.filter(i => i.role === 'creator').map(i => { const on = isOn(i); return '<div class="shop-item' + (on ? ' mine' : '') + '"><div class="si-ico">' + (i.svg || i.icon) + '</div><div class="si-body"><b>' + i.name + '</b><small>' + i.desc + '</small></div><div class="si-act"><button class="btn ' + (on ? 'secondary ' : '') + 'small" type="button" data-ad="' + (on ? 'unequip' : 'equip') + '" data-id="' + i.id + '">' + (on ? 'Снять' : 'Надеть') + '</button></div></div>'; }).join('') +
+        '<div class="form-actions"><button class="btn" type="button" data-ad="equipall">✦ Надеть всё</button></div>');
+      h += pSec('Звания и магазин', 'ДОСТУП',
+        '<div class="form-actions"><button class="btn secondary" type="button" data-ad="alltitles">Открыть все звания</button><button class="btn secondary" type="button" data-ad="notitles">Закрыть все звания</button><button class="btn secondary" type="button" data-ad="allshop">Открыть весь магазин</button><button class="btn danger" type="button" data-ad="resetshop">Сбросить покупки</button></div>');
+    }
+    /* цены */
+    h += pSec('Цены магазина', '✧', '<details class="norm-group"><summary>Показать цены<small>изменить</small></summary><div class="fields">' + pricesHTML(cr) + '</div></details>' + (cr ? '' : '<p class="notice">Допустимо от ' + ADMIN_LIM.priceMin + ' до ' + fmtN(ADMIN_LIM.priceMax) + ' ✧.</p>') + '<div class="form-actions"><button class="btn" type="button" data-ad="prices">Сохранить цены</button><button class="btn secondary" type="button" data-ad="resetprices">Стандартные</button></div>');
+    /* время кликера */
+    h += pSec('Время кликера', 'ИГРЫ', '<div class="fields">' + pNum('adTapSec', 'Секунд (5–60)', data.admin.tapSeconds, 5, 60) + '</div><div class="form-actions"><button class="btn" type="button" data-ad="time">Сохранить</button></div>');
+    /* рекорды (создатель) */
+    if (cr) {
+      h += pSec('Рекорды', 'ИГРЫ', '<p class="notice" style="margin-top:0">Пустое поле убирает рекорд (реакция и память).</p><div class="fields">' +
+        pNum('adRea', '⚡ Реакция, мс', st.reactionBest, 50, 5000) + pNum('adTap', '👆 Кликер', st.tapBest || 0, 0, 999) + pNum('adMemM', '🧠 Память, ходов', st.memoryMoves, 8, 999) + pNum('adMemT', '🧠 Память, сек', st.memoryTime, 1, 9999) +
+        pNum('adSnake', '🐍 Змейка', st.snakeBest || 0, 0, 999) + pNum('ad2048', '🔢 2048', st.g2048Best || 0, 0, 9999999) + pNum('adTW', '❌ Победы', st.ttt.w, 0, 99999) + pNum('adTD', '❌ Ничьи', st.ttt.d, 0, 99999) + pNum('adTL', '❌ Поражения', st.ttt.l, 0, 99999) +
+        '</div><div class="form-actions"><button class="btn" type="button" data-ad="rec">Сохранить рекорды</button><button class="btn danger" type="button" data-ad="resetrec">Сбросить все</button></div>');
+    }
+    /* нормы */
+    h += pSec('Нормы по возрасту', 'НОРМА', '<p class="notice" style="margin-top:0">Реакция и память — «не больше», остальное — «не меньше». Прогулка: пусто = авто.</p><div id="adNorms">' + normsHTML() + '</div><div class="form-actions"><button class="btn" type="button" data-ad="norms">Сохранить нормы</button><button class="btn secondary" type="button" data-ad="resetnorms">Стандартные</button></div>');
+    /* доступ */
+    h += pSec('Доступ', '', '<p class="notice" style="margin-top:0">Роль хранится на этом устройстве и переезжает вместе с бэкапом. Пароль нигде не сохраняется.</p><div class="form-actions"><button class="btn danger" type="button" data-ad="revoke">Отозвать доступ на этом устройстве</button></div>');
+    return h + '</div>';
   }
-  function openAdmin() {
+
+  let panelRole = null;
+  function mountPanel() {
+    const top = adminEl.scrollTop;
+    adminEl.innerHTML = panelHTML(panelRole);
+    adminEl.scrollTop = top;
+    updateWallet();
+  }
+  function openPanel(role) {
+    if (!panelCan(role)) return;
     closeSheets(true);
-    fillAdmin();
+    panelRole = role; mountPanel();
     adminEl.classList.add('show'); adminEl.setAttribute('aria-hidden', 'false'); adminEl.scrollTop = 0;
     document.body.classList.add('noscroll');
   }
-  function closeAdmin() {
-    adminEl.classList.remove('show'); adminEl.setAttribute('aria-hidden', 'true');
+  function closePanel() {
+    panelRole = null;
+    adminEl.classList.remove('show'); adminEl.setAttribute('aria-hidden', 'true'); adminEl.innerHTML = '';
     document.body.classList.remove('noscroll');
     try { renderHome(); renderWalk(); } catch {}
   }
-  function tryAdminLogin() {
-    const inp = $('adminPass');
-    if (inp.value.trim() === ADMIN_PASS) {
-      inp.value = '';
-      if (!data.titles.creatorAuto) {
-        data.titles.creatorAuto = true; data.titles.creator = true; data.titles.active = 'creator'; save(); checkTitles();
-        setTimeout(() => toast('🛠️ Тебе выдано звание «Создатель»'), 900);
-      }
-      openAdmin(); toast('Админ-панель открыта');
+  const pInt = id => { const el = $(id); return el ? Math.round(+el.value) : NaN; };
+  const pOpt = id => { const v = $(id).value.trim(); if (v === '') return null; const n = Math.round(+v); return Number.isFinite(n) && n >= 0 ? n : NaN; };
+  function giveCoins(n, cr) {
+    if (!(n > 0)) { toast('Введи сумму больше нуля'); return false; }
+    if (cr) {
+      if (n > 1e9) { toast('Не больше 1 000 000 000 за раз'); return false; }
+      addCoins(n, { raw: true });
+    } else {
+      if (n > ADMIN_LIM.grant) { toast('За раз — не больше ' + fmtN(ADMIN_LIM.grant) + ' ✧'); return false; }
+      const left = grantLeft();
+      if (n > left) { toast(left ? 'Сегодня можно выдать ещё ' + fmtN(left) + ' ✧' : 'Дневной лимит выдачи исчерпан'); return false; }
+      addCoins(n, { raw: true, noEarn: true });
+      const g = data.admin.grant;
+      data.admin.grant = { date: todayStr(), sum: (g && g.date === todayStr() ? g.sum : 0) + n }; save();
     }
-    else {
-      toast('Неверный пароль'); inp.value = '';
-      inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake'); inp.focus();
-    }
+    toast('Добавлено ' + fmtN(n) + ' ✧');
+    return true;
   }
-  $('adminPassOk').onclick = tryAdminLogin;
-  $('adminPass').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); tryAdminLogin(); } });
-  $('adminClose').onclick = closeAdmin;
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && adminEl.classList.contains('show')) closeAdmin(); });
-  /* скрытый вход: 5 нажатий по подписи в «Ещё» */
+  adminEl.addEventListener('click', e => {
+    const b = e.target.closest('[data-ad]'); if (!b) return;
+    const role = panelRole;
+    if (!role || !panelCan(role)) { closePanel(); return; }
+    const cr = role === 'creator', act = b.dataset.ad;
+    const only = () => { if (cr) return true; toast('Недоступно для администратора'); return false; };
+    switch (act) {
+      case 'close': closePanel(); return;
+      case 'coinadd': { const n = pInt('adCoinAmt'); if (giveCoins(n, cr)) { mountPanel(); } return; }
+      case 'quick': { if (giveCoins(+b.dataset.q, cr)) mountPanel(); return; }
+      case 'coinsub': { if (!only()) return; const n = pInt('adCoinAmt'); if (!(n > 0)) { toast('Введи сумму больше нуля'); return; } data.coins.bal = Math.max(0, data.coins.bal - n); save(); mountPanel(); toast('Списано ' + fmtN(n) + ' ✧'); return; }
+      case 'coinset': { if (!only()) return; const n = pInt('adCoinAmt'); if (!(n > 0 && n <= 1e9)) { toast('Сумма — от 1 до 1 000 000 000'); return; } data.coins.bal = n; data.coins.earned = Math.max(data.coins.earned, n); save(); checkTitles(); mountPanel(); toast('Баланс: ' + fmtN(n) + ' ✧'); return; }
+      case 'misc': {
+        if (!only()) return;
+        const m = pInt('adMult'), s = pInt('adStreak');
+        if (!(m >= 1 && m <= 1000)) { toast('Множитель — от 1 до 1000'); return; }
+        if (!(s >= 0 && s <= 9999)) { toast('Серия — от 0 до 9999'); return; }
+        data.admin.mult = m; data.streak.count = s; data.streak.best = Math.max(data.streak.best || 0, s); data.streak.last = s > 0 ? todayStr() : null;
+        save(); checkTitles(); mountPanel(); toast('Сохранено ✓'); return;
+      }
+      case 'equip': case 'unequip': {
+        if (!only()) return;
+        const it = SPECIAL.find(x => x.id === b.dataset.id); if (!it || it.role !== 'creator') return;
+        if (act === 'equip') equipItem(it);
+        else if (it.kind === 'theme') applyTheme('violet');
+        else if (it.kind === 'snake') { data.equip.snake = 'def'; save(); }
+        else { data.equip[it.kind] = null; save(); }
+        syncThemeSwatches(); updateWallet(); mountPanel(); return;
+      }
+      case 'equipall': { if (!only()) return; SPECIAL.filter(i => i.role === 'creator').forEach(equipItem); syncThemeSwatches(); updateWallet(); mountPanel(); toast('Эксклюзив надет ✦'); return; }
+      case 'alltitles': { if (!only()) return; TITLES.forEach(t => { if (!data.titles.got[t.id]) data.titles.got[t.id] = Date.now(); }); save(); updateWallet(); toast('Все звания открыты'); return; }
+      case 'notitles': {
+        if (!only()) return;
+        if (!confirm('Закрыть все звания? Они откроются заново, когда условия выполнятся.')) return;
+        data.titles.got = { rookie: 1 }; data.titles.active = 'rookie'; checkTitles(); save(); updateWallet(); toast('Звания закрыты'); return;
+      }
+      case 'allshop': { if (!only()) return; SHOP.filter(i => !i.inv).forEach(i => { data.owned[i.id] = true; }); save(); syncThemeSwatches(); toast('Весь магазин открыт'); return; }
+      case 'resetshop': {
+        if (!only()) return;
+        if (!confirm('Сбросить все покупки, бонусы и выбранный облик?')) return;
+        data.owned = {}; data.inv = { life: 0, undo: 0, hint: 0, slow: 0 };
+        data.equip = { snake: 'def', t2048: 'def', mem: 'def', ttt: 'def', badge: null, avatar: null, frame: null };
+        if (!['violet', 'ocean', 'rose', 'forest', 'sunset'].includes(data.theme)) applyTheme('violet');
+        save(); syncThemeSwatches(); updateWallet(); mountPanel(); toast('Покупки сброшены'); return;
+      }
+      case 'prices': {
+        const out = {}; let bad = false;
+        adminEl.querySelectorAll('[data-pid]').forEach(i => {
+          const n = Math.round(+i.value), it = PRICE_ITEMS().find(x => x.id === i.dataset.pid);
+          if (i.value.trim() === '' || !(n >= 0) || n > 1000000 || (!cr && (n < ADMIN_LIM.priceMin || n > ADMIN_LIM.priceMax))) { bad = true; return; }
+          if (it && n !== it.price) out[it.id] = n;
+        });
+        if (bad) { toast(cr ? 'Цены — целые числа от 0' : 'Цены — от ' + ADMIN_LIM.priceMin + ' до ' + fmtN(ADMIN_LIM.priceMax) + ' ✧'); return; }
+        data.admin.prices = out; save(); toast('Цены сохранены ✓'); return;
+      }
+      case 'resetprices': data.admin.prices = {}; save(); mountPanel(); toast('Стандартные цены возвращены'); return;
+      case 'time': {
+        const n = pInt('adTapSec');
+        if (!(n >= 5 && n <= 60)) { toast('Время кликера — от 5 до 60 секунд'); return; }
+        data.admin.tapSeconds = n; save(); toast('Время сохранено ✓'); return;
+      }
+      case 'rec': {
+        if (!only()) return;
+        const v = { rea: pOpt('adRea'), tap: pOpt('adTap'), mm: pOpt('adMemM'), mt: pOpt('adMemT'), sn: pOpt('adSnake'), g: pOpt('ad2048'), w: pOpt('adTW'), d: pOpt('adTD'), l: pOpt('adTL') };
+        if (Object.values(v).some(x => Number.isNaN(x))) { toast('Проверь числа: только целые, без минуса'); return; }
+        if (v.rea != null && v.rea < 50) { toast('Реакция быстрее 50 мс невозможна'); return; }
+        if ((v.mm == null) !== (v.mt == null)) { toast('Память: заполни и ходы, и время — или оба пустыми'); return; }
+        if (v.mm != null && v.mm < 8) { toast('Память: меньше 8 ходов не бывает'); return; }
+        const s = data.stats;
+        s.reactionBest = v.rea; s.tapBest = v.tap || 0; s.memoryMoves = v.mm; s.memoryTime = v.mt;
+        s.snakeBest = v.sn || 0; s.g2048Best = v.g || 0; s.ttt = { w: v.w || 0, d: v.d || 0, l: v.l || 0 };
+        save(); checkTitles(); mountPanel(); toast('Рекорды сохранены ✓'); return;
+      }
+      case 'resetrec': { if (!only()) return; if (!confirm('Сбросить все рекорды и статистику игр?')) return; data.stats = defaultStats(); save(); mountPanel(); toast('Рекорды сброшены'); return; }
+      case 'norms': {
+        const out = {}; let bad = false;
+        adminEl.querySelectorAll('#adNorms input').forEach(i => {
+          const g = i.dataset.g, k = i.dataset.k, raw = i.value.trim();
+          (out[g] = out[g] || {});
+          if (raw === '') { if (k === 'walk') out[g][k] = null; else bad = true; return; }
+          const n = Math.round(+raw);
+          if (!(n > 0)) { bad = true; return; }
+          out[g][k] = n;
+        });
+        if (bad) { toast('Заполни все нормы числами больше нуля (кроме прогулки)'); return; }
+        data.admin.norms = out; save(); toast('Нормы сохранены ✓'); return;
+      }
+      case 'resetnorms': { if (!confirm('Вернуть стандартные нормы для всех возрастов?')) return; data.admin.norms = {}; save(); mountPanel(); toast('Стандартные нормы возвращены'); return; }
+      case 'revoke': {
+        if (!confirm('Отозвать доступ на этом устройстве? Чтобы вернуть, понадобится пароль.')) return;
+        revokeRole(role); closePanel(); toast('Доступ отозван'); return;
+      }
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && adminEl.classList.contains('show')) closePanel(); });
+  /* скрытые входы: админ — 5 нажатий по подписи в «Ещё»; создатель — 9 быстрых нажатий по логотипу */
   (function () {
     let taps = 0, tm = null;
     $('appFooter').addEventListener('click', () => {
       taps++; clearTimeout(tm); tm = setTimeout(() => { taps = 0; }, 2500);
-      if (taps >= 5) {
-        taps = 0; openSheet('sheetAdminPass');
-        setTimeout(() => { try { $('adminPass').focus(); } catch {} }, 350);
-      }
+      if (taps >= 5) { taps = 0; askPassword('admin'); }
     });
   })();
-  const adAmt = () => { const n = Math.round(+$('adCoinAmt').value); if (!(n > 0)) { toast('Введи сумму больше нуля'); return null; } return n; };
-  $('adCoinAdd').onclick = () => { const n = adAmt(); if (n == null) return; addCoins(n, { raw: true }); fillAdmin(); toast('Добавлено ' + fmtN(n) + ' ✧'); };
-  $('adCoinSub').onclick = () => { const n = adAmt(); if (n == null) return; data.coins.bal = Math.max(0, data.coins.bal - n); save(); fillAdmin(); toast('Списано ' + fmtN(n) + ' ✧'); };
-  $('adCoinSet').onclick = () => { const n = adAmt(); if (n == null) return; data.coins.bal = n; data.coins.earned = Math.max(data.coins.earned, n); save(); checkTitles(); fillAdmin(); toast('Баланс: ' + fmtN(n) + ' ✧'); };
-  $('adQuick').addEventListener('click', e => { const b = e.target.closest('[data-q]'); if (!b) return; const n = +b.dataset.q; addCoins(n, { raw: true }); fillAdmin(); toast('+' + fmtN(n) + ' ✧'); });
-  $('adSaveMisc').onclick = () => {
-    const m = Math.round(+$('adMult').value), st = Math.round(+$('adStreak').value);
-    if (!(m >= 1 && m <= 1000)) { toast('Множитель — от 1 до 1000'); return; }
-    if (!(st >= 0 && st <= 9999)) { toast('Серия — от 0 до 9999'); return; }
-    data.admin.mult = m; data.streak.count = st; data.streak.best = Math.max(data.streak.best || 0, st); data.streak.last = st > 0 ? todayStr() : null;
-    save(); checkTitles(); fillAdmin(); toast('Сохранено ✓');
-  };
-  $('adCreator').onclick = () => {
-    data.titles.creator = !data.titles.creator;
-    if (data.titles.creator) data.titles.active = 'creator';
-    save(); checkTitles(); fillAdmin(); toast(data.titles.creator ? 'Звание «Создатель» включено' : 'Звание «Создатель» выключено');
-  };
-  $('adAllTitles').onclick = () => { TITLES.forEach(t => { if (!data.titles.got[t.id]) data.titles.got[t.id] = Date.now(); }); save(); updateWallet(); toast('Все звания открыты'); };
-  $('adNoTitles').onclick = () => {
-    if (!confirm('Закрыть все звания? Они откроются заново, когда условия выполнятся.')) return;
-    data.titles.got = { rookie: 1 }; if (data.titles.creator) data.titles.got.creator = Date.now();
-    if (!(data.titles.active === 'creator' && data.titles.creator)) data.titles.active = 'rookie';
-    save(); updateWallet(); toast('Звания закрыты');
-  };
-  $('adAllShop').onclick = () => { SHOP.filter(i => !i.inv).forEach(i => { data.owned[i.id] = true; }); save(); syncThemeSwatches(); toast('Весь магазин открыт'); };
-  $('adResetShop').onclick = () => {
-    if (!confirm('Сбросить все покупки, бонусы и выбранный облик?')) return;
-    data.owned = {}; data.inv = { life: 0, undo: 0, hint: 0, slow: 0 };
-    data.equip = { snake: 'def', t2048: 'def', mem: 'def', ttt: 'def', badge: null, avatar: null, frame: null };
-    if (!['violet', 'ocean', 'rose', 'forest', 'sunset'].includes(data.theme)) applyTheme('violet');
-    save(); syncThemeSwatches(); updateWallet(); toast('Покупки сброшены');
-  };
-  $('adSavePrices').onclick = () => {
-    const out = {}; let bad = false;
-    document.querySelectorAll('#adPrices input').forEach(i => {
-      const n = Math.round(+i.value), it = PRICE_ITEMS().find(x => x.id === i.dataset.pid);
-      if (i.value.trim() === '' || !(n >= 0)) { bad = true; return; }
-      if (it && n !== it.price) out[it.id] = n;
+  (function () {
+    const logo = document.querySelector('.logo'); if (!logo) return;
+    let taps = 0, tm = null;
+    logo.addEventListener('click', () => {
+      taps++; clearTimeout(tm); tm = setTimeout(() => { taps = 0; }, 1100);
+      if (taps >= 9) { taps = 0; askPassword('creator'); }
     });
-    if (bad) { toast('Цены — целые числа от 0'); return; }
-    data.admin.prices = out; save(); toast('Цены сохранены ✓');
-  };
-  $('adResetPrices').onclick = () => { data.admin.prices = {}; save(); renderAdminPrices(); toast('Стандартные цены возвращены'); };
-  $('adSaveRec').onclick = () => {
-    const v = { rea: numOrNull('adRea'), tap: numOrNull('adTap'), mm: numOrNull('adMemM'), mt: numOrNull('adMemT'), sn: numOrNull('adSnake'), g: numOrNull('ad2048'), w: numOrNull('adTW'), d: numOrNull('adTD'), l: numOrNull('adTL') };
-    if (Object.values(v).some(x => Number.isNaN(x))) { toast('Проверь числа: только целые, без минуса'); return; }
-    if (v.rea != null && v.rea < 50) { toast('Реакция быстрее 50 мс невозможна'); return; }
-    if ((v.mm == null) !== (v.mt == null)) { toast('Память: заполни и ходы, и время — или оба пустыми'); return; }
-    if (v.mm != null && v.mm < 8) { toast('Память: меньше 8 ходов не бывает'); return; }
-    const st = data.stats;
-    st.reactionBest = v.rea; st.tapBest = v.tap || 0; st.memoryMoves = v.mm; st.memoryTime = v.mt;
-    st.snakeBest = v.sn || 0; st.g2048Best = v.g || 0; st.ttt = { w: v.w || 0, d: v.d || 0, l: v.l || 0 };
-    save(); fillAdmin(); toast('Рекорды сохранены ✓');
-  };
-  $('adResetRec').onclick = () => {
-    if (!confirm('Сбросить все рекорды и статистику игр?')) return;
-    data.stats = defaultStats(); save(); fillAdmin(); toast('Рекорды сброшены');
-  };
-  $('adSaveTime').onclick = () => {
-    const n = Math.round(+$('adTapSec').value);
-    if (!(n >= 5 && n <= 60)) { toast('Время кликера — от 5 до 60 секунд'); return; }
-    data.admin.tapSeconds = n; save(); toast('Время сохранено ✓');
-  };
-  $('adSaveNorms').onclick = () => {
-    const out = {};
-    let bad = false;
-    document.querySelectorAll('#adNorms input').forEach(i => {
-      const g = i.dataset.g, k = i.dataset.k, raw = i.value.trim();
-      (out[g] = out[g] || {});
-      if (raw === '') { if (k === 'walk') out[g][k] = null; else bad = true; return; }
-      const n = Math.round(+raw);
-      if (!(n > 0)) { bad = true; return; }
-      out[g][k] = n;
-    });
-    if (bad) { toast('Заполни все нормы числами больше нуля (кроме прогулки)'); return; }
-    data.admin.norms = out; save(); toast('Нормы сохранены ✓');
-  };
-  $('adResetNorms').onclick = () => {
-    if (!confirm('Вернуть стандартные нормы для всех возрастов?')) return;
-    data.admin.norms = {}; save(); renderAdminNorms(); toast('Стандартные нормы возвращены');
-  };
+  })();
 
   /* ----- Games ----- */
   function startGame(name) {
@@ -4290,6 +4486,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   };
 
   window.exportData = function() {
+    data.lastExport = Date.now(); save(); renderBackupInfo();
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -4304,12 +4501,17 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     const reader = new FileReader();
     reader.onload = ev => {
       try {
-        data = normalizeData(JSON.parse(ev.target.result));
+        const old = data.auth || {}, nd = JSON.parse(ev.target.result);
+        if (!nd || typeof nd !== 'object' || Array.isArray(nd)) throw new Error('bad');
+        nd.auth = (nd.auth && typeof nd.auth === 'object') ? nd.auth : {};
+        if (!authCheck('admin', nd.auth.a)) nd.auth.a = old.a || null;
+        if (!authCheck('creator', nd.auth.c)) nd.auth.c = old.c || null;
+        data = normalizeData(nd);
         $('profileName').value = data.profile.name || '';
         save();
         applyTheme(data.theme);
         applyMode(data.mode);
-        syncThemeSwatches(); updateWallet(); checkTitles();
+        syncThemeSwatches(); updateWallet(); checkTitles(); renderBackupInfo();
         window._refreshFoods && window._refreshFoods();
         renderHome();
         renderNutrition();
@@ -4323,11 +4525,14 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
 
   window.clearData = function() {
     if (!confirm('Удалить все данные?')) return;
+    const keepAuth = data.auth;
     data = defaultData();
-    save();
+    data.auth = keepAuth || data.auth;
+    ROLE = rolesOf(data);
+    save(); checkTitles();
     applyTheme('violet');
     applyMode('dark');
-    syncThemeSwatches(); updateWallet();
+    syncThemeSwatches(); updateWallet(); renderBackupInfo();
     window._refreshFoods && window._refreshFoods();
     renderHome();
     renderNutrition();
@@ -4354,6 +4559,9 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   window.addEventListener('pageshow', checkDue);
   updateNotifUI();
   renderHome();
+  renderBackupInfo(); backupNudge();
+  window.addEventListener('error', e => { try { console.error(e.error || e.message); const t = Date.now(); if (!window._errT || t - window._errT > 30000) { window._errT = t; toast('Что-то пошло не так. Данные сохранены, обнови страницу'); } } catch {} });
+  window.addEventListener('unhandledrejection', e => { try { console.error(e.reason); } catch {} });
   maybeOnboard();
   setupBackgroundSync();
   function onLeaveBackground() {

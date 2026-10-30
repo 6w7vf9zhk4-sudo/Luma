@@ -1,7 +1,7 @@
-/* Luma service worker v5 */
-const CACHE = 'luma-v17';
-const ASSETS = ['./manifest.json'];
-const ICON = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✧</text></svg>";
+/* Luma service worker v18 */
+const CACHE = 'luma-v18';
+const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
+const ICON = './icon-192.png';
 
 function openDB() {
   return new Promise((resolve, reject) => {
@@ -117,7 +117,7 @@ async function checkStoredReminders(force) {
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE).then((c) => Promise.allSettled(ASSETS.map((a) => c.add(a)))).then(() => self.skipWaiting())
   );
 });
 
