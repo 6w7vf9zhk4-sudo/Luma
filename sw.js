@@ -1,5 +1,5 @@
-/* Luma service worker v18 */
-const CACHE = 'luma-v18';
+/* Luma service worker v19 */
+const CACHE = 'luma-v19';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 const ICON = './icon-192.png';
 
@@ -134,6 +134,7 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return; // внешние API (Open Food Facts) идут напрямую
   const isDoc = req.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/');
   const isCode = url.pathname.endsWith('.js') || url.pathname.endsWith('.css');
   if (isDoc || isCode) {

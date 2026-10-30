@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="18"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="19"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -877,7 +877,7 @@ html[data-mode="light"] .choice.on { border-color: #8b5cf6; background: rgba(139
 html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"] .geo-pill.bad { color: #b91c1c; }
 
 /* ===== v18 ===== */
-:focus-visible { outline: 2px solid #fbbf24; outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--accent, #c4b5fd); outline-offset: 2px; }
 .week-chart { display: flex; align-items: flex-end; gap: 8px; height: 130px; margin-top: 10px; }
 .wk-col { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; }
 .wk-bar { width: 100%; border-radius: 8px 8px 4px 4px; background: linear-gradient(180deg, var(--violet), rgba(167,139,250,.3)); min-height: 3px; transition: height .4s ease; }
@@ -911,13 +911,66 @@ html[data-theme="creator"][data-mode="light"] body::after { opacity: .55; }
 }
 .logo svg, .si-ico svg { width: 70%; height: 70%; display: block; }
 .si-ico svg { width: 30px; height: 30px; }
+
+/* ===== v19: минимализм ===== */
+:root { --surface: rgba(255,255,255,.035); --bd: rgba(255,255,255,.09); --ink: #f4f1fa; --ink-inv: #14101f; --accent: #c4b5fd; --page: #100820; }
+html[data-mode="light"] { --surface: rgba(0,0,0,.03); --bd: rgba(0,0,0,.1); --ink: #1a1326; --ink-inv: #ffffff; --line: rgba(0,0,0,.1); }
+body, html[data-mode="light"] body { font-weight: 400; }
+body::before { display: none; }
+.glass, html[data-mode="light"] .glass { background: var(--surface); border: 1px solid var(--bd); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; border-radius: 16px; }
+.section { padding: 18px; }
+.stat-card, html[data-mode="light"] .stat-card, .tile, html[data-mode="light"] .tile,
+.item, html[data-mode="light"] .item, .game-card, html[data-mode="light"] .game-card,
+.shop-item, .choice, html[data-mode="light"] .choice { background: transparent; border: 1px solid var(--bd); box-shadow: none; border-radius: 14px; }
+.stat-card b, html[data-mode="light"] .stat-card b { font-weight: 600; color: inherit; }
+.game-card:hover { transform: none; box-shadow: none; border-color: var(--ink); }
+.logo { background: transparent; border: 1px solid var(--bd); box-shadow: none; animation: none; border-radius: 12px; width: 38px; height: 38px; font-size: 18px; }
+.brand { font-weight: 600; letter-spacing: -.4px; }
+.pill, html[data-mode="light"] .pill { background: transparent; border-color: var(--bd); color: var(--muted); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.eyebrow, html[data-mode="light"] .eyebrow { color: var(--muted); font-weight: 600; letter-spacing: 1.6px; }
+.hero h1 { font-weight: 600; letter-spacing: -1.2px; }
+.hero h1 span, html[data-mode="light"] .hero h1 span { background: none; -webkit-text-fill-color: currentColor; color: var(--muted); animation: none; }
+.tag, html[data-mode="light"] .tag { background: transparent; border-color: var(--bd); color: var(--muted); }
+.section h2 { font-weight: 600; }
+label, html[data-mode="light"] label { color: var(--muted); }
+input, select, html[data-mode="light"] input, html[data-mode="light"] select { background: transparent; border: 1px solid var(--bd); border-radius: 12px; color: inherit; }
+input:focus-visible, select:focus-visible { outline: none; }
+input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="light"] select:focus { border-color: var(--accent); box-shadow: none; }
+.btn { background: var(--ink); color: var(--ink-inv); box-shadow: none; border-radius: 12px; font-weight: 600; }
+.btn.secondary, html[data-mode="light"] .btn.secondary { background: transparent; color: inherit; border: 1px solid var(--bd); }
+.btn.danger, html[data-mode="light"] .btn.danger { background: transparent; color: #ef6b6b; border: 1px solid rgba(239,107,107,.35); }
+.chip, .chip.on { background: transparent; border: 1px solid var(--bd); font-weight: 600; }
+.chip.on { border-color: var(--accent); color: var(--accent); }
+.bar, html[data-mode="light"] .bar { background: var(--bd); height: 6px; }
+.bar > div { background: var(--accent) !important; }
+.wallet b.big, .shop-bal b { color: inherit; font-weight: 600; }
+.wk-bar { background: var(--bd); }
+.wk-col.today .wk-bar { background: var(--accent); }
+.wk-col b { font-weight: 600; }
+.bottom-nav, html[data-mode="light"] .bottom-nav { background: var(--page); border-top: 1px solid var(--bd); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); -webkit-backdrop-filter: none; backdrop-filter: none; }
+.nav-inner, html[data-mode="light"] .nav-inner { background: none; border: 0; box-shadow: none; max-width: 520px; padding: 0; border-radius: 0; }
+.nav-btn, html[data-mode="light"] .nav-btn { color: var(--muted); font-weight: 500; border-radius: 10px; }
+.nav-btn span { filter: grayscale(1); opacity: .65; }
+.nav-btn.active, html[data-mode="light"] .nav-btn.active { background: none; color: var(--ink); }
+.nav-btn.active span { opacity: 1; }
+.nav-btn.active::after { content: ""; width: 16px; height: 2px; border-radius: 2px; background: var(--accent); margin-top: 1px; }
+.portion-box, html[data-mode="light"] .portion-box, .ob-preview { background: transparent; border: 1px solid var(--bd); }
+.food-row, html[data-mode="light"] .food-row { border-color: var(--bd); }
+.food-row .kc, html[data-mode="light"] .food-row .kc { color: var(--accent); }
+.sheet { box-shadow: none; border: 1px solid var(--bd); }
+.toast, html[data-mode="light"] .toast { background: var(--ink); color: var(--ink-inv); box-shadow: none; }
+.off-row { display: flex; align-items: stretch; gap: 6px; }
+.off-row .food-row { flex: 1; min-width: 0; }
+.off-save { flex: 0 0 44px; border: 1px solid var(--bd); background: transparent; border-radius: 12px; font-size: 16px; cursor: pointer; color: inherit; }
+.off-save:active { background: var(--surface); }
+.footer { opacity: .6; }
   </style>
 </head>
 <body>
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v18 · время для себя</span>
+      <span class="pill" id="topPill">v19 · время для себя</span>
     </header>
 
     <!-- HOME -->
@@ -1327,7 +1380,7 @@ html[data-theme="creator"][data-mode="light"] body::after { opacity: .55; }
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v18 · данные остаются на устройстве</p>
+      <p class="footer" id="appFooter">Luma · v19 · данные остаются на устройстве</p>
     </section>
   </main>
 
@@ -1385,8 +1438,13 @@ html[data-theme="creator"][data-mode="light"] body::after { opacity: .55; }
     <div class="sheet" role="dialog" aria-modal="true" aria-label="Выбор блюда">
       <div class="grab"></div>
       <div class="sheet-head"><h3>🍽 Выбери блюдо</h3><button type="button" class="sheet-close" data-close aria-label="Закрыть">✕</button></div>
-      <input type="search" id="foodSearch" placeholder="🔍 Найти блюдо…" autocomplete="off">
+      <input type="search" id="foodSearch" placeholder="🔍 Название или штрихкод…" autocomplete="off">
       <div class="food-list" id="mealPresets"></div>
+      <div id="offBox" hidden>
+        <div class="shop-sub" style="margin:14px 2px 6px">Онлайн · Open Food Facts</div>
+        <div class="food-list" id="offResults"></div>
+        <p class="notice" id="offStatus" style="margin-top:8px"></p>
+      </div>
       <div class="form-actions"><button type="button" class="btn secondary" onclick="openSheet('sheetMy')">＋ Добавить своё блюдо</button></div>
     </div>
   </div>
@@ -1473,7 +1531,7 @@ html[data-theme="creator"][data-mode="light"] body::after { opacity: .55; }
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '18';
+  const BUILD = '19';
   /* ----- Роли и пароли: хранятся только хеши (SHA-256, соль, 4000 итераций) ----- */
   function sha256(str) {
     const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
@@ -1679,13 +1737,16 @@ html[data-theme="creator"][data-mode="light"] body::after { opacity: .55; }
     const t = set[data.theme] || set.violet;
     document.documentElement.setAttribute('data-mode', eff);
     document.documentElement.setAttribute('data-theme', data.theme);
-    document.body.style.background =
-      `radial-gradient(ellipse at 12% 0%,${t.a} 0,transparent 38%),` +
-      `radial-gradient(ellipse at 95% 30%,${t.b} 0,transparent 34%),` +
-      `linear-gradient(150deg,${t.c},${t.b} 55%,${t.c})`;
+    const ACC = eff === 'light'
+      ? { violet: '#6d28d9', ocean: '#0369a1', rose: '#a21caf', forest: '#15803d', sunset: '#c2410c', neon: '#a21caf', gold: '#a16207', cosmos: '#1d4ed8', sakura: '#be185d', creator: '#0f766e' }
+      : { violet: '#c4b5fd', ocean: '#7dd3fc', rose: '#f0abfc', forest: '#86efac', sunset: '#fdba74', neon: '#f0abfc', gold: '#fcd34d', cosmos: '#93c5fd', sakura: '#f9a8d4', creator: '#a7f3d0' };
+    const acc = ACC[data.theme] || ACC.violet, rs = document.documentElement.style;
+    rs.setProperty('--page', t.c); rs.setProperty('--sheet-bg', t.c);
+    rs.setProperty('--accent', acc); rs.setProperty('--violet', acc); rs.setProperty('--primary', acc);
+    document.body.style.background = t.c;
     document.body.style.backgroundAttachment = 'fixed';
     const mt = document.querySelector('meta[name="theme-color"]');
-    if (mt) mt.setAttribute('content', eff === 'light' ? '#f6f1ff' : '#170d32');
+    if (mt) mt.setAttribute('content', t.c);
   }
   function applyTheme(name) {
     data.theme = (themes[name] && (name !== 'creator' || ROLE.creator)) ? name : 'violet';
@@ -1714,7 +1775,7 @@ html[data-theme="creator"][data-mode="light"] body::after { opacity: .55; }
     el.classList.add('show'); el.setAttribute('aria-hidden', 'false');
     document.body.classList.add('noscroll');
     const sh = el.querySelector('.sheet'); if (sh) sh.scrollTop = 0;
-    if (id === 'sheetPick') { const q = $('foodSearch'); q.value = ''; renderFoodButtons(); }
+    if (id === 'sheetPick') { const q = $('foodSearch'); q.value = ''; renderFoodButtons(); offClear(); }
   }
   function closeSheets(keepScroll) {
     document.querySelectorAll('.sheet-back.show').forEach(e => { e.classList.remove('show'); e.setAttribute('aria-hidden', 'true'); });
@@ -2108,6 +2169,98 @@ html[data-theme="creator"][data-mode="light"] body::after { opacity: .55; }
     $('wPlus').addEventListener('click', () => setWeight((+$('portionWeight').value || 0) + ((curPreset && curPreset.step) || 10)));
   })();
   window._refreshFoods = () => { renderFoodButtons(); renderCustomFoods(); };
+  /* ----- Онлайн-поиск продуктов: Open Food Facts (бесплатно, без ключа, без своего сервера) ----- */
+  const OFF = {
+    base: 'https://world.openfoodfacts.org',
+    fields: 'code,product_name,product_name_ru,brands,nutriments,serving_quantity',
+    cache: new Map(), ctl: null, tm: null, seq: 0
+  };
+  const offIsCode = q => /^\d{8,14}$/.test(q);
+  function offClear() {
+    clearTimeout(OFF.tm); OFF.seq++;
+    if (OFF.ctl) { try { OFF.ctl.abort(); } catch {} }
+    const b = $('offBox'); if (b) b.hidden = true;
+    const r = $('offResults'); if (r) r.innerHTML = '';
+  }
+  /* приводит продукт из ответа к формату блюда Luma (значения на 100 г); без калорий — отбрасывает */
+  function offItem(p) {
+    const n = p && p.nutriments; if (!n || typeof n !== 'object') return null;
+    let kcal = parseFloat(n['energy-kcal_100g']);
+    if (!Number.isFinite(kcal)) { const kj = parseFloat(n['energy_100g']); if (Number.isFinite(kj)) kcal = kj / 4.184; }
+    if (!Number.isFinite(kcal) || kcal < 0 || kcal > 950) return null;
+    const g = k => { const v = parseFloat(n[k]); return Number.isFinite(v) && v >= 0 && v <= 100 ? fmt1(v) : 0; };
+    const name = String(p.product_name_ru || p.product_name || '').trim().slice(0, 60); if (!name) return null;
+    const brand = String(p.brands || '').split(',')[0].trim().slice(0, 30);
+    let w = parseFloat(p.serving_quantity); if (!(w >= 5 && w <= 1000)) w = 100;
+    return { n: brand && !name.toLowerCase().includes(brand.toLowerCase()) ? name + ' (' + brand + ')' : name, w: Math.round(w), c: Math.round(kcal), p: g('proteins_100g'), f: g('fat_100g'), u: g('carbohydrates_100g'), t: 'snack' };
+  }
+  async function offFetch(url, ctl) {
+    const to = setTimeout(() => { try { ctl.abort(); } catch {} }, 9000);
+    try {
+      const r = await fetch(url, { signal: ctl.signal });
+      if (!r.ok) throw new Error('http ' + r.status);
+      return await r.json();
+    } finally { clearTimeout(to); }
+  }
+  function offRender(items) {
+    const res = $('offResults'), st = $('offStatus'); if (!res) return;
+    res.innerHTML = '';
+    items.forEach(it => {
+      const row = document.createElement('div'); row.className = 'off-row';
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'food-row';
+      b.innerHTML = '<span>' + esc(it.n) + '<small>' + it.w + ' г · на 100 г: Б ' + it.p + ' · Ж ' + it.f + ' · У ' + it.u + '</small></span><span class="kc">' + it.c + ' ккал</span>';
+      b.addEventListener('click', () => pickFood(it));
+      const s = document.createElement('button'); s.type = 'button'; s.className = 'off-save'; s.textContent = '⭐'; s.title = 'Сохранить в «Мои блюда»'; s.setAttribute('aria-label', 'Сохранить в мои блюда');
+      s.addEventListener('click', () => {
+        if (!Array.isArray(data.customFoods)) data.customFoods = [];
+        if (data.customFoods.some(x => x.n === it.n)) { toast('Уже есть в «Моих блюдах»'); return; }
+        data.customFoods.push(Object.assign({}, it, { id: 'cf' + Date.now() + Math.floor(Math.random() * 1000) }));
+        save(); renderCustomFoods(); renderFoodButtons(); toast('Сохранено в «Мои блюда» ⭐');
+      });
+      row.appendChild(b); row.appendChild(s); res.appendChild(row);
+    });
+    st.textContent = items.length ? 'Данные Open Food Facts вносят пользователи — сверяй с упаковкой.' : 'Онлайн ничего не найдено. Добавь продукт вручную кнопкой ниже.';
+  }
+  async function offSearch(q) {
+    const box = $('offBox'), res = $('offResults'), st = $('offStatus'); if (!box) return;
+    const my = ++OFF.seq;
+    if (OFF.ctl) { try { OFF.ctl.abort(); } catch {} }
+    const ctl = OFF.ctl = new AbortController();
+    box.hidden = false;
+    const key = q.toLowerCase();
+    if (OFF.cache.has(key)) { offRender(OFF.cache.get(key)); return; }
+    res.innerHTML = '';
+    if (navigator.onLine === false) { st.textContent = 'Нет интернета — онлайн-поиск недоступен.'; return; }
+    st.textContent = 'Ищу…';
+    try {
+      let items;
+      if (offIsCode(q)) {
+        const j = await offFetch(OFF.base + '/api/v2/product/' + q + '.json?fields=' + OFF.fields, ctl);
+        const it = j && j.status === 1 ? offItem(j.product) : null; items = it ? [it] : [];
+      } else {
+        const j = await offFetch(OFF.base + '/cgi/search.pl?search_simple=1&action=process&json=1&page_size=20&lc=ru&fields=' + OFF.fields + '&search_terms=' + encodeURIComponent(q), ctl);
+        items = (j && Array.isArray(j.products) ? j.products : []).map(offItem).filter(Boolean).slice(0, 12);
+      }
+      if (my !== OFF.seq) return;
+      if (OFF.cache.size > 40) OFF.cache.delete(OFF.cache.keys().next().value);
+      OFF.cache.set(key, items);
+      offRender(items);
+    } catch (e) {
+      if (my !== OFF.seq) return;
+      res.innerHTML = '';
+      st.textContent = e && e.name === 'AbortError' ? 'Сервис не ответил вовремя. Попробуй ещё раз.' : 'Не удалось связаться с Open Food Facts. Проверь интернет.';
+    }
+  }
+  (function setupOff() {
+    const inp = $('foodSearch'); if (!inp) return;
+    inp.addEventListener('input', () => {
+      clearTimeout(OFF.tm);
+      const q = inp.value.trim();
+      if (q.length < 3 && !offIsCode(q)) { offClear(); return; }
+      OFF.tm = setTimeout(() => offSearch(q), 600);
+    });
+  })();
+
   $('mealForm').addEventListener('reset', () => { setTimeout(() => { const h = $('presetHint'); if (h) h.textContent = ''; curPreset = null; $('portionBox').classList.remove('show'); }, 0); });
 
   /* ----- Reminders ----- */
