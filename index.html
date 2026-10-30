@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="9"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="10"><title>Luma — время для себя</title>
   <link rel="manifest" href="manifest.json">
   <style>
 :root {
@@ -569,6 +569,42 @@ input[type=time]::-webkit-calendar-picker-indicator {
   max-width: 100%;
 }
 
+/* Snake mobile */
+#snakeCanvas { touch-action: none; width: min(100%, 360px); height: auto; aspect-ratio: 1; }
+.dpad { display: grid; grid-template-columns: repeat(3, 64px); grid-template-rows: repeat(2, 56px); gap: 8px; justify-content: center; margin: 10px auto 4px; }
+.dpad button { border: 1px solid var(--line); background: rgba(255,255,255,.09); color: #fff; font-size: 22px; border-radius: 16px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
+.dpad button:active { background: rgba(167,139,250,.4); }
+.dpad .up { grid-column: 2; grid-row: 1; }
+.dpad .left { grid-column: 1; grid-row: 2; }
+.dpad .down { grid-column: 2; grid-row: 2; }
+.dpad .right { grid-column: 3; grid-row: 2; }
+.game-bar { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+
+/* Portion / weight */
+.portion-box { margin: 12px 0; padding: 14px; border-radius: 18px; background: rgba(167,139,250,.1); border: 1px solid #c4a7ff30; display: none; }
+.portion-box.show { display: block; }
+.portion-box h4 { font-size: 14px; margin-bottom: 10px; }
+.portion-row { display: flex; align-items: center; gap: 8px; }
+.portion-row input[type=number] { text-align: center; font-size: 18px; font-weight: 700; }
+.step-btn { flex: 0 0 48px; height: 48px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,.09); color: #fff; font-size: 22px; touch-action: manipulation; }
+.step-btn:active { background: rgba(167,139,250,.4); }
+.portion-box input[type=range] { padding: 0; margin-top: 12px; accent-color: #a78bfa; border: 0; background: transparent; }
+.portion-calc { margin-top: 10px; font-size: 13px; color: #e8ddff; line-height: 1.6; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+
+/* 2048 */
+.g2048 { position: relative; width: min(100%, 340px); aspect-ratio: 1; margin: 12px auto; padding: 8px; border-radius: 18px; background: rgba(0,0,0,.35); border: 1px solid rgba(167,139,250,.35); display: grid; grid-template-columns: repeat(4,1fr); grid-template-rows: repeat(4,1fr); gap: 8px; touch-action: none; user-select: none; }
+.t2048 { border-radius: 10px; display: grid; place-items: center; font-weight: 800; font-size: clamp(16px, 6vw, 26px); background: rgba(255,255,255,.06); color: #fff; transition: transform .1s; }
+.t2048.pop { animation: pop .18s; }
+@keyframes pop { 0% { transform: scale(.7); } 100% { transform: scale(1); } }
+
+/* Tic-tac-toe */
+.ttt { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: min(100%, 300px); margin: 14px auto; }
+.ttt button { aspect-ratio: 1; border-radius: 16px; border: 1px solid var(--line); background: rgba(255,255,255,.07); color: #fff; font-size: 40px; font-weight: 800; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.ttt button.x { color: #e0a6ff; }
+.ttt button.o { color: #67e8f9; }
+.ttt button.win { background: rgba(167,139,250,.4); border-color: #e0caff; }
+
 /* Themes */
 .theme-row {
   display: flex;
@@ -646,7 +682,7 @@ input[type=time]::-webkit-calendar-picker-indicator {
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v9 · время для себя</span>
+      <span class="pill" id="topPill">v10 · время для себя</span>
     </header>
 
     <!-- HOME -->
@@ -748,6 +784,18 @@ input[type=time]::-webkit-calendar-picker-indicator {
             <div class="notice" style="margin:0 0 8px">Быстрый выбор: нажми на блюдо — подставятся средние значения на порцию (можно поправить)</div>
             <div class="water-btns" id="mealPresets" style="margin-top:0"></div>
             <div class="notice" id="presetHint" style="margin:8px 0 0"></div>
+          </div>
+          <div class="portion-box" id="portionBox">
+            <h4 id="portionTitle">Порция</h4>
+            <div class="portion-row">
+              <button type="button" class="step-btn" id="wMinus" aria-label="Меньше">−</button>
+              <input type="number" id="portionWeight" inputmode="decimal" min="1" max="2000" step="any">
+              <span class="muted">г</span>
+              <button type="button" class="step-btn" id="wPlus" aria-label="Больше">+</button>
+            </div>
+            <input type="range" id="portionRange" min="10" max="600" step="any">
+            <div class="chips" id="portionChips"></div>
+            <div class="portion-calc" id="portionCalc"></div>
           </div>
           <div class="fields">
             <div class="field full"><label>Название</label><input id="mealName" placeholder="Овсянка с бананом" required maxlength="60"></div>
@@ -858,7 +906,17 @@ input[type=time]::-webkit-calendar-picker-indicator {
           <div class="game-card" onclick="startGame('snake')">
             <div class="icon">🐍</div>
             <h3>Змейка</h3>
-            <p>Стрелки или WASD</p>
+            <p>Свайпы или кнопки</p>
+          </div>
+          <div class="game-card" onclick="startGame('g2048')">
+            <div class="icon">🔢</div>
+            <h3>2048</h3>
+            <p>Свайпай плитки</p>
+          </div>
+          <div class="game-card" onclick="startGame('ttt')">
+            <div class="icon">❌</div>
+            <h3>Крестики-нолики</h3>
+            <p>Против бота</p>
           </div>
         </div>
       </div>
@@ -1244,7 +1302,7 @@ input[type=time]::-webkit-calendar-picker-indicator {
       el.innerHTML = `
         <div class="body">
           <strong>${esc(m.name)}</strong>
-          <span>${typeNames[m.type] || m.type} · ${m.cal} ккал</span>
+          <span>${typeNames[m.type] || m.type} · ${m.cal} ккал · Б ${m.prot || 0} · Ж ${m.fat || 0} · У ${m.carb || 0}</span>
         </div>
         <div class="item-actions">
           <button type="button" data-del="${m.id}">Удалить</button>
@@ -1297,25 +1355,48 @@ input[type=time]::-webkit-calendar-picker-indicator {
     toast('Приём пищи добавлен');
   });
 
+  /* Значения на 100 г: c — ккал, p — белки, f — жиры, u — углеводы; w — стандартная порция, г */
   const MEAL_PRESETS = [
-    { n: 'Овсяная каша на воде', g: '250 г', c: 150, p: 5, f: 3, u: 27, t: 'breakfast' },
-    { n: 'Овсяная каша на молоке', g: '250 г', c: 215, p: 8, f: 7, u: 31, t: 'breakfast' },
-    { n: 'Гречневая каша', g: '200 г', c: 185, p: 7, f: 1.5, u: 38, t: 'lunch' },
-    { n: 'Рис варёный', g: '200 г', c: 260, p: 5.4, f: 0.6, u: 56, t: 'lunch' },
-    { n: 'Макароны варёные', g: '200 г', c: 316, p: 11.6, f: 1.8, u: 62, t: 'lunch' },
-    { n: 'Картофельное пюре', g: '200 г', c: 220, p: 4, f: 8, u: 32, t: 'dinner' },
-    { n: 'Куриная грудка варёная', g: '150 г', c: 248, p: 46, f: 5.4, u: 0, t: 'lunch' },
-    { n: 'Яйцо варёное', g: '1 шт', c: 78, p: 6.3, f: 5.3, u: 0.6, t: 'breakfast' },
-    { n: 'Омлет из 2 яиц', g: '150 г', c: 220, p: 14, f: 17, u: 2, t: 'breakfast' },
-    { n: 'Творог 5%', g: '150 г', c: 182, p: 26, f: 7.5, u: 2.7, t: 'snack' },
-    { n: 'Йогурт натуральный', g: '150 г', c: 90, p: 5, f: 5, u: 7, t: 'snack' },
-    { n: 'Банан', g: '1 шт', c: 105, p: 1.3, f: 0.4, u: 27, t: 'snack' },
-    { n: 'Яблоко', g: '1 шт', c: 95, p: 0.5, f: 0.3, u: 25, t: 'snack' },
-    { n: 'Бутерброд с сыром', g: '1 шт', c: 200, p: 9, f: 10, u: 18, t: 'breakfast' },
-    { n: 'Борщ', g: '300 г', c: 150, p: 6, f: 7, u: 15, t: 'lunch' },
-    { n: 'Куриный суп', g: '300 г', c: 120, p: 8, f: 4, u: 12, t: 'lunch' },
-    { n: 'Овощной салат с маслом', g: '200 г', c: 120, p: 2, f: 9, u: 8, t: 'dinner' }
+    { n: 'Овсяная каша на воде', w: 250, c: 60, p: 2, f: 1.2, u: 10.8, t: 'breakfast' },
+    { n: 'Овсяная каша на молоке', w: 250, c: 86, p: 3.2, f: 2.8, u: 12.4, t: 'breakfast' },
+    { n: 'Гречневая каша', w: 200, c: 92.5, p: 3.5, f: 0.75, u: 19, t: 'lunch' },
+    { n: 'Рис варёный', w: 200, c: 130, p: 2.7, f: 0.3, u: 28, t: 'lunch' },
+    { n: 'Макароны варёные', w: 200, c: 158, p: 5.8, f: 0.9, u: 31, t: 'lunch' },
+    { n: 'Картофельное пюре', w: 200, c: 110, p: 2, f: 4, u: 16, t: 'dinner' },
+    { n: 'Куриная грудка варёная', w: 150, c: 165, p: 30.7, f: 3.6, u: 0, t: 'lunch' },
+    { n: 'Яйцо варёное', w: 50, c: 156, p: 12.6, f: 10.6, u: 1.2, t: 'breakfast', step: 50, unit: 'шт' },
+    { n: 'Омлет из 2 яиц', w: 150, c: 147, p: 9.3, f: 11.3, u: 1.3, t: 'breakfast' },
+    { n: 'Творог 5%', w: 150, c: 121, p: 17.3, f: 5, u: 1.8, t: 'snack' },
+    { n: 'Йогурт натуральный', w: 150, c: 60, p: 3.3, f: 3.3, u: 4.7, t: 'snack' },
+    { n: 'Банан', w: 120, c: 88, p: 1.1, f: 0.3, u: 22.5, t: 'snack' },
+    { n: 'Яблоко', w: 180, c: 52, p: 0.3, f: 0.2, u: 13.8, t: 'snack' },
+    { n: 'Бутерброд с сыром', w: 80, c: 250, p: 11.3, f: 12.5, u: 22.5, t: 'breakfast' },
+    { n: 'Борщ', w: 300, c: 50, p: 2, f: 2.3, u: 5, t: 'lunch' },
+    { n: 'Куриный суп', w: 300, c: 40, p: 2.7, f: 1.3, u: 4, t: 'lunch' },
+    { n: 'Овощной салат с маслом', w: 200, c: 60, p: 1, f: 4.5, u: 4, t: 'dinner' }
   ];
+  const fmt1 = v => Math.round(v * 10) / 10;
+  let curPreset = null;
+  function recalcPortion(fromRange) {
+    if (!curPreset) return;
+    let w = +$('portionWeight').value;
+    if (!Number.isFinite(w) || w < 0) w = 0;
+    const k = w / 100, m = curPreset;
+    const cal = Math.round(m.c * k), pr = fmt1(m.p * k), fa = fmt1(m.f * k), ca = fmt1(m.u * k);
+    $('mealName').value = m.n + ' (' + w + ' г)';
+    $('mealCal').value = cal;
+    $('mealProt').value = pr;
+    $('mealFat').value = fa;
+    $('mealCarb').value = ca;
+    $('mealType').value = m.t;
+    $('portionRange').value = Math.min(Math.max(w, +$('portionRange').min), +$('portionRange').max);
+    $('portionCalc').innerHTML = '<b>' + cal + ' ккал</b> · Б ' + pr + ' г · Ж ' + fa + ' г · У ' + ca + ' г<br><span class="muted">На 100 г: ' + m.c + ' ккал · Б ' + m.p + ' · Ж ' + m.f + ' · У ' + m.u + '</span>';
+  }
+  function setWeight(w) {
+    w = Math.max(5, Math.min(2000, Math.round(w)));
+    $('portionWeight').value = w;
+    recalcPortion();
+  }
   (function setupPresets() {
     const box = $('mealPresets');
     if (!box) return;
@@ -1325,18 +1406,33 @@ input[type=time]::-webkit-calendar-picker-indicator {
       b.className = 'btn secondary small';
       b.textContent = m.n;
       b.addEventListener('click', () => {
-        $('mealName').value = m.n + ' (' + m.g + ')';
-        $('mealCal').value = m.c;
-        $('mealProt').value = m.p;
-        $('mealFat').value = m.f;
-        $('mealCarb').value = m.u;
-        $('mealType').value = m.t;
-        $('presetHint').textContent = m.n + ' (' + m.g + '): ' + m.c + ' ккал · Б ' + m.p + ' · Ж ' + m.f + ' · У ' + m.u + ' — нажми «Добавить»';
+        curPreset = m;
+        $('portionBox').classList.add('show');
+        $('portionTitle').textContent = m.n + ' — сколько грамм?';
+        const chips = $('portionChips');
+        chips.innerHTML = '';
+        const base = m.w;
+        [0.5, 1, 1.5, 2].forEach(f => {
+          const val = Math.round(base * f);
+          const c = document.createElement('button');
+          c.type = 'button';
+          c.className = 'btn secondary small';
+          c.textContent = val + ' г';
+          c.onclick = () => setWeight(val);
+          chips.appendChild(c);
+        });
+        $('portionRange').max = Math.max(600, base * 3);
+        setWeight(base);
+        $('presetHint').textContent = 'Измени вес — калории, белки, жиры и углеводы пересчитаются сами. Затем нажми «Добавить».';
       });
       box.appendChild(b);
     });
+    $('portionWeight').addEventListener('input', () => recalcPortion());
+    $('portionRange').addEventListener('input', e => { $('portionWeight').value = e.target.value; recalcPortion(); });
+    $('wMinus').addEventListener('click', () => setWeight((+$('portionWeight').value || 0) - ((curPreset && curPreset.step) || 10)));
+    $('wPlus').addEventListener('click', () => setWeight((+$('portionWeight').value || 0) + ((curPreset && curPreset.step) || 10)));
   })();
-  $('mealForm').addEventListener('reset', () => { setTimeout(() => { const h = $('presetHint'); if (h) h.textContent = ''; }, 0); });
+  $('mealForm').addEventListener('reset', () => { setTimeout(() => { const h = $('presetHint'); if (h) h.textContent = ''; curPreset = null; $('portionBox').classList.remove('show'); }, 0); });
 
   /* ----- Reminders ----- */
   let remUserEdited = false;
@@ -1995,6 +2091,8 @@ input[type=time]::-webkit-calendar-picker-indicator {
     else if (name === 'memory') initMemory(box);
     else if (name === 'tap') initTap(box);
     else if (name === 'snake') initSnake(box);
+    else if (name === 'g2048') init2048(box);
+    else if (name === 'ttt') initTTT(box);
   }
   window.startGame = startGame;
 
@@ -2154,13 +2252,28 @@ input[type=time]::-webkit-calendar-picker-indicator {
     box.innerHTML = `
       <h2 style="margin-bottom:8px;text-align:center">🐍 Змейка</h2>
       <p class="muted" style="text-align:center">Счёт: <b id="snScore">0</b> · Рекорд: <b id="snBest">${localStorage.getItem('luma-snake') || 0}</b></p>
-      <canvas id="snakeCanvas" width="280" height="280"></canvas>
-      <p class="notice" style="text-align:center">Стрелки / WASD · Пробел — пауза</p>
-      <div style="text-align:center;margin-top:8px"><button class="btn secondary small" type="button" id="snRestart">Заново</button></div>`;
+      <canvas id="snakeCanvas"></canvas>
+      <p class="notice" style="text-align:center" id="snHint">Свайпай по полю или жми кнопки · на ПК: стрелки / WASD, пробел — пауза</p>
+      <div class="dpad">
+        <button type="button" class="up" data-d="up" aria-label="Вверх">▲</button>
+        <button type="button" class="left" data-d="left" aria-label="Влево">◀</button>
+        <button type="button" class="down" data-d="down" aria-label="Вниз">▼</button>
+        <button type="button" class="right" data-d="right" aria-label="Вправо">▶</button>
+      </div>
+      <div class="game-bar">
+        <button class="btn secondary small" type="button" id="snPause">⏸ Пауза</button>
+        <button class="btn secondary small" type="button" id="snRestart">Заново</button>
+      </div>`;
     const canvas = $('snakeCanvas');
     const ctx = canvas.getContext('2d');
-    const S = 14, COLS = 20, ROWS = 20;
-    let snake, dir, nextDir, food, score, alive, paused, last = 0;
+    const COLS = 16, ROWS = 16;
+    const SIZE = Math.min(360, Math.max(240, Math.floor(Math.min(box.clientWidth || 320, window.innerWidth - 56))));
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    canvas.width = SIZE * dpr; canvas.height = SIZE * dpr;
+    canvas.style.width = SIZE + 'px'; canvas.style.height = SIZE + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const S = SIZE / COLS;
+    let snake, dir, queue, food, score, alive, paused, started, last = 0, speed;
 
     function placeFood() {
       let p;
@@ -2169,71 +2282,318 @@ input[type=time]::-webkit-calendar-picker-indicator {
       return p;
     }
     function reset() {
-      snake = [{ x: 10, y: 10 }];
+      snake = [{ x: 8, y: 8 }];
       dir = { x: 1, y: 0 };
-      nextDir = { ...dir };
+      queue = [];
       food = placeFood();
-      score = 0; alive = true; paused = false;
+      score = 0; alive = true; paused = false; started = false; speed = 150;
       $('snScore').textContent = '0';
+      $('snPause').textContent = '⏸ Пауза';
+    }
+    function rr(x, y, w, h, r) {
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(x, y, w, h, r);
+      else ctx.rect(x, y, w, h);
+      ctx.fill();
+    }
+    function overlay(text, sub) {
+      ctx.fillStyle = 'rgba(16,8,32,.72)';
+      ctx.fillRect(0, 0, SIZE, SIZE);
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.font = '700 ' + Math.round(SIZE / 12) + 'px system-ui, sans-serif';
+      ctx.fillText(text, SIZE / 2, SIZE / 2 - 4);
+      ctx.font = '500 ' + Math.round(SIZE / 22) + 'px system-ui, sans-serif';
+      ctx.fillStyle = '#d8cbed';
+      ctx.fillText(sub, SIZE / 2, SIZE / 2 + SIZE / 11);
     }
     function draw() {
-      ctx.fillStyle = 'rgba(0,0,0,.35)';
-      ctx.fillRect(0, 0, 280, 280);
+      ctx.fillStyle = '#150b2b';
+      ctx.fillRect(0, 0, SIZE, SIZE);
+      ctx.fillStyle = 'rgba(255,255,255,.035)';
+      for (let x = 0; x < COLS; x++) for (let y = 0; y < ROWS; y++) if ((x + y) % 2 === 0) ctx.fillRect(x * S, y * S, S, S);
       ctx.fillStyle = '#f472b6';
-      ctx.beginPath();
-      ctx.roundRect(food.x * S + 2, food.y * S + 2, S - 4, S - 4, 4);
-      ctx.fill();
+      rr(food.x * S + 2, food.y * S + 2, S - 4, S - 4, S / 3);
       snake.forEach((s, i) => {
         ctx.fillStyle = i === 0 ? '#e0a6ff' : '#a78bfa';
-        ctx.beginPath();
-        ctx.roundRect(s.x * S + 1, s.y * S + 1, S - 2, S - 2, 3);
-        ctx.fill();
+        rr(s.x * S + 1, s.y * S + 1, S - 2, S - 2, S / 4);
       });
+      if (!alive) overlay('Игра окончена', 'Счёт ' + score + ' · нажми «Заново»');
+      else if (!started) overlay('Готов?', 'Свайп или кнопка — старт');
+      else if (paused) overlay('Пауза', 'Нажми «Пауза», чтобы продолжить');
     }
-    function loop(ts) {
-      if (!alive || activeGame !== 'snake') return;
-      window._snakeRAF = requestAnimationFrame(loop);
-      if (paused) return;
-      if (ts - last < 110) return;
-      last = ts;
-      dir = { ...nextDir };
+    function step() {
+      if (queue.length) dir = queue.shift();
       const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
-      if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS || snake.some(s => s.x === head.x && s.y === head.y)) {
+      const willEat = head.x === food.x && head.y === food.y;
+      const body = willEat ? snake : snake.slice(0, -1);
+      if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS || body.some(s => s.x === head.x && s.y === head.y)) {
         alive = false;
+        try { navigator.vibrate && navigator.vibrate(120); } catch {}
         const best = +(localStorage.getItem('luma-snake') || 0);
         if (score > best) {
           localStorage.setItem('luma-snake', score);
           $('snBest').textContent = score;
           toast('Рекорд змейки! 🐍');
         } else toast('Игра окончена · ' + score);
+        draw();
         return;
       }
       snake.unshift(head);
-      if (head.x === food.x && head.y === food.y) {
+      if (willEat) {
         score++;
         $('snScore').textContent = score;
+        speed = Math.max(70, 150 - score * 3);
+        try { navigator.vibrate && navigator.vibrate(15); } catch {}
         food = placeFood();
       } else snake.pop();
-      draw();
     }
+    function loop(ts) {
+      if (activeGame !== 'snake') return;
+      window._snakeRAF = requestAnimationFrame(loop);
+      if (!alive || paused || !started) return;
+      if (ts - last < speed) return;
+      last = ts;
+      step();
+      if (alive) draw();
+    }
+    function turn(dx, dy) {
+      if (!alive) return;
+      const ref = queue.length ? queue[queue.length - 1] : dir;
+      if (ref.x === -dx && ref.y === -dy) return;
+      if (ref.x === dx && ref.y === dy) { if (!started) { started = true; draw(); } return; }
+      if (queue.length < 3) queue.push({ x: dx, y: dy });
+      if (!started) { started = true; paused = false; last = 0; draw(); }
+    }
+    const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+    box.querySelectorAll('.dpad button').forEach(b => {
+      const go = e => { e.preventDefault(); const d = DIRS[b.dataset.d]; turn(d[0], d[1]); };
+      b.addEventListener('touchstart', go, { passive: false });
+      b.addEventListener('mousedown', go);
+    });
+    /* swipe */
+    let tx = 0, ty = 0, tracking = false;
+    canvas.addEventListener('touchstart', e => {
+      const t = e.changedTouches[0]; tx = t.clientX; ty = t.clientY; tracking = true; e.preventDefault();
+    }, { passive: false });
+    canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      if (!tracking) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - tx, dy = t.clientY - ty;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 22) return;
+      if (Math.abs(dx) > Math.abs(dy)) turn(dx > 0 ? 1 : -1, 0); else turn(0, dy > 0 ? 1 : -1);
+      tx = t.clientX; ty = t.clientY;
+    }, { passive: false });
+    canvas.addEventListener('touchend', () => { tracking = false; });
+    /* keyboard */
     function onKey(e) {
       if (activeGame !== 'snake') return;
       const k = e.key.toLowerCase();
-      if (k === 'arrowup' || k === 'w') { if (dir.y === 0) nextDir = { x: 0, y: -1 }; e.preventDefault(); }
-      else if (k === 'arrowdown' || k === 's') { if (dir.y === 0) nextDir = { x: 0, y: 1 }; e.preventDefault(); }
-      else if (k === 'arrowleft' || k === 'a') { if (dir.x === 0) nextDir = { x: -1, y: 0 }; e.preventDefault(); }
-      else if (k === 'arrowright' || k === 'd') { if (dir.x === 0) nextDir = { x: 1, y: 0 }; e.preventDefault(); }
-      else if (k === ' ') { paused = !paused; e.preventDefault(); }
+      if (k === 'arrowup' || k === 'w') { turn(0, -1); e.preventDefault(); }
+      else if (k === 'arrowdown' || k === 's') { turn(0, 1); e.preventDefault(); }
+      else if (k === 'arrowleft' || k === 'a') { turn(-1, 0); e.preventDefault(); }
+      else if (k === 'arrowright' || k === 'd') { turn(1, 0); e.preventDefault(); }
+      else if (k === ' ') { togglePause(); e.preventDefault(); }
+    }
+    function togglePause() {
+      if (!alive || !started) return;
+      paused = !paused;
+      $('snPause').textContent = paused ? '▶ Продолжить' : '⏸ Пауза';
+      draw();
     }
     document.addEventListener('keydown', onKey);
     gameCleanups.push(() => document.removeEventListener('keydown', onKey));
-    $('snRestart').onclick = () => {
-      if (window._snakeRAF) cancelAnimationFrame(window._snakeRAF);
-      reset(); draw(); last = 0;
-      window._snakeRAF = requestAnimationFrame(loop);
-    };
+    /* auto-pause when app goes to background */
+    const onHide = () => { if (document.hidden && alive && started && !paused) togglePause(); };
+    document.addEventListener('visibilitychange', onHide);
+    gameCleanups.push(() => document.removeEventListener('visibilitychange', onHide));
+    $('snPause').onclick = togglePause;
+    $('snRestart').onclick = () => { reset(); draw(); last = 0; };
     reset(); draw();
     window._snakeRAF = requestAnimationFrame(loop);
+  }
+
+  /* ----- 2048 ----- */
+  function init2048(box) {
+    const N = 4;
+    const COLORS = { 0: ['rgba(255,255,255,.06)', '#fff'], 2: ['#e9dcff', '#3b1f6b'], 4: ['#d9c2ff', '#3b1f6b'], 8: ['#c29bff', '#fff'], 16: ['#a978ff', '#fff'], 32: ['#f08ad6', '#fff'], 64: ['#ec5fa8', '#fff'], 128: ['#fbbf24', '#3b2a00'], 256: ['#f59e0b', '#fff'], 512: ['#34d399', '#053b2a'], 1024: ['#22d3ee', '#04323b'], 2048: ['#fff27a', '#3b3300'] };
+    let grid, score, over, won;
+    let best = +(localStorage.getItem('luma-2048') || 0);
+    box.innerHTML = `
+      <h2 style="margin-bottom:8px;text-align:center">🔢 2048</h2>
+      <p class="muted" style="text-align:center">Счёт: <b id="gScore">0</b> · Рекорд: <b id="gBest">${best}</b></p>
+      <div class="g2048" id="g2048"></div>
+      <p class="notice" style="text-align:center">Свайпай по полю · на ПК: стрелки / WASD</p>
+      <div class="game-bar"><button class="btn secondary small" type="button" id="gRestart">Заново</button></div>`;
+    const board = $('g2048');
+    function empty() { const e = []; for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) if (!grid[r][c]) e.push([r, c]); return e; }
+    let newest = null;
+    function spawn() {
+      const e = empty(); if (!e.length) return;
+      const [r, c] = e[Math.floor(Math.random() * e.length)];
+      grid[r][c] = Math.random() < 0.9 ? 2 : 4; newest = r + ',' + c;
+    }
+    function render() {
+      board.innerHTML = '';
+      for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+        const v = grid[r][c];
+        const t = document.createElement('div');
+        t.className = 't2048' + (newest === r + ',' + c ? ' pop' : '');
+        const col = COLORS[v] || ['#fff', '#000'];
+        t.style.background = col[0]; t.style.color = col[1];
+        if (v >= 1024) t.style.fontSize = 'clamp(13px,5vw,21px)';
+        t.textContent = v || '';
+        board.appendChild(t);
+      }
+      $('gScore').textContent = score;
+      if (score > best) { best = score; localStorage.setItem('luma-2048', best); $('gBest').textContent = best; }
+    }
+    function slideLine(line) {
+      const a = line.filter(Boolean); const out = []; let gain = 0;
+      for (let i = 0; i < a.length; i++) {
+        if (a[i] === a[i + 1]) { out.push(a[i] * 2); gain += a[i] * 2; i++; } else out.push(a[i]);
+      }
+      while (out.length < N) out.push(0);
+      return [out, gain];
+    }
+    function move(dir) { /* 0 left, 1 up, 2 right, 3 down */
+      if (over) return;
+      let moved = false, gain = 0;
+      const ng = grid.map(r => r.slice());
+      for (let i = 0; i < N; i++) {
+        let line = [];
+        for (let j = 0; j < N; j++) {
+          const [r, c] = dir === 0 ? [i, j] : dir === 2 ? [i, N - 1 - j] : dir === 1 ? [j, i] : [N - 1 - j, i];
+          line.push(grid[r][c]);
+        }
+        const [res, g] = slideLine(line); gain += g;
+        for (let j = 0; j < N; j++) {
+          const [r, c] = dir === 0 ? [i, j] : dir === 2 ? [i, N - 1 - j] : dir === 1 ? [j, i] : [N - 1 - j, i];
+          if (ng[r][c] !== res[j]) moved = true;
+          ng[r][c] = res[j];
+        }
+      }
+      if (!moved) return;
+      grid = ng; score += gain; spawn(); render();
+      try { navigator.vibrate && navigator.vibrate(8); } catch {}
+      if (!won && grid.some(r => r.includes(2048))) { won = true; toast('2048! Ты победил 🎉 Можно играть дальше'); }
+      if (!canMove()) { over = true; toast('Ходов нет · счёт ' + score); }
+    }
+    function canMove() {
+      if (empty().length) return true;
+      for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+        if (c + 1 < N && grid[r][c] === grid[r][c + 1]) return true;
+        if (r + 1 < N && grid[r][c] === grid[r + 1][c]) return true;
+      }
+      return false;
+    }
+    function reset() {
+      grid = Array.from({ length: N }, () => Array(N).fill(0));
+      score = 0; over = false; won = false; spawn(); spawn(); render();
+    }
+    let sx = 0, sy = 0;
+    board.addEventListener('touchstart', e => { const t = e.changedTouches[0]; sx = t.clientX; sy = t.clientY; e.preventDefault(); }, { passive: false });
+    board.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+    board.addEventListener('touchend', e => {
+      const t = e.changedTouches[0]; const dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+      if (Math.abs(dx) > Math.abs(dy)) move(dx > 0 ? 2 : 0); else move(dy > 0 ? 3 : 1);
+      e.preventDefault();
+    }, { passive: false });
+    function onKey(e) {
+      if (activeGame !== 'g2048') return;
+      const k = e.key.toLowerCase();
+      const m = { arrowleft: 0, a: 0, arrowup: 1, w: 1, arrowright: 2, d: 2, arrowdown: 3, s: 3 }[k];
+      if (m !== undefined) { move(m); e.preventDefault(); }
+    }
+    document.addEventListener('keydown', onKey);
+    gameCleanups.push(() => document.removeEventListener('keydown', onKey));
+    $('gRestart').onclick = reset;
+    reset();
+  }
+
+  /* ----- Крестики-нолики ----- */
+  function initTTT(box) {
+    const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    let b, over, level = 'hard', stats = JSON.parse(localStorage.getItem('luma-ttt') || '{"w":0,"l":0,"d":0}');
+    box.innerHTML = `
+      <h2 style="margin-bottom:8px;text-align:center">❌ Крестики-нолики</h2>
+      <div class="scoreline"><span>Победы <b id="tW">${stats.w}</b></span><span>Ничьи <b id="tD">${stats.d}</b></span><span>Поражения <b id="tL">${stats.l}</b></span></div>
+      <div class="game-bar" style="margin:0 0 6px">
+        <button class="btn secondary small" type="button" data-lv="easy">Лёгкий</button>
+        <button class="btn small" type="button" data-lv="hard">Умный</button>
+      </div>
+      <div class="ttt" id="ttt"></div>
+      <p class="notice" style="text-align:center" id="tStatus">Твой ход — ты играешь ❌</p>
+      <div class="game-bar"><button class="btn secondary small" type="button" id="tRestart">Новая партия</button></div>`;
+    const grid = $('ttt');
+    const winner = (bd) => { for (const l of LINES) if (bd[l[0]] && bd[l[0]] === bd[l[1]] && bd[l[0]] === bd[l[2]]) return { p: bd[l[0]], l }; return null; };
+    function minimax(bd, turn) {
+      const w = winner(bd);
+      if (w) return w.p === 'O' ? 10 : -10;
+      if (bd.every(Boolean)) return 0;
+      let best = turn === 'O' ? -99 : 99;
+      for (let i = 0; i < 9; i++) if (!bd[i]) {
+        bd[i] = turn;
+        const v = minimax(bd, turn === 'O' ? 'X' : 'O');
+        bd[i] = null;
+        best = turn === 'O' ? Math.max(best, v) : Math.min(best, v);
+      }
+      return best;
+    }
+    function botMove() {
+      const free = [];
+      for (let i = 0; i < 9; i++) if (!b[i]) free.push(i);
+      if (level === 'easy' && Math.random() < 0.7) return free[Math.floor(Math.random() * free.length)];
+      let bestV = -99, bestI = [];
+      for (const i of free) {
+        b[i] = 'O'; const v = minimax(b, 'X'); b[i] = null;
+        if (v > bestV) { bestV = v; bestI = [i]; } else if (v === bestV) bestI.push(i);
+      }
+      return bestI[Math.floor(Math.random() * bestI.length)];
+    }
+    function saveStats() { localStorage.setItem('luma-ttt', JSON.stringify(stats)); $('tW').textContent = stats.w; $('tD').textContent = stats.d; $('tL').textContent = stats.l; }
+    function render() {
+      grid.innerHTML = '';
+      const w = winner(b);
+      b.forEach((v, i) => {
+        const c = document.createElement('button');
+        c.type = 'button';
+        c.className = (v === 'X' ? 'x' : v === 'O' ? 'o' : '') + (w && w.l.includes(i) ? ' win' : '');
+        c.textContent = v === 'X' ? '✕' : v === 'O' ? '◯' : '';
+        c.onclick = () => play(i);
+        grid.appendChild(c);
+      });
+    }
+    function finish() {
+      const w = winner(b);
+      if (w) { over = true; if (w.p === 'X') { stats.w++; $('tStatus').textContent = 'Ты победил! 🎉'; } else { stats.l++; $('tStatus').textContent = 'Бот победил 🤖'; } saveStats(); return true; }
+      if (b.every(Boolean)) { over = true; stats.d++; $('tStatus').textContent = 'Ничья'; saveStats(); return true; }
+      return false;
+    }
+    function play(i) {
+      if (over || b[i]) return;
+      b[i] = 'X'; render();
+      if (finish()) { render(); return; }
+      $('tStatus').textContent = 'Бот думает…';
+      const t = setTimeout(() => {
+        const m = botMove(); if (m !== undefined) b[m] = 'O';
+        render();
+        if (!finish()) $('tStatus').textContent = 'Твой ход — ты играешь ❌';
+      }, 350);
+      gameCleanups.push(() => clearTimeout(t));
+    }
+    function reset() { b = Array(9).fill(null); over = false; $('tStatus').textContent = 'Твой ход — ты играешь ❌'; render(); }
+    box.querySelectorAll('[data-lv]').forEach(btn => {
+      btn.onclick = () => {
+        level = btn.dataset.lv;
+        box.querySelectorAll('[data-lv]').forEach(x => x.className = 'btn small' + (x === btn ? '' : ' secondary'));
+        reset();
+      };
+    });
+    $('tRestart').onclick = reset;
+    reset();
   }
 
   /* ----- Settings ----- */
