@@ -1,5 +1,5 @@
-/* Luma service worker v19 */
-const CACHE = 'luma-v19';
+/* Luma service worker v20 */
+const CACHE = 'luma-v20';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 const ICON = './icon-192.png';
 

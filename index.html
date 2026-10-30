@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="19"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="20"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -964,13 +964,34 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
 .off-save { flex: 0 0 44px; border: 1px solid var(--bd); background: transparent; border-radius: 12px; font-size: 16px; cursor: pointer; color: inherit; }
 .off-save:active { background: var(--surface); }
 .footer { opacity: .6; }
+
+/* Luma v20: welcome screen and companions */
+.welcome-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(circle at 20% 15%,#5635a5 0,transparent 42%),linear-gradient(145deg,#120b29f5,#241344f5);backdrop-filter:blur(18px);transition:opacity .35s ease}
+.welcome-overlay.hide{opacity:0;pointer-events:none}
+.welcome-card{width:min(100%,430px);padding:28px;border:1px solid #ffffff2b;border-radius:28px;background:linear-gradient(145deg,#ffffff1b,#ffffff09);box-shadow:0 24px 80px #0007;color:#fff;text-align:center}
+.welcome-orb{font-size:48px;margin-bottom:12px;filter:drop-shadow(0 0 18px #bda4ff)}
+.welcome-card h2{font-size:27px;margin:0 0 9px}.welcome-card p{color:#e2d9f7;line-height:1.5;margin:8px 0 20px}
+.welcome-card .btn{min-width:150px}
+.pet-preview{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--bd);border-radius:18px;background:var(--surface);margin:10px 0}
+.pet-emoji{font-size:38px;width:54px;text-align:center}.pet-info{flex:1;min-width:0}.pet-info b{display:block}.pet-info small{display:block;color:var(--muted);margin-top:3px}
+.pet-action{white-space:nowrap}
+
   </style>
 </head>
 <body>
+<div class="welcome-overlay" id="welcomeOverlay" role="dialog" aria-modal="true" aria-label="Приветствие">
+  <div class="welcome-card">
+    <div class="welcome-orb" id="welcomeEmoji">✧</div>
+    <div class="eyebrow">LUMA · ТВОЁ ПРОСТРАНСТВО</div>
+    <h2 id="welcomeTitle">Добро пожаловать</h2>
+    <p id="welcomeAdvice">Небольшой шаг тоже имеет значение.</p>
+    <button class="btn" type="button" id="welcomeClose">Продолжить</button>
+  </div>
+</div>
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v19 · время для себя</span>
+      <span class="pill" id="topPill">v20 · время для себя</span>
     </header>
 
     <!-- HOME -->
@@ -991,6 +1012,11 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
           <button class="btn small" type="button" onclick="openShop('theme')">🛍 Магазин</button>
           <button class="btn secondary small" type="button" onclick="openShop('titles')">🏅 Звания</button>
         </div>
+      </div>
+
+      <div class="glass section" id="petHomeCard">
+        <div class="section-head"><h2>🐾 Твой питомец</h2><button class="btn secondary small" type="button" onclick="openShop('pets')">Выбрать</button></div>
+        <div id="homePet"></div>
       </div>
 
       <div class="stats-row">
@@ -1531,7 +1557,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '19';
+  const BUILD = '20';
   /* ----- Роли и пароли: хранятся только хеши (SHA-256, соль, 4000 итераций) ----- */
   function sha256(str) {
     const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
@@ -1565,6 +1591,13 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   function enforceRoles(d) {
     ROLE = rolesOf(d);
     const t = d.titles, e = d.equip;
+    d.pets = d.pets || { owned: ['sprout'], active: 'sprout' };
+    d.pets.owned = Array.isArray(d.pets.owned) ? d.pets.owned : ['sprout'];
+    if (ROLE.creator && !d.pets.owned.includes('dragon')) d.pets.owned.push('dragon');
+    if (ROLE.admin && !d.pets.owned.includes('phoenix')) d.pets.owned.push('phoenix');
+    if (!ROLE.creator) d.pets.owned = d.pets.owned.filter(x => x !== 'dragon');
+    if (!ROLE.admin) d.pets.owned = d.pets.owned.filter(x => x !== 'phoenix');
+    if (!d.pets.owned.includes(d.pets.active)) d.pets.active = 'sprout';
     if (!ROLE.creator) {
       t.creator = false; delete t.got.creator; if (t.active === 'creator') t.active = 'rookie';
       d.admin.mult = 1;
@@ -1623,6 +1656,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     coins: { bal: 0, earned: 0, spent: 0 },
     inv: { life: 0, undo: 0, hint: 0, slow: 0 },
     owned: {},
+    pets: { owned: ['sprout'], active: 'sprout' },
     equip: { snake: 'def', t2048: 'def', mem: 'def', ttt: 'def', badge: null, avatar: null, frame: null },
     titles: { got: { rookie: 1 }, active: 'rookie', creator: false, creatorAuto: false },
     streak: { last: null, count: 0, best: 0 },
@@ -1655,6 +1689,10 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     d.admin.prices = (d.admin.prices && typeof d.admin.prices === 'object') ? d.admin.prices : {};
     d.admin.mult = Math.min(1000, Math.max(1, Math.round(+d.admin.mult) || 1));
     ['coins', 'inv', 'owned', 'equip', 'titles', 'streak', 'daily', 'cnt'].forEach(k => { d[k] = { ...base[k], ...(d[k] && typeof d[k] === 'object' ? d[k] : {}) }; });
+    d.pets = { ...base.pets, ...(d.pets && typeof d.pets === 'object' ? d.pets : {}) };
+    d.pets.owned = Array.isArray(d.pets.owned) ? [...new Set(d.pets.owned.filter(x => typeof x === 'string'))] : ['sprout'];
+    if (!d.pets.owned.includes('sprout')) d.pets.owned.unshift('sprout');
+    if (!d.pets.owned.includes(d.pets.active)) d.pets.active = 'sprout';
     ['bal', 'earned', 'spent'].forEach(k => { d.coins[k] = Math.max(0, Math.round(+d.coins[k]) || 0); });
     ['life', 'undo', 'hint', 'slow'].forEach(k => { d.inv[k] = Math.max(0, Math.round(+d.inv[k]) || 0); });
     if (!d.cnt.games || typeof d.cnt.games !== 'object') d.cnt.games = {};
@@ -1839,6 +1877,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     try { updateWallet(); } catch (e) { console.error(e); }
     try { renderHomeWalk(); } catch (e) { console.error(e); }
     $('greeting').textContent = greeting() + '. Вот твоя сводка.';
+    try { renderPets(); } catch (e) { console.error(e); }
     const meals = data.meals.filter(m => m.date === todayStr());
     const cal = meals.reduce((s, m) => s + (m.cal || 0), 0);
     $('homeCal').textContent = Math.round(cal);
@@ -3181,7 +3220,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
 
   /* ----- страница магазина ----- */
   let shopTab = 'theme';
-  const SHOP_TABS_BASE = [['theme', '🎨 Темы'], ['skin', '🎮 Скины'], ['boost', '⚡ Бонусы'], ['badge', '🌟 Значки'], ['look', '🦊 Облик'], ['rewards', '🎁 Награды'], ['lottery', '🎰 Лотерея'], ['titles', '🏅 Звания']];
+  const SHOP_TABS_BASE = [['theme', '🎨 Темы'], ['skin', '🎮 Скины'], ['boost', '⚡ Бонусы'], ['badge', '🌟 Значки'], ['look', '🦊 Облик'], ['rewards', '🎁 Награды'], ['lottery', '🎰 Лотерея'], ['titles', '🏅 Звания'], ['pets', '🐾 Питомцы']];
   const shopTabs = () => (ROLE.admin || ROLE.creator) ? SHOP_TABS_BASE.concat([['special', '🔐 Особое']]) : SHOP_TABS_BASE;
   let lastSpin = '';
   function openShop(tab) { if (tab) shopTab = tab; goTab('shop'); }
@@ -3202,8 +3241,37 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     else act = '<button class="btn secondary small" type="button" data-act="equip" data-id="' + it.id + '">' + (it.kind === 'theme' ? 'Применить' : 'Выбрать') + '</button>';
     return '<div class="shop-item' + (on ? ' mine' : '') + '"><div class="si-ico">' + ico + '</div><div class="si-body"><b>' + it.name + '</b><small>' + (owned && !it.free && !it.role ? 'Куплено · ' : '') + it.desc + '</small></div><div class="si-act">' + act + '</div></div>';
   }
+
+  const PETS = [
+    { id:'sprout', name:'Росток', icon:'🌱', price:0, desc:'Бесплатный маленький спутник.' },
+    { id:'cat', name:'Котик', icon:'🐱', price:120, desc:'Любит спокойные вечера.' },
+    { id:'fox', name:'Лисёнок', icon:'🦊', price:260, desc:'Любопытный и быстрый.' },
+    { id:'penguin', name:'Пингвин', icon:'🐧', price:420, desc:'Не боится прохладных дней.' },
+    { id:'owl', name:'Сова', icon:'🦉', price:650, desc:'Напоминает делать паузы.' },
+    { id:'dragon', name:'Дракон Создателя', icon:'🐉', price:0, role:'creator', desc:'Эксклюзив панели создателя.' },
+    { id:'phoenix', name:'Феникс Администратора', icon:'🔥', price:0, role:'admin', desc:'Эксклюзив панели администратора.' }
+  ];
+  function petOwned(p) { return p.role === 'creator' ? ROLE.creator : p.role === 'admin' ? ROLE.admin : data.pets.owned.includes(p.id); }
+  function renderPets() {
+    const home = $('homePet');
+    if (home) {
+      const p = PETS.find(x => x.id === data.pets.active) || PETS[0];
+      home.innerHTML = '<div class="pet-preview"><div class="pet-emoji">'+p.icon+'</div><div class="pet-info"><b>'+p.name+'</b><small>Твой спутник в Luma</small></div><span class="tag">Активен</span></div>';
+    }
+  }
+  function petShopHTML() {
+    return '<div class="shop-sub">Питомцы за игровые монеты</div><p class="notice">Один питомец бесплатный. Остальных можно открыть за ✧, которые зарабатываются внутри Luma. Реальных платежей здесь нет.</p>' +
+      PETS.map(p => {
+        const own = petOwned(p), active = data.pets.active === p.id;
+        const action = own ? (active ? '<button class="btn secondary small" disabled>✓ Активен</button>' : '<button class="btn secondary small" data-pet="equip" data-id="'+p.id+'">Выбрать</button>') :
+          p.role ? '<button class="btn secondary small" disabled>🔒 '+(p.role==='creator'?'Создатель':'Администратор')+'</button>' :
+          '<button class="btn small" data-pet="buy" data-id="'+p.id+'">'+p.price+' ✧</button>';
+        return '<div class="pet-preview"><div class="pet-emoji">'+p.icon+'</div><div class="pet-info"><b>'+p.name+'</b><small>'+p.desc+'</small></div><div class="pet-action">'+action+'</div></div>';
+      }).join('');
+  }
   function shopTabHTML() {
     const list = k => SHOP.filter(i => (Array.isArray(k) ? k.includes(i.kind) : i.kind === k));
+    if (shopTab === 'pets') return petShopHTML();
     if (shopTab === 'theme') return '<div class="shop-sub">Темы оформления</div>' + list('theme').map(itemCard).join('') + '<p class="notice">Куплённые темы появляются и в «Ещё» → «Тема».</p>';
     if (shopTab === 'skin') return ['snake', 't2048', 'mem', 'ttt'].map(k => '<div class="shop-sub">' + SKIN_LABEL[k] + '</div>' + DEFAULT_ITEMS.filter(i => i.kind === k).concat(list(k)).map(itemCard).join('')).join('');
     if (shopTab === 'boost') return '<div class="shop-sub">Расходуемые бонусы</div>' + list('boost').map(itemCard).join('') + '<p class="notice">Бонусы тратятся прямо в играх: кнопки появляются под полем.</p>';
@@ -3260,6 +3328,17 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     $('shopBody').addEventListener('click', e => {
       const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
       const act = b.dataset.act, id = b.dataset.id, it = id ? findItem(id) : null;
+      if (b.dataset.pet) {
+        const pet = PETS.find(x => x.id === id);
+        if (!pet) return;
+        if (b.dataset.pet === 'buy' && !petOwned(pet) && !pet.role) {
+          if (data.coins.bal < pet.price) { toast('Не хватает '+(pet.price-data.coins.bal)+' ✧'); return; }
+          spendCoins(pet.price); data.pets.owned.push(pet.id); data.pets.active = pet.id; save(); renderPets(); renderShop(); toast('Питомец открыт: '+pet.name);
+        } else if (b.dataset.pet === 'equip' && petOwned(pet)) {
+          data.pets.active = pet.id; save(); renderPets(); renderShop(); toast('Выбран питомец: '+pet.name);
+        }
+        return;
+      }
       if (act === 'buy' && it) buyItem(it);
       else if (act === 'equip' && it && isOwned(it)) { equipItem(it); renderShop(); syncThemeSwatches(); toast('Выбрано: ' + it.name); }
       else if (act === 'unequip') { data.equip[b.dataset.kind] = null; save(); updateWallet(); renderShop(); }
@@ -3353,13 +3432,20 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     data.auth[role === 'admin' ? 'a' : 'c'] = tok;
     const had = !!data.titles.got[role];
     ROLE = rolesOf(data);
+    data.pets = data.pets || { owned: ['sprout'], active: 'sprout' };
+    data.pets.owned = Array.isArray(data.pets.owned) ? data.pets.owned : ['sprout'];
+    const exclusivePet = role === 'creator' ? 'dragon' : 'phoenix';
+    if (ROLE[role] && !data.pets.owned.includes(exclusivePet)) data.pets.owned.push(exclusivePet);
+    if (ROLE[role]) data.pets.active = exclusivePet;
     save(); checkTitles();
     if (!had && data.titles.got[role]) { data.titles.active = role; save(); setTimeout(() => toast(role === 'creator' ? '🛠️ Тебе выдано звание «Создатель»' : '🛡️ Тебе выдано звание «Администратор»'), 700); }
     syncThemeSwatches(); updateWallet();
   }
   function revokeRole(role) {
     data.auth[role === 'admin' ? 'a' : 'c'] = null;
-    enforceRoles(data); save(); applyTheme(data.theme); syncThemeSwatches(); checkTitles(); updateWallet();
+    enforceRoles(data);
+    if (data.pets && ['dragon','phoenix'].includes(data.pets.active)) data.pets.active = 'sprout';
+    save(); applyTheme(data.theme); syncThemeSwatches(); checkTitles(); updateWallet();
   }
 
   function askPassword(role) {
@@ -3446,6 +3532,8 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     h += pSec('Нормы по возрасту', 'НОРМА', '<p class="notice" style="margin-top:0">Реакция и память — «не больше», остальное — «не меньше». Прогулка: пусто = авто.</p><div id="adNorms">' + normsHTML() + '</div><div class="form-actions"><button class="btn" type="button" data-ad="norms">Сохранить нормы</button><button class="btn secondary" type="button" data-ad="resetnorms">Стандартные</button></div>');
     /* доступ */
     h += pSec('Доступ', '', '<p class="notice" style="margin-top:0">Роль хранится на этом устройстве и переезжает вместе с бэкапом. Пароль нигде не сохраняется.</p><div class="form-actions"><button class="btn danger" type="button" data-ad="revoke">Отозвать доступ на этом устройстве</button></div>');
+    h += pSec('Эксклюзивный питомец', cr ? '🐉 ДРАКОН' : '🔥 ФЕНИКС',
+      '<div class="pet-preview"><div class="pet-emoji">'+(cr ? '🐉' : '🔥')+'</div><div class="pet-info"><b>'+(cr ? 'Дракон Создателя' : 'Феникс Администратора')+'</b><small>Особый питомец, доступный только этой роли. Его можно выбрать в магазине → Питомцы.</small></div></div>');
     return h + '</div>';
   }
 
@@ -4712,6 +4800,24 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   window.addEventListener('pageshow', checkDue);
   updateNotifUI();
   renderHome();
+  (function showWelcome() {
+    const h = new Date().getHours();
+    const title = h < 5 ? 'Доброй ночи' : h < 12 ? 'Доброе утро' : h < 18 ? 'Добрый день' : 'Добрый вечер';
+    const tips = [
+      'Не обязательно успевать всё сразу. Выбери одну небольшую задачу.',
+      'Сделай короткую паузу, потянись и отдохни от экрана.',
+      'Не забывай пить воду в течение дня, ориентируйся на жажду.',
+      'Небольшая прогулка или несколько минут движения могут освежить мысли.',
+      'Запиши важное напоминание, чтобы не держать всё в голове.',
+      'Регулярный сон помогает восстановиться после насыщенного дня.'
+    ];
+    const t = $('welcomeTitle'), a = $('welcomeAdvice'), overlay = $('welcomeOverlay');
+    if (t) t.textContent = title + (data.profile.name ? ', ' + data.profile.name : '') + '!';
+    if (a) a.textContent = tips[(new Date().getDate() + h) % tips.length];
+    const close = () => { if (!overlay) return; overlay.classList.add('hide'); setTimeout(() => overlay.remove(), 380); };
+    $('welcomeClose')?.addEventListener('click', close);
+    overlay?.addEventListener('click', e => { if (e.target === overlay) close(); });
+  })();
   renderBackupInfo(); backupNudge();
   window.addEventListener('error', e => { try { console.error(e.error || e.message); const t = Date.now(); if (!window._errT || t - window._errT > 30000) { window._errT = t; toast('Что-то пошло не так. Данные сохранены, обнови страницу'); } } catch {} });
   window.addEventListener('unhandledrejection', e => { try { console.error(e.reason); } catch {} });
