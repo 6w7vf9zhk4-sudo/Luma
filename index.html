@@ -965,7 +965,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
 .off-save:active { background: var(--surface); }
 .footer { opacity: .6; }
 
-/* Luma v20: welcome screen and companions */
+/* Luma v21: animated pets and pet care */
 .welcome-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(circle at 20% 15%,#5635a5 0,transparent 42%),linear-gradient(145deg,#120b29f5,#241344f5);backdrop-filter:blur(18px);transition:opacity .35s ease}
 .welcome-overlay.hide{opacity:0;pointer-events:none}
 .welcome-card{width:min(100%,430px);padding:28px;border:1px solid #ffffff2b;border-radius:28px;background:linear-gradient(145deg,#ffffff1b,#ffffff09);box-shadow:0 24px 80px #0007;color:#fff;text-align:center}
@@ -974,7 +974,37 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
 .welcome-card .btn{min-width:150px}
 .pet-preview{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--bd);border-radius:18px;background:var(--surface);margin:10px 0}
 .pet-emoji{font-size:38px;width:54px;text-align:center}.pet-info{flex:1;min-width:0}.pet-info b{display:block}.pet-info small{display:block;color:var(--muted);margin-top:3px}
+
 .pet-action{white-space:nowrap}
+.pet-stage{display:flex;align-items:center;justify-content:center;min-height:150px;border:1px solid var(--bd);border-radius:20px;background:radial-gradient(circle at 50% 75%,rgba(167,139,250,.18),transparent 62%),var(--surface);overflow:hidden;margin:12px 0;position:relative}
+.pet-stage:after{content:"";position:absolute;bottom:19px;width:92px;height:13px;border-radius:50%;background:#0002;filter:blur(5px)}
+.pet-avatar{font-size:76px;z-index:1;transform-origin:50% 85%;animation:pet-idle 2.5s ease-in-out infinite;filter:drop-shadow(0 8px 9px #0002)}
+.pet-avatar.cat{animation-duration:2.1s}.pet-avatar.fox{animation-duration:1.8s}.pet-avatar.dragon{filter:drop-shadow(0 0 14px #ff9b4a)}.pet-avatar.phoenix{filter:drop-shadow(0 0 15px #ff6b36)}
+.pet-stage.eating .pet-avatar{animation:pet-eat .38s ease-in-out infinite alternate}
+.pet-stage.sleeping .pet-avatar{animation:pet-sleep 2.8s ease-in-out infinite;filter:drop-shadow(0 0 12px #9c8cff)}
+.pet-stage.playing .pet-avatar{animation:pet-play .55s ease-in-out infinite alternate}
+.pet-stage.waking .pet-avatar{animation:pet-wake .8s ease-out 1}
+@keyframes pet-idle{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-9px) rotate(2deg)}}
+@keyframes pet-eat{from{transform:translateY(0) scale(.98) rotate(-4deg)}to{transform:translateY(3px) scale(1.04) rotate(4deg)}}
+@keyframes pet-sleep{0%,100%{transform:translateY(5px) scale(1) rotate(-5deg)}50%{transform:translateY(8px) scale(.96) rotate(5deg)}}
+@keyframes pet-play{from{transform:translateY(-4px) rotate(-12deg)}to{transform:translateY(-18px) rotate(12deg)}}
+@keyframes pet-wake{0%{transform:scale(.7) translateY(10px)}65%{transform:scale(1.15) translateY(-8px)}100%{transform:scale(1) translateY(0)}}
+
+.pet-avatar.sprout{animation:pet-sprout 3.2s ease-in-out infinite}.pet-avatar.penguin{animation:pet-waddle 1.6s ease-in-out infinite}.pet-avatar.owl{animation:pet-owl 3s ease-in-out infinite}.pet-avatar.rabbit{animation:pet-hop 1.25s ease-in-out infinite}.pet-avatar.dog{animation:pet-dog 1.7s ease-in-out infinite}.pet-avatar.panda{animation:pet-panda 2.6s ease-in-out infinite}.pet-avatar.raccoon{animation:pet-raccoon 1.9s ease-in-out infinite}.pet-avatar.turtle{animation:pet-turtle 3.8s ease-in-out infinite}.pet-avatar.unicorn{animation:pet-unicorn 2.2s ease-in-out infinite}
+@keyframes pet-sprout{0%,100%{transform:rotate(-8deg) scale(.98)}50%{transform:rotate(8deg) scale(1.04)}}
+@keyframes pet-waddle{0%,100%{transform:rotate(-9deg) translateY(0)}50%{transform:rotate(9deg) translateY(-3px)}}
+@keyframes pet-owl{0%,85%,100%{transform:translateY(0) scaleY(1)}90%{transform:translateY(1px) scaleY(.84)}}
+@keyframes pet-hop{0%,100%{transform:translateY(0) scaleY(1)}45%{transform:translateY(-15px) scaleY(1.04)}65%{transform:translateY(0) scaleY(.94)}}
+@keyframes pet-dog{0%,100%{transform:rotate(-5deg) translateY(0)}50%{transform:rotate(6deg) translateY(-7px)}}
+@keyframes pet-panda{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg) translateY(-5px)}}
+@keyframes pet-raccoon{0%,100%{transform:translateX(-3px) rotate(-3deg)}50%{transform:translateX(3px) rotate(3deg)}}
+@keyframes pet-turtle{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-3px) rotate(2deg)}}
+@keyframes pet-unicorn{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-12px) scale(1.03)}}
+
+.pet-meter{height:8px;background:var(--bd);border-radius:20px;overflow:hidden;margin-top:5px}.pet-meter i{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,#a78bfa,#67e8f9)}
+.pet-controls,.pet-food-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.pet-food-card{padding:12px;border:1px solid var(--bd);border-radius:15px;background:var(--surface);display:flex;align-items:center;gap:9px}.pet-food-card .food-icon{font-size:28px}.pet-food-card .food-copy{flex:1;min-width:0}.pet-food-card small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+
 
   </style>
 </head>
@@ -991,7 +1021,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v20 · время для себя</span>
+      <span class="pill" id="topPill">v21 · питомцы и забота</span>
     </header>
 
     <!-- HOME -->
@@ -1015,7 +1045,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
       </div>
 
       <div class="glass section" id="petHomeCard">
-        <div class="section-head"><h2>🐾 Твой питомец</h2><button class="btn secondary small" type="button" onclick="openShop('pets')">Выбрать</button></div>
+        <div class="section-head"><h2>🐾 Твой питомец</h2><button class="btn secondary small" type="button" onclick="openPets()">Уход и питомцы</button></div>
         <div id="homePet"></div>
       </div>
 
@@ -1323,6 +1353,14 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         <div class="shop-tabs" id="shopTabs"></div>
       </div>
       <div id="shopBody"></div>
+    </section>
+
+    <!-- PET CARE -->
+    <section class="page" id="page-pets">
+      <div class="hero center"><div class="eyebrow">LUMA COMPANIONS</div><h1>Питомцы<br><span>и забота</span></h1><p class="muted">Выбирай спутника, корми его и помогай ему отдыхать.</p></div>
+      <div class="glass section"><div class="section-head"><h2>Твой питомец</h2><span class="tag" id="petMoodTag">Бодрствует</span></div><div id="petCareMain"></div></div>
+      <div class="glass section"><div class="section-head"><h2>🐾 Коллекция</h2><span class="tag" id="petCount">1 питомец</span></div><div id="petCollection"></div></div>
+      <div class="glass section"><div class="section-head"><h2>🥕 Магазин еды</h2><span class="tag">За ✧</span></div><p class="notice" style="margin-top:0">Покупай еду за игровые монеты. Запас еды хранится в твоём профиле.</p><div id="petFoodShop"></div></div>
     </section>
 
     <!-- SETTINGS -->
@@ -1656,7 +1694,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     coins: { bal: 0, earned: 0, spent: 0 },
     inv: { life: 0, undo: 0, hint: 0, slow: 0 },
     owned: {},
-    pets: { owned: ['sprout'], active: 'sprout' },
+    pets: { owned: ['sprout'], active: 'sprout', food: { berry: 2, fish: 0, carrot: 0, cake: 0 }, hunger: 75, energy: 80, mood: 'awake', updated: Date.now() },
     equip: { snake: 'def', t2048: 'def', mem: 'def', ttt: 'def', badge: null, avatar: null, frame: null },
     titles: { got: { rookie: 1 }, active: 'rookie', creator: false, creatorAuto: false },
     streak: { last: null, count: 0, best: 0 },
@@ -1693,6 +1731,10 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     d.pets.owned = Array.isArray(d.pets.owned) ? [...new Set(d.pets.owned.filter(x => typeof x === 'string'))] : ['sprout'];
     if (!d.pets.owned.includes('sprout')) d.pets.owned.unshift('sprout');
     if (!d.pets.owned.includes(d.pets.active)) d.pets.active = 'sprout';
+    d.pets.food = { berry: 2, fish: 0, carrot: 0, cake: 0, ...(d.pets.food || {}) };
+    ['berry','fish','carrot','cake'].forEach(k => d.pets.food[k] = Math.max(0, Math.floor(+d.pets.food[k] || 0)));
+    d.pets.hunger = Math.max(0, Math.min(100, +d.pets.hunger || 0)); d.pets.energy = Math.max(0, Math.min(100, +d.pets.energy || 0));
+    d.pets.mood = ['awake','sleeping'].includes(d.pets.mood) ? d.pets.mood : 'awake'; d.pets.updated = +d.pets.updated || Date.now();
     ['bal', 'earned', 'spent'].forEach(k => { d.coins[k] = Math.max(0, Math.round(+d.coins[k]) || 0); });
     ['life', 'undo', 'hint', 'slow'].forEach(k => { d.inv[k] = Math.max(0, Math.round(+d.inv[k]) || 0); });
     if (!d.cnt.games || typeof d.cnt.games !== 'object') d.cnt.games = {};
@@ -1841,6 +1883,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     });
     try {
       if (name === 'home') renderHome();
+      if (name === 'pets') renderPets();
       if (name === 'nutrition') renderNutrition();
       if (name === 'reminders') { renderReminders(); initRemDefaults(); }
       if (name === 'walk') { renderWalk(); }
@@ -3220,11 +3263,12 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
 
   /* ----- страница магазина ----- */
   let shopTab = 'theme';
-  const SHOP_TABS_BASE = [['theme', '🎨 Темы'], ['skin', '🎮 Скины'], ['boost', '⚡ Бонусы'], ['badge', '🌟 Значки'], ['look', '🦊 Облик'], ['rewards', '🎁 Награды'], ['lottery', '🎰 Лотерея'], ['titles', '🏅 Звания'], ['pets', '🐾 Питомцы']];
+  const SHOP_TABS_BASE = [['theme', '🎨 Темы'], ['skin', '🎮 Скины'], ['boost', '⚡ Бонусы'], ['badge', '🌟 Значки'], ['look', '🦊 Облик'], ['rewards', '🎁 Награды'], ['lottery', '🎰 Лотерея'], ['titles', '🏅 Звания']];
   const shopTabs = () => (ROLE.admin || ROLE.creator) ? SHOP_TABS_BASE.concat([['special', '🔐 Особое']]) : SHOP_TABS_BASE;
   let lastSpin = '';
   function openShop(tab) { if (tab) shopTab = tab; goTab('shop'); }
   window.openShop = openShop;
+  function openPets(){ goTab('pets'); renderPets(); } window.openPets=openPets;
 
   function itemCard(it) {
     const owned = isOwned(it), on = owned && isOn(it);
@@ -3244,31 +3288,45 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
 
   const PETS = [
     { id:'sprout', name:'Росток', icon:'🌱', price:0, desc:'Бесплатный маленький спутник.' },
-    { id:'cat', name:'Котик', icon:'🐱', price:120, desc:'Любит спокойные вечера.' },
-    { id:'fox', name:'Лисёнок', icon:'🦊', price:260, desc:'Любопытный и быстрый.' },
-    { id:'penguin', name:'Пингвин', icon:'🐧', price:420, desc:'Не боится прохладных дней.' },
-    { id:'owl', name:'Сова', icon:'🦉', price:650, desc:'Напоминает делать паузы.' },
+    { id:'cat', name:'Котик', icon:'🐱', price:120, desc:'Любит уют и рыбу.', food:'fish' },
+    { id:'fox', name:'Лисёнок', icon:'🦊', price:260, desc:'Любопытный и быстрый.', food:'berry' },
+    { id:'penguin', name:'Пингвин', icon:'🐧', price:420, desc:'Обожает прохладу и рыбу.', food:'fish' },
+    { id:'owl', name:'Сова', icon:'🦉', price:650, desc:'Ночной наблюдатель.', food:'berry' },
+    { id:'rabbit', name:'Кролик', icon:'🐰', price:780, desc:'Любит морковку.', food:'carrot' },
+    { id:'dog', name:'Щенок', icon:'🐶', price:900, desc:'Верный и игривый.', food:'cake' },
+    { id:'panda', name:'Панда', icon:'🐼', price:1100, desc:'Спокойный любитель перекусов.', food:'carrot' },
+    { id:'raccoon', name:'Енот', icon:'🦝', price:1250, desc:'Любит находить вкусности.', food:'berry' },
+    { id:'turtle', name:'Черепаха', icon:'🐢', price:1400, desc:'Медленный и спокойный.', food:'carrot' },
+    { id:'unicorn', name:'Единорог', icon:'🦄', price:1800, desc:'Редкий волшебный спутник.', food:'cake' },
     { id:'dragon', name:'Дракон Создателя', icon:'🐉', price:0, role:'creator', desc:'Эксклюзив панели создателя.' },
     { id:'phoenix', name:'Феникс Администратора', icon:'🔥', price:0, role:'admin', desc:'Эксклюзив панели администратора.' }
   ];
+  const PET_FOODS = [
+    {id:'berry',name:'Ягоды',icon:'🫐',price:15,desc:'Небольшая порция',gain:18},
+    {id:'fish',name:'Рыбка',icon:'🐟',price:25,desc:'Любимое угощение котиков и пингвинов',gain:28},
+    {id:'carrot',name:'Морковка',icon:'🥕',price:20,desc:'Хрустящий перекус',gain:24},
+    {id:'cake',name:'Печенье',icon:'🍪',price:35,desc:'Особое лакомство',gain:35}
+  ];
   function petOwned(p) { return p.role === 'creator' ? ROLE.creator : p.role === 'admin' ? ROLE.admin : data.pets.owned.includes(p.id); }
-  function renderPets() {
-    const home = $('homePet');
-    if (home) {
-      const p = PETS.find(x => x.id === data.pets.active) || PETS[0];
-      home.innerHTML = '<div class="pet-preview"><div class="pet-emoji">'+p.icon+'</div><div class="pet-info"><b>'+p.name+'</b><small>Твой спутник в Luma</small></div><span class="tag">Активен</span></div>';
-    }
+  let petAnim='';
+  function petUpdateNeeds(){ const now=Date.now(), mins=Math.max(0,Math.min(720,(now-(data.pets.updated||now))/60000)); if(data.pets.mood==='sleeping') data.pets.energy=Math.min(100,data.pets.energy+mins*.55); else data.pets.energy=Math.max(0,data.pets.energy-mins*.12); data.pets.hunger=Math.max(0,data.pets.hunger-mins*.08); data.pets.updated=now; }
+  function petMeters(){return '<div class="fields"><div class="field"><label>Сытость · '+Math.round(data.pets.hunger)+'%</label><div class="pet-meter"><i style="width:'+data.pets.hunger+'%"></i></div></div><div class="field"><label>Энергия · '+Math.round(data.pets.energy)+'%</label><div class="pet-meter"><i style="width:'+data.pets.energy+'%"></i></div></div></div>';}
+  function renderPets(){
+    petUpdateNeeds(); const p=PETS.find(x=>x.id===data.pets.active)||PETS[0]; const mood=data.pets.mood||'awake';
+    const stageClass=petAnim || (mood==='sleeping'?'sleeping':'awake'); const stage=$('petCareMain');
+    const home=$('homePet');
+    if(home) home.innerHTML='<div class="pet-preview"><div class="pet-emoji">'+p.icon+'</div><div class="pet-info"><b>'+p.name+'</b><small>'+(mood==='sleeping'?'Спит':data.pets.hunger<25?'Проголодался':'Бодрствует')+'</small></div><span class="tag">Активен</span></div>';
+    if(stage) stage.innerHTML='<div class="pet-stage '+stageClass+'" id="petStage"><div class="pet-avatar '+p.id+'" id="petAvatar">'+p.icon+'</div></div>'+petMeters()+'<div class="pet-controls"><button class="btn" type="button" data-petcare="feed">🍽 Покормить</button><button class="btn secondary" type="button" data-petcare="play">🎾 Играть</button><button class="btn secondary" type="button" data-petcare="sleep">🌙 Спать</button><button class="btn secondary" type="button" data-petcare="wake">☀️ Разбудить</button></div><p class="notice" id="petCareHint">'+(mood==='sleeping'?'Питомец отдыхает и восстанавливает энергию.':'Заботься о питомце: корми его и давай отдыхать.')+'</p>';
+    const collection=$('petCollection'); if(collection){const owned=PETS.filter(p=>!p.role && petOwned(p));$('petCount').textContent=owned.length+' питомц.';collection.innerHTML=owned.map(p=>'<div class="pet-preview"><div class="pet-emoji">'+p.icon+'</div><div class="pet-info"><b>'+p.name+'</b><small>'+p.desc+'</small></div><div class="pet-action">'+(data.pets.active===p.id?'<button class="btn secondary small" disabled>✓ Активен</button>':'<button class="btn secondary small" data-pet="equip" data-id="'+p.id+'">Активировать</button>')+'</div></div>').join('')+PETS.filter(p=>!p.role && !petOwned(p)).map(p=>'<div class="pet-preview"><div class="pet-emoji">'+p.icon+'</div><div class="pet-info"><b>'+p.name+'</b><small>'+p.desc+'</small></div><div class="pet-action"><button class="btn small" data-pet="buy" data-id="'+p.id+'">'+p.price+' ✧</button></div></div>').join('');}
+    const food=$('petFoodShop');if(food)food.innerHTML='<div class="pet-food-grid">'+PET_FOODS.map(f=>'<div class="pet-food-card"><span class="food-icon">'+f.icon+'</span><div class="food-copy"><b>'+f.name+'</b><small>'+f.desc+' · есть: '+(data.pets.food[f.id]||0)+'</small><small>'+f.price+' ✧</small><button class="btn small" style="margin-top:7px" data-petfood="buy" data-id="'+f.id+'">Купить</button></div></div>').join('')+'</div>';
+    save();
   }
-  function petShopHTML() {
-    return '<div class="shop-sub">Питомцы за игровые монеты</div><p class="notice">Один питомец бесплатный. Остальных можно открыть за ✧, которые зарабатываются внутри Luma. Реальных платежей здесь нет.</p>' +
-      PETS.map(p => {
-        const own = petOwned(p), active = data.pets.active === p.id;
-        const action = own ? (active ? '<button class="btn secondary small" disabled>✓ Активен</button>' : '<button class="btn secondary small" data-pet="equip" data-id="'+p.id+'">Выбрать</button>') :
-          p.role ? '<button class="btn secondary small" disabled>🔒 '+(p.role==='creator'?'Создатель':'Администратор')+'</button>' :
-          '<button class="btn small" data-pet="buy" data-id="'+p.id+'">'+p.price+' ✧</button>';
-        return '<div class="pet-preview"><div class="pet-emoji">'+p.icon+'</div><div class="pet-info"><b>'+p.name+'</b><small>'+p.desc+'</small></div><div class="pet-action">'+action+'</div></div>';
-      }).join('');
-  }
+  function petCare(action){petUpdateNeeds();const stage=$('petStage');if(action==='feed'){const p=PETS.find(x=>x.id===data.pets.active)||PETS[0];const foodId=p.food||'berry';if(!data.pets.food[foodId]){toast('Нет подходящей еды. Купи её в магазине еды.');return;}data.pets.food[foodId]--;data.pets.hunger=Math.min(100,data.pets.hunger+ (PET_FOODS.find(x=>x.id===foodId)?.gain||18));petAnim='eating';toast('Питомец поел '+(PET_FOODS.find(x=>x.id===foodId)?.name||'')+'!');}
+    else if(action==='sleep'){data.pets.mood='sleeping';data.pets.energy=Math.min(100,data.pets.energy+12);toast('Питомец отдыхает.');}
+    else if(action==='wake'){data.pets.mood='awake';data.pets.energy=Math.min(100,data.pets.energy+4);petAnim='waking';toast('Питомец проснулся!');}
+    else if(action==='play'){if(data.pets.mood==='sleeping'){toast('Сначала разбуди питомца.');return;}if(data.pets.energy<10){toast('Питомец устал. Пусть отдохнёт.');return;}data.pets.energy=Math.max(0,data.pets.energy-12);data.pets.hunger=Math.max(0,data.pets.hunger-5);petAnim='playing';toast('Вы отлично поиграли!');}
+    data.pets.updated=Date.now();save();renderPets();if(petAnim && petAnim!=='sleeping'){setTimeout(()=>{petAnim='';renderPets();},1400);}}
+  function petShopHTML(){return '<p class="notice">Питомцы теперь находятся в отдельном разделе. Здесь магазин еды и уход.</p><button class="btn" type="button" onclick="openPets()">Открыть питомцев</button>';}
   function shopTabHTML() {
     const list = k => SHOP.filter(i => (Array.isArray(k) ? k.includes(i.kind) : i.kind === k));
     if (shopTab === 'pets') return petShopHTML();
@@ -3305,6 +3363,8 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     body.innerHTML = shopTabHTML();
     updateWallet();
   }
+  const petPage=$('page-pets'); if(petPage){petPage.addEventListener('click',e=>{const c=e.target.closest('[data-petcare]');if(c){petCare(c.dataset.petcare);return;}const b=e.target.closest('[data-pet]');if(b){const pet=PETS.find(x=>x.id===b.dataset.id);if(!pet)return;if(b.dataset.pet==='buy'){if(pet.role){toast('Этот питомец доступен только в панели соответствующей роли.');return;}if(data.coins.bal<pet.price){toast('Не хватает '+(pet.price-data.coins.bal)+' ✧');return;}spendCoins(pet.price);data.pets.owned.push(pet.id);data.pets.active=pet.id;save();renderPets();updateWallet();toast('Питомец открыт: '+pet.name);}else if(b.dataset.pet==='equip'&&petOwned(pet)){data.pets.active=pet.id;data.pets.mood='awake';save();renderPets();toast('Активирован: '+pet.name);}return;}const f=e.target.closest('[data-petfood]');if(f){const food=PET_FOODS.find(x=>x.id===f.dataset.id);if(!food)return;if(data.coins.bal<food.price){toast('Не хватает '+food.price+' ✧');return;}spendCoins(food.price);data.pets.food[food.id]=(data.pets.food[food.id]||0)+1;save();renderPets();toast('Куплено: '+food.name);}});}
+
   function spinLottery() {
     const p = priceOf(LOTTERY);
     if (!spendCoins(p)) { toast('Не хватает ' + fmtN(p - data.coins.bal) + ' ✧'); return; }
@@ -3436,7 +3496,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     data.pets.owned = Array.isArray(data.pets.owned) ? data.pets.owned : ['sprout'];
     const exclusivePet = role === 'creator' ? 'dragon' : 'phoenix';
     if (ROLE[role] && !data.pets.owned.includes(exclusivePet)) data.pets.owned.push(exclusivePet);
-    if (ROLE[role]) data.pets.active = exclusivePet;
+    // Эксклюзив питомца выдаётся роли, но активируется вручную в панели.
     save(); checkTitles();
     if (!had && data.titles.got[role]) { data.titles.active = role; save(); setTimeout(() => toast(role === 'creator' ? '🛠️ Тебе выдано звание «Создатель»' : '🛡️ Тебе выдано звание «Администратор»'), 700); }
     syncThemeSwatches(); updateWallet();
@@ -3508,10 +3568,11 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         '<div class="chips-row">' + [50, 100, 500].map(q => '<button class="btn secondary small" type="button" data-ad="quick" data-q="' + q + '">+' + q + '</button>').join('') + '</div>' +
         '<p class="notice">Лимит выдачи: ' + fmtN(ADMIN_LIM.day) + ' ✧ в день. Осталось сегодня: <b id="adLeft">' + fmtN(grantLeft()) + '</b> ✧. Выданные монеты не идут в «заработанные» и не открывают звания.</p>');
     }
+    if (!cr) { h += pSec('Эксклюзив администратора', 'ТОЛЬКО ТЫ', '<div class="pet-preview"><div class="pet-emoji">🔥</div><div class="pet-info"><b>Феникс Администратора</b><small>Эксклюзивный питомец</small></div><div class="pet-action"><button class="btn small" type="button" data-ad="petadmin">' + (data.pets.active === 'phoenix' ? '✓ Активен' : 'Активировать') + '</button></div></div>'); }
     /* особое (только создатель) */
     if (cr) {
       h += pSec('Эксклюзив создателя', 'ТОЛЬКО ТЫ',
-        '<p class="notice" style="margin-top:0">Фон, аватар, рамка, значок и скин змейки видны только пока активна роль создателя.</p>' +
+        '<p class="notice" style="margin-top:0">Эксклюзивные предметы и питомец доступны только в панели создателя.</p>' + '<div class="pet-preview"><div class="pet-emoji">🐉</div><div class="pet-info"><b>Дракон Создателя</b><small>Эксклюзивный питомец</small></div><div class="pet-action"><button class="btn small" type="button" data-ad="petcreator">' + (data.pets.active === 'dragon' ? '✓ Активен' : 'Активировать') + '</button></div></div>' +
         SPECIAL.filter(i => i.role === 'creator').map(i => { const on = isOn(i); return '<div class="shop-item' + (on ? ' mine' : '') + '"><div class="si-ico">' + (i.svg || i.icon) + '</div><div class="si-body"><b>' + i.name + '</b><small>' + i.desc + '</small></div><div class="si-act"><button class="btn ' + (on ? 'secondary ' : '') + 'small" type="button" data-ad="' + (on ? 'unequip' : 'equip') + '" data-id="' + i.id + '">' + (on ? 'Снять' : 'Надеть') + '</button></div></div>'; }).join('') +
         '<div class="form-actions"><button class="btn" type="button" data-ad="equipall">✦ Надеть всё</button></div>');
       h += pSec('Звания и магазин', 'ДОСТУП',
@@ -3583,6 +3644,8 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     const only = () => { if (cr) return true; toast('Недоступно для администратора'); return false; };
     switch (act) {
       case 'close': closePanel(); return;
+      case 'petcreator': { if(!cr || !ROLE.creator)return; data.pets.active='dragon';data.pets.mood='awake';save();renderPets();mountPanel();toast('Дракон активирован');return; }
+      case 'petadmin': { if(cr || !ROLE.admin)return; data.pets.active='phoenix';data.pets.mood='awake';save();renderPets();mountPanel();toast('Феникс активирован');return; }
       case 'coinadd': { const n = pInt('adCoinAmt'); if (giveCoins(n, cr)) { mountPanel(); } return; }
       case 'quick': { if (giveCoins(+b.dataset.q, cr)) mountPanel(); return; }
       case 'coinsub': { if (!only()) return; const n = pInt('adCoinAmt'); if (!(n > 0)) { toast('Введи сумму больше нуля'); return; } data.coins.bal = Math.max(0, data.coins.bal - n); save(); mountPanel(); toast('Списано ' + fmtN(n) + ' ✧'); return; }
