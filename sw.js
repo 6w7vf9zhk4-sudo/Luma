@@ -1,5 +1,5 @@
 /* Luma service worker v5 */
-const CACHE = 'luma-v12';
+const CACHE = 'luma-v14';
 const ASSETS = ['./manifest.json'];
 const ICON = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✧</text></svg>";
 

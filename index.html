@@ -10,7 +10,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="10"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="12"><title>Luma — время для себя</title>
+  <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <style>
 :root {
@@ -676,13 +677,112 @@ input[type=time]::-webkit-calendar-picker-indicator {
     height: 50px;
   }
 }
+
+/* ===== v12: sheets, light mode, animations ===== */
+:root { --sheet-bg: #1b1038; --card-fill: rgba(255,255,255,.05); }
+body.noscroll { overflow: hidden; }
+.sheet-back { position: fixed; inset: 0; z-index: 10000; display: none; align-items: flex-end; justify-content: center; background: rgba(8,3,20,.58); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.sheet-back.show { display: flex; animation: fadeIn .25s ease both; }
+.sheet { width: 100%; max-width: 560px; max-height: 84vh; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; background: var(--sheet-bg); border: 1px solid var(--line); border-bottom: 0; border-radius: 28px 28px 0 0; padding: 8px 16px calc(20px + env(safe-area-inset-bottom)); box-shadow: 0 -20px 60px rgba(0,0,0,.45); animation: sheetUp .38s cubic-bezier(.2,.9,.25,1) both; }
+@media (min-width: 700px) { .sheet-back { align-items: center; } .sheet { border-radius: 28px; border-bottom: 1px solid var(--line); max-height: 80vh; } }
+.sheet .grab { width: 44px; height: 5px; border-radius: 9px; background: rgba(255,255,255,.25); margin: 6px auto 10px; }
+.sheet-head { position: sticky; top: -8px; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 0 12px; background: var(--sheet-bg); }
+.sheet-head h3 { font-size: 18px; letter-spacing: -.3px; }
+.sheet-close { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: rgba(255,255,255,.08); color: inherit; font-size: 18px; cursor: pointer; touch-action: manipulation; }
+.food-list { display: grid; gap: 8px; margin-top: 12px; }
+.food-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 12px 14px; border-radius: 15px; border: 1px solid rgba(255,255,255,.12); background: var(--card-fill); color: inherit; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: transform .15s, background .2s, border-color .2s; }
+.food-row small { display: block; font-weight: 500; font-size: 11px; color: var(--muted); margin-top: 3px; }
+.food-row .kc { white-space: nowrap; font-size: 12px; color: #d8c8ff; }
+.food-row:active { transform: scale(.98); background: rgba(167,139,250,.25); }
+.pick-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.pick-actions .btn { flex: 1; min-width: 140px; }
+.mode-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sheetUp { from { transform: translateY(60px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes rise { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes navpop { 0% { transform: scale(.8) translateY(2px); } 60% { transform: scale(1.18) translateY(-2px); } 100% { transform: none; } }
+@keyframes shimmer { from { background-position: 0 0; } to { background-position: 200% 0; } }
+.page.active > * { animation: rise .5s cubic-bezier(.2,.8,.2,1) both; }
+.page.active > *:nth-child(2) { animation-delay: .05s; }
+.page.active > *:nth-child(3) { animation-delay: .1s; }
+.page.active > *:nth-child(4) { animation-delay: .15s; }
+.page.active > *:nth-child(5) { animation-delay: .2s; }
+.page.active > *:nth-child(6) { animation-delay: .25s; }
+.page.active > *:nth-child(n+7) { animation-delay: .3s; }
+.item { animation: rise .35s cubic-bezier(.2,.8,.2,1) both; }
+.orb { animation: floaty 3.6s ease-in-out infinite; }
+.logo { animation: floaty 5s ease-in-out infinite; }
+.nav-btn.active span { animation: navpop .42s cubic-bezier(.2,.9,.3,1.3); }
+.btn { transition: transform .15s, filter .2s, box-shadow .2s, background .25s; }
+.btn:hover { filter: brightness(1.06); }
+.game-card { transition: transform .2s, border-color .2s, background .2s, box-shadow .2s; }
+.game-card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(120,70,220,.25); }
+.glass, input, select, .item, .stat-card, .nav-inner, .pill { transition: background .35s, border-color .35s, color .35s, box-shadow .35s; }
+.bar > div { transition: width .7s cubic-bezier(.2,.8,.2,1); }
+.hero h1 span { background-size: 200% 100%; animation: shimmer 6s linear infinite; background-image: linear-gradient(100deg, #fff, #d7b7ff 25%, #a78bfa 50%, #d7b7ff 75%, #fff); }
+.toast { z-index: 10001; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; } }
+
+/* ===== Light mode ===== */
+html[data-mode="light"] { color-scheme: light; --muted: #5d4c82; --white: #24113f; --line: rgba(80,50,140,.18); --sheet-bg: #fbf8ff; --card-fill: rgba(255,255,255,.75); }
+html[data-mode="light"] body { color: #24113f; background: linear-gradient(150deg,#f6f1ff,#d8e0ff 55%,#f6f1ff); }
+html[data-mode="light"] body::before { display: none; }
+html[data-mode="light"] .glass { background: linear-gradient(135deg, rgba(255,255,255,.88), rgba(255,255,255,.58)); box-shadow: inset 0 1px 0 #fff, 0 14px 40px rgba(90,60,160,.14); }
+html[data-mode="light"] .pill { background: rgba(255,255,255,.7); color: #3b1f6b; }
+html[data-mode="light"] .tag { color: #4c2a91; background: rgba(124,58,237,.1); border-color: rgba(124,58,237,.25); }
+html[data-mode="light"] .eyebrow { color: #6d3fd0; }
+html[data-mode="light"] .hero h1 span { background-image: linear-gradient(100deg, #4c1d95, #7c3aed 25%, #a855f7 50%, #7c3aed 75%, #4c1d95); background-size: 200% 100%; }
+html[data-mode="light"] .notice { color: #6a5a8c; }
+html[data-mode="light"] label { color: #4a3a6e; }
+html[data-mode="light"] input, html[data-mode="light"] select { color: #24113f; background: rgba(255,255,255,.9); border-color: rgba(80,50,140,.25); }
+html[data-mode="light"] input::placeholder { color: #9a8cb8; }
+html[data-mode="light"] input:focus, html[data-mode="light"] select:focus { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,.2); }
+html[data-mode="light"] .btn.secondary { color: #3b1f6b; background: rgba(255,255,255,.7); }
+html[data-mode="light"] .btn.danger { color: #b42323; }
+html[data-mode="light"] .item { background: rgba(255,255,255,.75); border-color: rgba(80,50,140,.14); }
+html[data-mode="light"] .item .timebox { background: rgba(139,92,246,.12); border-color: rgba(139,92,246,.25); }
+html[data-mode="light"] .item .timebox span { color: #5d4c82; }
+html[data-mode="light"] .item-actions button { color: #4a3a6e; border-color: rgba(80,50,140,.25); }
+html[data-mode="light"] .item-actions .done { color: #0b6b45; background: rgba(34,197,94,.14); border-color: rgba(34,150,94,.35); }
+html[data-mode="light"] .stat-card { background: rgba(255,255,255,.7); border-color: rgba(80,50,140,.14); }
+html[data-mode="light"] .stat-card b { color: #24113f; }
+html[data-mode="light"] .bar { background: rgba(80,50,140,.13); }
+html[data-mode="light"] .macro-row .label { color: #4a3a6e; }
+html[data-mode="light"] .game-card { background: rgba(255,255,255,.72); border-color: rgba(80,50,140,.14); }
+html[data-mode="light"] .back-link { color: #4a3a6e; }
+html[data-mode="light"] .bottom-nav { background: linear-gradient(180deg, transparent, rgba(246,241,255,.94) 28%); }
+html[data-mode="light"] .nav-inner { background: rgba(255,255,255,.85); box-shadow: 0 10px 30px rgba(90,60,160,.2); }
+html[data-mode="light"] .nav-btn { color: #6a5a8c; }
+html[data-mode="light"] .nav-btn.active { background: rgba(139,92,246,.2); color: #24113f; }
+html[data-mode="light"] .scoreline { color: #4a3a6e; }
+html[data-mode="light"] .scoreline b { color: #24113f; }
+html[data-mode="light"] .reaction-arena { background: rgba(255,255,255,.55); border-color: rgba(80,50,140,.2); }
+html[data-mode="light"] .reaction-arena button { color: #24113f; }
+html[data-mode="light"] .reaction-arena.waiting button, html[data-mode="light"] .reaction-arena.ready button, html[data-mode="light"] .reaction-arena.early button { color: #fff; }
+html[data-mode="light"] .memory-cell { color: #24113f; background: rgba(255,255,255,.75); border-color: rgba(80,50,140,.25); }
+html[data-mode="light"] .memory-cell.on, html[data-mode="light"] .memory-cell.matched { background: rgba(167,139,250,.55); }
+html[data-mode="light"] .ttt button, html[data-mode="light"] .dpad button, html[data-mode="light"] .step-btn { color: #24113f; background: rgba(255,255,255,.8); }
+html[data-mode="light"] .ttt button.x { color: #8b2fd6; }
+html[data-mode="light"] .ttt button.o { color: #0a8aa6; }
+html[data-mode="light"] .portion-box { background: rgba(139,92,246,.1); border-color: rgba(139,92,246,.3); }
+html[data-mode="light"] .portion-calc { color: #3b1f6b; }
+html[data-mode="light"] .toast { background: #2a1450; color: #fff; }
+html[data-mode="light"] .footer, html[data-mode="light"] .empty { color: #6a5a8c; }
+html[data-mode="light"] .sheet .grab { background: rgba(80,50,140,.25); }
+html[data-mode="light"] .sheet-close { background: rgba(80,50,140,.08); }
+html[data-mode="light"] .food-row { border-color: rgba(80,50,140,.16); }
+html[data-mode="light"] .food-row .kc { color: #5b2fb8; }
+html[data-mode="light"] .food-row:active { background: rgba(167,139,250,.35); }
+html[data-mode="light"] .theme-swatch { border-color: rgba(80,50,140,.3); }
   </style>
 </head>
 <body>
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v10 · время для себя</span>
+      <span class="pill" id="topPill">v12 · время для себя</span>
     </header>
 
     <!-- HOME -->
@@ -781,8 +881,10 @@ input[type=time]::-webkit-calendar-picker-indicator {
         <div class="section-head"><h2>Добавить приём пищи</h2></div>
         <form id="mealForm" onsubmit="return false;">
           <div style="margin-bottom:12px">
-            <div class="notice" style="margin:0 0 8px">Быстрый выбор: нажми на блюдо — подставятся средние значения на порцию (можно поправить)</div>
-            <div class="water-btns" id="mealPresets" style="margin-top:0"></div>
+            <div class="pick-actions">
+              <button type="button" class="btn" onclick="openSheet('sheetPick')">🍽 Выбрать блюдо</button>
+              <button type="button" class="btn secondary" onclick="openSheet('sheetMy')">⭐ Мои блюда</button>
+            </div>
             <div class="notice" id="presetHint" style="margin:8px 0 0"></div>
           </div>
           <div class="portion-box" id="portionBox">
@@ -944,6 +1046,12 @@ input[type=time]::-webkit-calendar-picker-indicator {
           <button class="theme-swatch" data-theme="forest" style="background:linear-gradient(135deg,#27634e,#0c201b)" aria-label="Зелёная"></button>
           <button class="theme-swatch" data-theme="sunset" style="background:linear-gradient(135deg,#9a4a2a,#2a1010)" aria-label="Закат"></button>
         </div>
+        <p class="notice" style="margin:16px 0 8px">Режим</p>
+        <div class="mode-row" id="modeRow">
+          <button type="button" class="btn small" data-mode="dark">🌙 Тёмная</button>
+          <button type="button" class="btn secondary small" data-mode="light">☀️ Светлая</button>
+          <button type="button" class="btn secondary small" data-mode="auto">🌓 Как в системе</button>
+        </div>
       </div>
 
       <div class="glass section">
@@ -1013,6 +1121,49 @@ input[type=time]::-webkit-calendar-picker-indicator {
       <button type="button" class="nav-btn" data-tab="settings" onclick="window.goTab && goTab('settings')"><span>⚙️</span>Ещё</button>
     </div>
   </nav>
+
+  <!-- Sheet: pick a dish -->
+  <div class="sheet-back" id="sheetPick" aria-hidden="true">
+    <div class="sheet" role="dialog" aria-modal="true" aria-label="Выбор блюда">
+      <div class="grab"></div>
+      <div class="sheet-head"><h3>🍽 Выбери блюдо</h3><button type="button" class="sheet-close" data-close aria-label="Закрыть">✕</button></div>
+      <input type="search" id="foodSearch" placeholder="🔍 Найти блюдо…" autocomplete="off">
+      <div class="food-list" id="mealPresets"></div>
+      <div class="form-actions"><button type="button" class="btn secondary" onclick="openSheet('sheetMy')">＋ Добавить своё блюдо</button></div>
+    </div>
+  </div>
+
+  <!-- Sheet: my dishes -->
+  <div class="sheet-back" id="sheetMy" aria-hidden="true">
+    <div class="sheet" role="dialog" aria-modal="true" aria-label="Мои блюда">
+      <div class="grab"></div>
+      <div class="sheet-head"><h3>⭐ Мои блюда <span class="tag" id="cfCount">0</span></h3><button type="button" class="sheet-close" data-close aria-label="Закрыть">✕</button></div>
+      <p class="notice" style="margin:0 0 12px">Добавь свой продукт или блюдо один раз — потом оно будет в быстром выборе, и вес можно менять. Значения указывай на 100 г (смотри на упаковке).</p>
+      <div class="fields">
+        <div class="field full"><label>Название</label><input id="cfName" maxlength="60" placeholder="Мой протеиновый батончик"></div>
+        <div class="field"><label>Ккал на 100 г</label><input type="number" id="cfCal" min="0" step="any" inputmode="decimal"></div>
+        <div class="field"><label>Белки на 100 г</label><input type="number" id="cfProt" min="0" step="any" inputmode="decimal"></div>
+        <div class="field"><label>Жиры на 100 г</label><input type="number" id="cfFat" min="0" step="any" inputmode="decimal"></div>
+        <div class="field"><label>Углеводы на 100 г</label><input type="number" id="cfCarb" min="0" step="any" inputmode="decimal"></div>
+        <div class="field"><label>Обычная порция, г</label><input type="number" id="cfWeight" min="1" step="any" inputmode="decimal" value="100"></div>
+        <div class="field">
+          <label>Тип</label>
+          <select id="cfType">
+            <option value="breakfast">Завтрак</option>
+            <option value="lunch">Обед</option>
+            <option value="dinner">Ужин</option>
+            <option value="snack" selected>Перекус</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn" type="button" id="cfSave">＋ Сохранить блюдо</button>
+        <button class="btn secondary" type="button" id="cfCancel" style="display:none">Отмена</button>
+      </div>
+      <div class="list" id="cfList" style="margin-top:14px"></div>
+
+    </div>
+  </div>
 
   <div class="toast" id="toast"></div>
 
@@ -1113,7 +1264,9 @@ input[type=time]::-webkit-calendar-picker-indicator {
     profile: { name: '' },
     theme: 'violet',
     ntfy: { enabled: false, topic: '' },
-    stats: { tapBest: 0, reactionBest: null }
+    stats: { tapBest: 0, reactionBest: null },
+    customFoods: [],
+    mode: 'dark'
   });
 
   let data = load();
@@ -1150,18 +1303,69 @@ input[type=time]::-webkit-calendar-picker-indicator {
     forest: { a: '#27634e', b: '#183f3b', c: '#0c201b' },
     sunset: { a: '#9a4a2a', b: '#5a2a20', c: '#2a1010' }
   };
-  function applyTheme(name) {
-    const t = themes[name] || themes.violet;
+  const lightThemes = {
+    violet: { a: '#e3d1ff', b: '#d6defe', c: '#f6f1ff' },
+    ocean:  { a: '#c4ecf9', b: '#d2e2ff', c: '#eef8ff' },
+    rose:   { a: '#fbd0ea', b: '#e7d2f7', c: '#fff2fa' },
+    forest: { a: '#c9efdc', b: '#cdebee', c: '#f0fbf5' },
+    sunset: { a: '#ffd9c4', b: '#f8d3d0', c: '#fff4ec' }
+  };
+  const effMode = () => {
+    const m = data.mode || 'dark';
+    if (m === 'auto') return (window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+    return m;
+  };
+  function paintBg() {
+    const eff = effMode();
+    const set = eff === 'light' ? lightThemes : themes;
+    const t = set[data.theme] || set.violet;
+    document.documentElement.setAttribute('data-mode', eff);
     document.body.style.background =
       `radial-gradient(ellipse at 12% 0%,${t.a} 0,transparent 38%),` +
       `radial-gradient(ellipse at 95% 30%,${t.b} 0,transparent 34%),` +
       `linear-gradient(150deg,${t.c},${t.b} 55%,${t.c})`;
+    document.body.style.backgroundAttachment = 'fixed';
+    const mt = document.querySelector('meta[name="theme-color"]');
+    if (mt) mt.setAttribute('content', eff === 'light' ? '#f6f1ff' : '#170d32');
+  }
+  function applyTheme(name) {
+    data.theme = themes[name] ? name : 'violet';
     document.querySelectorAll('.theme-swatch').forEach(b => {
-      b.classList.toggle('active', b.dataset.theme === name);
+      b.classList.toggle('active', b.dataset.theme === data.theme);
     });
-    data.theme = name;
+    paintBg();
     save();
   }
+  function applyMode(m) {
+    data.mode = (m === 'light' || m === 'auto') ? m : 'dark';
+    document.querySelectorAll('#modeRow [data-mode]').forEach(b => {
+      b.classList.toggle('secondary', b.dataset.mode !== data.mode);
+    });
+    paintBg();
+    save();
+  }
+  window.applyMode = applyMode;
+  document.querySelectorAll('#modeRow [data-mode]').forEach(b => { b.onclick = () => applyMode(b.dataset.mode); });
+  try { matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => { if (data.mode === 'auto') paintBg(); }); } catch {}
+
+  /* ----- Sheets (modal windows) ----- */
+  function openSheet(id) {
+    closeSheets(true);
+    const el = $(id); if (!el) return;
+    el.classList.add('show'); el.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('noscroll');
+    const sh = el.querySelector('.sheet'); if (sh) sh.scrollTop = 0;
+    if (id === 'sheetPick') { const q = $('foodSearch'); q.value = ''; renderFoodButtons(); }
+  }
+  function closeSheets(keepScroll) {
+    document.querySelectorAll('.sheet-back.show').forEach(e => { e.classList.remove('show'); e.setAttribute('aria-hidden', 'true'); });
+    if (!keepScroll) document.body.classList.remove('noscroll');
+  }
+  window.openSheet = openSheet; window.closeSheets = closeSheets;
+  document.querySelectorAll('.sheet-back').forEach(back => {
+    back.addEventListener('click', e => { if (e.target === back || e.target.closest('[data-close]')) closeSheets(); });
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheets(); });
 
   /* ----- Navigation ----- */
   function goTab(name) {
@@ -1397,41 +1601,108 @@ input[type=time]::-webkit-calendar-picker-indicator {
     $('portionWeight').value = w;
     recalcPortion();
   }
-  (function setupPresets() {
+  const allFoods = () => MEAL_PRESETS.concat(data.customFoods || []);
+  function pickFood(m) {
+    curPreset = m;
+    $('portionBox').classList.add('show');
+    $('portionTitle').textContent = m.n + ' — сколько грамм?';
+    const chips = $('portionChips');
+    chips.innerHTML = '';
+    [0.5, 1, 1.5, 2].forEach(f => {
+      const val = Math.max(1, Math.round(m.w * f));
+      const c = document.createElement('button');
+      c.type = 'button';
+      c.className = 'btn secondary small';
+      c.textContent = val + ' г';
+      c.onclick = () => setWeight(val);
+      chips.appendChild(c);
+    });
+    $('portionRange').max = Math.max(600, m.w * 3);
+    setWeight(m.w);
+    $('presetHint').textContent = 'Измени вес — калории, белки, жиры и углеводы пересчитаются сами. Затем нажми «Добавить».';
+    closeSheets();
+    setTimeout(() => { try { $('portionBox').scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch {} }, 80);
+  }
+  function renderFoodButtons() {
     const box = $('mealPresets');
     if (!box) return;
-    MEAL_PRESETS.forEach(m => {
+    const q = ($('foodSearch').value || '').trim().toLowerCase();
+    box.innerHTML = '';
+    const list = allFoods().filter(m => !q || m.n.toLowerCase().includes(q));
+    list.forEach(m => {
       const b = document.createElement('button');
       b.type = 'button';
-      b.className = 'btn secondary small';
-      b.textContent = m.n;
-      b.addEventListener('click', () => {
-        curPreset = m;
-        $('portionBox').classList.add('show');
-        $('portionTitle').textContent = m.n + ' — сколько грамм?';
-        const chips = $('portionChips');
-        chips.innerHTML = '';
-        const base = m.w;
-        [0.5, 1, 1.5, 2].forEach(f => {
-          const val = Math.round(base * f);
-          const c = document.createElement('button');
-          c.type = 'button';
-          c.className = 'btn secondary small';
-          c.textContent = val + ' г';
-          c.onclick = () => setWeight(val);
-          chips.appendChild(c);
-        });
-        $('portionRange').max = Math.max(600, base * 3);
-        setWeight(base);
-        $('presetHint').textContent = 'Измени вес — калории, белки, жиры и углеводы пересчитаются сами. Затем нажми «Добавить».';
-      });
+      b.className = 'food-row';
+      b.innerHTML = '<span>' + (m.id ? '⭐ ' : '') + esc(m.n) + '<small>' + m.w + ' г · на 100 г: Б ' + m.p + ' · Ж ' + m.f + ' · У ' + m.u + '</small></span><span class="kc">' + Math.round(m.c * m.w / 100) + ' ккал</span>';
+      b.addEventListener('click', () => pickFood(m));
       box.appendChild(b);
     });
+    if (!list.length) box.innerHTML = '<span class="notice" style="margin:0">Ничего не найдено — добавь своё блюдо кнопкой ниже</span>';
+  }
+  /* ----- Мои блюда ----- */
+  let editingFood = null;
+  function renderCustomFoods() {
+    const list = $('cfList');
+    const arr = data.customFoods || [];
+    $('cfCount').textContent = arr.length;
+    if (!arr.length) { list.innerHTML = '<div class="empty" style="padding:12px">Пока нет своих блюд</div>'; return; }
+    list.innerHTML = '';
+    arr.forEach(m => {
+      const el = document.createElement('div');
+      el.className = 'item';
+      el.innerHTML = `<div class="body"><strong>${esc(m.n)}</strong><span>${m.c} ккал · Б ${m.p} · Ж ${m.f} · У ${m.u} — на 100 г · порция ${m.w} г</span></div>
+        <div class="item-actions"><button type="button" data-use>Выбрать</button><button type="button" data-edit>Изменить</button><button type="button" data-del>Удалить</button></div>`;
+      el.querySelector('[data-use]').onclick = () => { pickFood(m); };
+      el.querySelector('[data-edit]').onclick = () => {
+        editingFood = m.id;
+        $('cfName').value = m.n; $('cfCal').value = m.c; $('cfProt').value = m.p; $('cfFat').value = m.f; $('cfCarb').value = m.u;
+        $('cfWeight').value = m.w; $('cfType').value = m.t;
+        $('cfSave').textContent = '✓ Сохранить изменения';
+        $('cfCancel').style.display = '';
+        try { $('cfName').scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch {}
+      };
+      el.querySelector('[data-del]').onclick = () => {
+        if (!confirm('Удалить «' + m.n + '»?')) return;
+        data.customFoods = data.customFoods.filter(x => x.id !== m.id);
+        save(); renderCustomFoods(); renderFoodButtons();
+        if (curPreset && curPreset.id === m.id) { curPreset = null; $('portionBox').classList.remove('show'); }
+        toast('Блюдо удалено');
+      };
+      list.appendChild(el);
+    });
+  }
+  function resetCfForm() {
+    editingFood = null;
+    ['cfName', 'cfCal', 'cfProt', 'cfFat', 'cfCarb'].forEach(i => $(i).value = '');
+    $('cfWeight').value = 100; $('cfType').value = 'snack';
+    $('cfSave').textContent = '＋ Сохранить блюдо';
+    $('cfCancel').style.display = 'none';
+  }
+  $('cfSave').addEventListener('click', () => {
+    const name = $('cfName').value.trim();
+    const num = id => { const v = parseFloat(String($(id).value).replace(',', '.')); return Number.isFinite(v) && v >= 0 ? v : 0; };
+    if (!name) { toast('Введи название'); $('cfName').focus(); return; }
+    if ($('cfCal').value === '') { toast('Укажи калории на 100 г'); $('cfCal').focus(); return; }
+    const w = num('cfWeight') || 100;
+    const item = { id: editingFood || 'cf' + Date.now(), n: name, w: w, c: fmt1(num('cfCal')), p: fmt1(num('cfProt')), f: fmt1(num('cfFat')), u: fmt1(num('cfCarb')), t: $('cfType').value };
+    if (!Array.isArray(data.customFoods)) data.customFoods = [];
+    const i = data.customFoods.findIndex(x => x.id === item.id);
+    if (i >= 0) data.customFoods[i] = item; else data.customFoods.push(item);
+    save();
+    toast(i >= 0 ? 'Блюдо обновлено' : 'Блюдо добавлено ⭐');
+    resetCfForm(); renderCustomFoods(); renderFoodButtons();
+  });
+  $('cfCancel').addEventListener('click', resetCfForm);
+  (function setupPresets() {
+    $('foodSearch').addEventListener('input', renderFoodButtons);
+    renderFoodButtons();
+    renderCustomFoods();
     $('portionWeight').addEventListener('input', () => recalcPortion());
     $('portionRange').addEventListener('input', e => { $('portionWeight').value = e.target.value; recalcPortion(); });
     $('wMinus').addEventListener('click', () => setWeight((+$('portionWeight').value || 0) - ((curPreset && curPreset.step) || 10)));
     $('wPlus').addEventListener('click', () => setWeight((+$('portionWeight').value || 0) + ((curPreset && curPreset.step) || 10)));
   })();
+  window._refreshFoods = () => { renderFoodButtons(); renderCustomFoods(); };
   $('mealForm').addEventListener('reset', () => { setTimeout(() => { const h = $('presetHint'); if (h) h.textContent = ''; curPreset = null; $('portionBox').classList.remove('show'); }, 0); });
 
   /* ----- Reminders ----- */
@@ -2627,6 +2898,8 @@ input[type=time]::-webkit-calendar-picker-indicator {
         data = { ...defaultData(), ...JSON.parse(ev.target.result) };
         save();
         applyTheme(data.theme);
+        applyMode(data.mode);
+        window._refreshFoods && window._refreshFoods();
         renderHome();
         renderNutrition();
         renderReminders();
@@ -2642,6 +2915,8 @@ input[type=time]::-webkit-calendar-picker-indicator {
     data = defaultData();
     save();
     applyTheme('violet');
+    applyMode('dark');
+    window._refreshFoods && window._refreshFoods();
     renderHome();
     renderNutrition();
     renderReminders();
@@ -2656,6 +2931,7 @@ input[type=time]::-webkit-calendar-picker-indicator {
 
   /* ----- Init ----- */
   applyTheme(data.theme || 'violet');
+  applyMode(data.mode || 'dark');
   initRemDefaults();
   checkDue();
   setInterval(checkDue, 5000);
