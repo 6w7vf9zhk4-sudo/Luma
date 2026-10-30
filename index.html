@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="14"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="15"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <style>
@@ -654,6 +654,37 @@ input[type=time]::-webkit-calendar-picker-indicator {
 }
 
 .hero.center { text-align: center; }
+.coin-pop { position: fixed; top: calc(12px + env(safe-area-inset-top)); right: 12px; z-index: 10110; padding: 9px 14px; border-radius: 999px; font-weight: 800; font-size: 14px; color: #3b2a00; background: linear-gradient(135deg,#fff27a,#fbbf24); box-shadow: 0 8px 24px rgba(251,191,36,.4); opacity: 0; transform: translateY(-12px) scale(.95); pointer-events: none; transition: opacity .25s, transform .25s; }
+.coin-pop.show { opacity: 1; transform: none; }
+.wallet-top { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px; }
+.wallet small, .shop-bal span { display: block; color: var(--muted); font-size: 11px; letter-spacing: .6px; text-transform: uppercase; }
+.wallet b.big { font-size: 28px; letter-spacing: -.5px; color: #fbbf24; }
+.wallet b.mid { font-size: 22px; }
+.wallet-who { margin: 12px 0 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.title-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: rgba(167,139,250,.18); border: 1px solid rgba(167,139,250,.35); }
+.title-chip.creator { color: #3b2a00; border-color: #fde68a; background: linear-gradient(100deg,#fde68a,#fbbf24,#f59e0b,#fde68a); background-size: 200% 100%; animation: shimmer 4s linear infinite; box-shadow: 0 0 14px rgba(251,191,36,.45); }
+.shop-bal { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.shop-bal b { font-size: 26px; color: #fbbf24; }
+.shop-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.shop-tabs::-webkit-scrollbar { display: none; }
+.chip { flex: 0 0 auto; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--card-fill); color: inherit; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.chip.on { border-color: #a78bfa; background: rgba(167,139,250,.28); }
+.shop-sub { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin: 16px 2px 8px; font-weight: 700; }
+.shop-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 18px; border: 1px solid var(--line); background: var(--card-fill); margin-bottom: 8px; }
+.shop-item.locked { opacity: .65; }
+.shop-item.mine { border-color: #fbbf24; }
+.si-ico { width: 46px; height: 46px; flex: 0 0 46px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; background: rgba(255,255,255,.08); }
+.si-body { flex: 1; min-width: 0; }
+.si-body b { display: block; font-size: 14px; }
+.si-body small { display: block; color: var(--muted); font-size: 11.5px; line-height: 1.4; }
+.si-act { flex: 0 0 auto; }
+.bar.mini { height: 6px; margin-top: 6px; }
+.spin-res { text-align: center; padding: 16px; border-radius: 18px; border: 1px dashed #fbbf24; margin: 12px 0; font-weight: 700; }
+.logo.fr-gold { box-shadow: 0 0 0 2px #fbbf24, 0 0 16px #fbbf2488; }
+.logo.fr-neon { box-shadow: 0 0 0 2px #22d3ee, 0 0 18px #22d3ee; }
+.logo.fr-rainbow { box-shadow: 0 0 0 2px #f472b6, 0 0 0 4px #fbbf24, 0 0 0 6px #34d399, 0 0 0 8px #60a5fa; }
+.badge-em { font-size: 20px; }
+.chips-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
 .footer { touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
 .norm-line { text-align: center; font-size: 12px; line-height: 1.5; color: var(--muted); margin: 6px 0 10px; }
 .norm-line b { color: inherit; }
@@ -849,7 +880,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v14 · время для себя</span>
+      <span class="pill" id="topPill">v15 · время для себя</span>
     </header>
 
     <!-- HOME -->
@@ -858,6 +889,18 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
         <div class="eyebrow">YOUR GENTLE SPACE</div>
         <h1>Меньше забывай.<br><span>Больше успевай.</span></h1>
         <p class="muted" id="greeting">Добро пожаловать</p>
+      </div>
+
+      <div class="glass section wallet" id="walletCard">
+        <div class="wallet-top">
+          <div><small>Баланс</small><b class="big" id="wBal">0 ✧</b></div>
+          <div><small>Серия дней</small><b class="mid" id="wStreak">0 дн.</b></div>
+        </div>
+        <div class="wallet-who" id="wWho"></div>
+        <div class="form-actions">
+          <button class="btn small" type="button" onclick="openShop('theme')">🛍 Магазин</button>
+          <button class="btn secondary small" type="button" onclick="openShop('titles')">🏅 Звания</button>
+        </div>
       </div>
 
       <div class="stats-row">
@@ -1143,6 +1186,19 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       </div>
     </section>
 
+    <!-- SHOP -->
+    <section class="page" id="page-shop">
+      <div class="hero center">
+        <div class="eyebrow">SHOP</div>
+        <h1>Магазин<br><span>и звания</span></h1>
+      </div>
+      <div class="glass section">
+        <div class="shop-bal"><span>Баланс</span><b id="shopBal">0 ✧</b></div>
+        <div class="shop-tabs" id="shopTabs"></div>
+      </div>
+      <div id="shopBody"></div>
+    </section>
+
     <!-- SETTINGS -->
     <section class="page" id="page-settings">
       <div class="hero center">
@@ -1176,6 +1232,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
         <div class="form-actions">
           <button class="btn" type="button" id="saveProfile">Сохранить</button>
           <button class="btn secondary" type="button" onclick="openOnboard(true)">Параметры: возраст, рост, вес, цель</button>
+          <button class="btn secondary" type="button" onclick="openShop('titles')">🏅 Магазин и звания</button>
         </div>
       </div>
 
@@ -1339,6 +1396,53 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       </div>
 
       <div class="glass section">
+        <div class="section-head"><h2>Монеты</h2><span class="tag" id="adBal">0 ✧</span></div>
+        <div class="fields">
+          <div class="field full"><label>Сумма, ✧</label><input type="number" id="adCoinAmt" min="0" inputmode="numeric" placeholder="1000"></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" type="button" id="adCoinAdd">＋ Добавить</button>
+          <button class="btn secondary" type="button" id="adCoinSub">− Списать</button>
+          <button class="btn secondary" type="button" id="adCoinSet">= Установить</button>
+        </div>
+        <p class="notice">Быстро добавить:</p>
+        <div class="chips-row" id="adQuick">
+          <button class="btn secondary small" type="button" data-q="100">+100</button>
+          <button class="btn secondary small" type="button" data-q="1000">+1 000</button>
+          <button class="btn secondary small" type="button" data-q="10000">+10 000</button>
+          <button class="btn secondary small" type="button" data-q="100000">+100 000</button>
+          <button class="btn secondary small" type="button" data-q="1000000">+1 000 000</button>
+        </div>
+        <div class="fields">
+          <div class="field"><label>Множитель наград (1–1000)</label><input type="number" id="adMult" min="1" max="1000" inputmode="numeric"></div>
+          <div class="field"><label>Серия дней</label><input type="number" id="adStreak" min="0" max="9999" inputmode="numeric"></div>
+        </div>
+        <div class="form-actions"><button class="btn" type="button" id="adSaveMisc">Сохранить множитель и серию</button></div>
+        <p class="notice">Добавленные здесь монеты считаются заработанными — от них открываются звания «Богач», «Магнат» и другие.</p>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Звания и магазин</h2><span class="tag">ДОСТУП</span></div>
+        <p class="notice" style="margin-top:0">Звание «Создатель» хранится только в этом браузере и попадает в экспорт данных: чтобы оно было на другом устройстве, перенеси туда бэкап или открой админ-панель и там.</p>
+        <div class="form-actions">
+          <button class="btn" type="button" id="adCreator">Создатель: …</button>
+          <button class="btn secondary" type="button" id="adAllTitles">Открыть все звания</button>
+          <button class="btn secondary" type="button" id="adNoTitles">Закрыть все звания</button>
+          <button class="btn secondary" type="button" id="adAllShop">Открыть весь магазин</button>
+          <button class="btn danger" type="button" id="adResetShop">Сбросить покупки</button>
+        </div>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Цены магазина</h2><span class="tag">✧</span></div>
+        <details class="norm-group"><summary>Показать цены<small>изменить</small></summary><div class="fields" id="adPrices"></div></details>
+        <div class="form-actions">
+          <button class="btn" type="button" id="adSavePrices">Сохранить цены</button>
+          <button class="btn secondary" type="button" id="adResetPrices">Стандартные</button>
+        </div>
+      </div>
+
+      <div class="glass section">
         <div class="section-head"><h2>Рекорды</h2><span class="tag">ИГРЫ</span></div>
         <p class="notice" style="margin-top:0">Оставь поле пустым, чтобы убрать рекорд (для реакции и памяти).</p>
         <div class="fields">
@@ -1379,6 +1483,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     </div>
   </div>
 
+  <div class="coin-pop" id="coinPop" aria-live="polite"></div>
   <div class="toast" id="toast"></div>
 
   
@@ -1436,7 +1541,16 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     theme: 'violet',
     ntfy: { enabled: false, topic: '' },
     stats: defaultStats(),
-    admin: { tapSeconds: 10, norms: {} },
+    admin: { tapSeconds: 10, norms: {}, prices: {}, mult: 1 },
+    coins: { bal: 0, earned: 0, spent: 0 },
+    inv: { life: 0, undo: 0, hint: 0, slow: 0 },
+    owned: {},
+    equip: { snake: 'def', t2048: 'def', mem: 'def', ttt: 'def', badge: null, avatar: null, frame: null },
+    titles: { got: { rookie: 1 }, active: 'rookie', creator: false, creatorAuto: false },
+    streak: { last: null, count: 0, best: 0 },
+    daily: { water: null, walk: null, meal: null },
+    cnt: { games: {}, total: 0, dist: 0, waterDays: 0, remDone: 0, meals: 0, lottery: 0, bought: 0, won2048: 0 },
+    rewards: [],
     customFoods: [],
     walks: [],
     mode: 'dark'
@@ -1457,7 +1571,20 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     d.admin = { ...base.admin, ...(d.admin || {}) };
     if (!d.admin.norms || typeof d.admin.norms !== 'object') d.admin.norms = {};
     d.admin.tapSeconds = Math.min(60, Math.max(5, Math.round(+d.admin.tapSeconds) || 10));
+    d.admin.prices = (d.admin.prices && typeof d.admin.prices === 'object') ? d.admin.prices : {};
+    d.admin.mult = Math.min(1000, Math.max(1, Math.round(+d.admin.mult) || 1));
+    ['coins', 'inv', 'owned', 'equip', 'titles', 'streak', 'daily', 'cnt'].forEach(k => { d[k] = { ...base[k], ...(d[k] && typeof d[k] === 'object' ? d[k] : {}) }; });
+    ['bal', 'earned', 'spent'].forEach(k => { d.coins[k] = Math.max(0, Math.round(+d.coins[k]) || 0); });
+    ['life', 'undo', 'hint', 'slow'].forEach(k => { d.inv[k] = Math.max(0, Math.round(+d.inv[k]) || 0); });
+    if (!d.cnt.games || typeof d.cnt.games !== 'object') d.cnt.games = {};
+    if (!d.titles.got || typeof d.titles.got !== 'object') d.titles.got = { rookie: 1 };
+    if (!Array.isArray(d.rewards)) d.rewards = [];
     if (!d.profile || typeof d.profile !== 'object') d.profile = base.profile;
+    if (!d.cnt || !d.cnt.init) {
+      d.cnt = { ...base.cnt, ...(d.cnt || {}), init: true };
+      d.cnt.dist = (Array.isArray(d.walks) ? d.walks : []).reduce((a, w) => a + (+w.dist || 0), 0);
+      d.cnt.meals = Array.isArray(d.meals) ? d.meals.length : 0;
+    }
     ['goals', 'water'].forEach(k => { if (!d[k] || typeof d[k] !== 'object') d[k] = base[k]; });
     ['meals', 'reminders', 'customFoods', 'walks'].forEach(k => { if (!Array.isArray(d[k])) d[k] = []; });
     return d;
@@ -1497,14 +1624,22 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     ocean:  { a: '#126b85', b: '#173b70', c: '#071c35' },
     rose:   { a: '#873b72', b: '#55234f', c: '#250d2d' },
     forest: { a: '#27634e', b: '#183f3b', c: '#0c201b' },
-    sunset: { a: '#9a4a2a', b: '#5a2a20', c: '#2a1010' }
+    sunset: { a: '#9a4a2a', b: '#5a2a20', c: '#2a1010' },
+    neon:   { a: '#8a1fa8', b: '#2a1170', c: '#0b0420' },
+    gold:   { a: '#8a6a12', b: '#4a3410', c: '#1c1405' },
+    cosmos: { a: '#1f3a9a', b: '#3a1a6e', c: '#050818' },
+    sakura: { a: '#a8456f', b: '#5e2a5a', c: '#2a0f24' }
   };
   const lightThemes = {
     violet: { a: '#e3d1ff', b: '#d6defe', c: '#f6f1ff' },
     ocean:  { a: '#c4ecf9', b: '#d2e2ff', c: '#eef8ff' },
     rose:   { a: '#fbd0ea', b: '#e7d2f7', c: '#fff2fa' },
     forest: { a: '#c9efdc', b: '#cdebee', c: '#f0fbf5' },
-    sunset: { a: '#ffd9c4', b: '#f8d3d0', c: '#fff4ec' }
+    sunset: { a: '#ffd9c4', b: '#f8d3d0', c: '#fff4ec' },
+    neon:   { a: '#f3c6ff', b: '#d9d0ff', c: '#fbf0ff' },
+    gold:   { a: '#fbe7a6', b: '#f1dcc0', c: '#fff9e8' },
+    cosmos: { a: '#c9d4ff', b: '#e0cdf8', c: '#f1f3ff' },
+    sakura: { a: '#fbc6dc', b: '#ecd0ee', c: '#fff0f6' }
   };
   const effMode = () => {
     const m = data.mode || 'dark';
@@ -1583,6 +1718,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       if (name === 'walk') { renderWalk(); }
       if (name === 'games') { exitGame(); }
       if (name === 'settings') updateNotifUI();
+      if (name === 'shop') renderShop();
     } catch (e) { console.error(e); }
     try { window.scrollTo(0, 0); } catch {}
   }
@@ -1608,6 +1744,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
 
   function renderHome() {
     resetWaterIfNeeded();
+    try { updateWallet(); } catch (e) { console.error(e); }
     try { renderHomeWalk(); } catch (e) { console.error(e); }
     $('greeting').textContent = greeting() + '. Вот твоя сводка.';
     const meals = data.meals.filter(m => m.date === todayStr());
@@ -1639,6 +1776,10 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     if (ml === 0) data.water.current = 0;
     else data.water.current += ml;
     save();
+    if (ml > 0 && data.water.current >= data.water.goal && data.daily.water !== todayStr()) {
+      data.daily.water = todayStr(); data.cnt.waterDays++;
+      addCoins(15, { pop: 'норма воды' });
+    }
     renderHome();
     if (ml) toast('+' + ml + ' мл воды');
   };
@@ -1739,7 +1880,13 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     });
     const cutoff = Date.now() - 60 * 86400000;
     data.meals = data.meals.filter(m => new Date(m.date).getTime() > cutoff);
+    data.cnt.meals++;
     save();
+    addCoins(2, { pop: 'приём пищи' });
+    {
+      const dayCal = data.meals.filter(m => m.date === todayStr()).reduce((a, m) => a + (m.cal || 0), 0), gc = data.goals.cal;
+      if (gc > 0 && dayCal >= gc * 0.9 && dayCal <= gc * 1.1 && data.daily.meal !== todayStr()) { data.daily.meal = todayStr(); addCoins(15, { pop: 'калории в цель' }); }
+    }
     e.target.reset();
     renderNutrition();
     renderHome();
@@ -2022,7 +2169,9 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       r.done = true;
       if (remTimers.has(id)) { clearTimeout(remTimers.get(id).t); remTimers.delete(id); }
     }
+    data.cnt.remDone++;
     save();
+    addCoins(3, { pop: 'выполнено' });
     syncRemindersToSW();
     renderReminders();
     renderHome();
@@ -2539,6 +2688,356 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     if (status) status.textContent = map[p];
   }
 
+  /* ================= Монеты, магазин, звания ================= */
+  const fmtN = n => Math.round(n).toLocaleString('ru-RU');
+  let popT;
+  function coinPop(text) {
+    const el = $('coinPop'); if (!el) return;
+    el.textContent = text; el.classList.add('show');
+    clearTimeout(popT); popT = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+  /* opts: raw — без множителя; pop — показать «+N ✧» (true или подпись) */
+  function addCoins(n, opts) {
+    opts = opts || {};
+    n = Math.round(n);
+    if (!n) return 0;
+    if (n > 0 && !opts.raw) n = Math.max(1, Math.round(n * (data.admin.mult || 1)));
+    data.coins.bal = Math.max(0, data.coins.bal + n);
+    if (n > 0) data.coins.earned += n;
+    save(); updateWallet();
+    if (opts.pop) coinPop((n > 0 ? '+' : '') + fmtN(n) + ' ✧' + (opts.pop === true ? '' : ' · ' + opts.pop));
+    checkTitles();
+    return n;
+  }
+  function spendCoins(n) {
+    if (data.coins.bal < n) return false;
+    data.coins.bal -= n; data.coins.spent += n; save(); updateWallet();
+    return true;
+  }
+  const REC_B = { reaction: 8, memory: 15, tap: 10, snake: 10 }, NORM_B = { reaction: 3, memory: 10, tap: 5, snake: 5 };
+  function gameDone(kind, base, recHit, normHit) {
+    const c = data.cnt; c.games[kind] = (c.games[kind] || 0) + 1; c.total++;
+    const n = base + (recHit ? REC_B[kind] || 0 : 0) + (normHit ? NORM_B[kind] || 0 : 0);
+    if (n > 0) addCoins(n, { pop: recHit ? 'рекорд!' : (normHit ? 'в норме' : true) });
+    else { save(); checkTitles(); }
+  }
+
+  /* ----- серия дней ----- */
+  function updateStreak() {
+    const t = todayStr(), s = data.streak;
+    if (s.last === t) return;
+    const y = new Date(); y.setDate(y.getDate() - 1);
+    const ys = y.getFullYear() + '-' + pad(y.getMonth() + 1) + '-' + pad(y.getDate());
+    s.count = s.last === ys ? s.count + 1 : 1;
+    s.best = Math.max(s.best || 0, s.count); s.last = t;
+    save();
+    const got = addCoins(Math.min(5 + s.count * 2, 50));
+    coinPop('Серия ' + s.count + ' дн. · +' + fmtN(got) + ' ✧');
+  }
+
+  /* ----- каталог магазина ----- */
+  const SHOP = [
+    { id: 'th_neon', kind: 'theme', name: 'Неон', icon: '🌆', price: 300, theme: 'neon', sw: 'linear-gradient(135deg,#ff2bd6,#1b0b3a)', desc: 'Тема оформления' },
+    { id: 'th_gold', kind: 'theme', name: 'Золото', icon: '🏅', price: 500, theme: 'gold', sw: 'linear-gradient(135deg,#d4a017,#2a1a05)', desc: 'Тема оформления' },
+    { id: 'th_cosmos', kind: 'theme', name: 'Космос', icon: '🪐', price: 400, theme: 'cosmos', sw: 'linear-gradient(135deg,#2b3fa0,#050818)', desc: 'Тема оформления' },
+    { id: 'th_sakura', kind: 'theme', name: 'Сакура', icon: '🌸', price: 350, theme: 'sakura', sw: 'linear-gradient(135deg,#d9609a,#2a0f24)', desc: 'Тема оформления' },
+
+    { id: 'sn_neon', kind: 'snake', name: 'Неон-змейка', icon: '🟢', price: 150, skin: 'neon', desc: 'Змейка: светящийся зелёный' },
+    { id: 'sn_fire', kind: 'snake', name: 'Огненная змейка', icon: '🔥', price: 200, skin: 'fire', desc: 'Змейка: от жёлтого к красному' },
+    { id: 'sn_rainbow', kind: 'snake', name: 'Радужная змейка', icon: '🌈', price: 400, skin: 'rainbow', desc: 'Змейка: все цвета радуги' },
+    { id: 't_pastel', kind: 't2048', name: 'Пастельные плитки', icon: '🍬', price: 150, skin: 'pastel', desc: '2048: мягкие цвета' },
+    { id: 't_neon', kind: 't2048', name: 'Тёмный неон', icon: '💡', price: 250, skin: 'neon', desc: '2048: светящиеся цифры' },
+    { id: 'm_animals', kind: 'mem', name: 'Животные', icon: '🐶', price: 150, pack: ['🐶','🐱','🦊','🐼','🐸','🦁','🐵','🐙'], desc: 'Память: карточки-животные' },
+    { id: 'm_space', kind: 'mem', name: 'Космос', icon: '🚀', price: 200, pack: ['🌙','⭐','🪐','🚀','☄️','🌍','👽','🛸'], desc: 'Память: космические карточки' },
+    { id: 'm_food', kind: 'mem', name: 'Еда', icon: '🍕', price: 150, pack: ['🍕','🍔','🍣','🍩','🌮','🍦','🥐','🍪'], desc: 'Память: вкусные карточки' },
+    { id: 'x_hearts', kind: 'ttt', name: 'Сердца и звёзды', icon: '❤️', price: 150, sym: ['❤️','⭐'], desc: 'Крестики-нолики' },
+    { id: 'x_sun', kind: 'ttt', name: 'Солнце и луна', icon: '☀️', price: 150, sym: ['☀️','🌙'], desc: 'Крестики-нолики' },
+    { id: 'x_fire', kind: 'ttt', name: 'Огонь и лёд', icon: '🔥', price: 200, sym: ['🔥','❄️'], desc: 'Крестики-нолики' },
+
+    { id: 'b_life', kind: 'boost', inv: 'life', name: 'Вторая жизнь', icon: '❤️', price: 60, desc: 'Змейка: спасает от одного столкновения (срабатывает сама)' },
+    { id: 'b_undo', kind: 'boost', inv: 'undo', name: 'Отмена хода', icon: '↩️', price: 40, desc: '2048: вернуть последний ход' },
+    { id: 'b_hint', kind: 'boost', inv: 'hint', name: 'Подсказка', icon: '💡', price: 30, desc: 'Память: на секунду покажет одну пару' },
+    { id: 'b_slow', kind: 'boost', inv: 'slow', name: 'Замедление', icon: '🐢', price: 50, desc: 'Змейка: 10 секунд помедленнее' },
+
+    { id: 'bd_star', kind: 'badge', name: 'Звезда', icon: '🌟', price: 200, desc: 'Значок рядом с именем' },
+    { id: 'bd_fire', kind: 'badge', name: 'Огонь', icon: '🔥', price: 300, desc: 'Значок рядом с именем' },
+    { id: 'bd_rocket', kind: 'badge', name: 'Ракета', icon: '🚀', price: 400, desc: 'Значок рядом с именем' },
+    { id: 'bd_uni', kind: 'badge', name: 'Единорог', icon: '🦄', price: 500, desc: 'Значок рядом с именем' },
+    { id: 'bd_crown', kind: 'badge', name: 'Корона', icon: '👑', price: 1000, desc: 'Значок рядом с именем' },
+    { id: 'bd_gem', kind: 'badge', name: 'Бриллиант', icon: '💎', price: 2000, desc: 'Значок рядом с именем' },
+
+    { id: 'av_fox', kind: 'avatar', name: 'Лис', icon: '🦊', price: 250, desc: 'Аватар вместо логотипа' },
+    { id: 'av_cat', kind: 'avatar', name: 'Кот', icon: '🐱', price: 250, desc: 'Аватар вместо логотипа' },
+    { id: 'av_panda', kind: 'avatar', name: 'Панда', icon: '🐼', price: 250, desc: 'Аватар вместо логотипа' },
+    { id: 'av_owl', kind: 'avatar', name: 'Сова', icon: '🦉', price: 300, desc: 'Аватар вместо логотипа' },
+    { id: 'av_dragon', kind: 'avatar', name: 'Дракон', icon: '🐲', price: 400, desc: 'Аватар вместо логотипа' },
+    { id: 'av_robot', kind: 'avatar', name: 'Робот', icon: '🤖', price: 400, desc: 'Аватар вместо логотипа' },
+    { id: 'fr_gold', kind: 'frame', name: 'Золотая рамка', icon: '🟡', price: 300, cls: 'fr-gold', desc: 'Рамка вокруг аватара' },
+    { id: 'fr_neon', kind: 'frame', name: 'Неоновая рамка', icon: '🔵', price: 350, cls: 'fr-neon', desc: 'Рамка вокруг аватара' },
+    { id: 'fr_rainbow', kind: 'frame', name: 'Радужная рамка', icon: '🌈', price: 600, cls: 'fr-rainbow', desc: 'Рамка вокруг аватара' }
+  ];
+  const DEFAULT_ITEMS = [
+    { id: 'snake_def', kind: 'snake', free: true, name: 'Стандартная змейка', icon: '🟣', desc: 'Фиолетовая' },
+    { id: 't2048_def', kind: 't2048', free: true, name: 'Стандартные плитки', icon: '🟪', desc: 'Классические цвета' },
+    { id: 'mem_def', kind: 'mem', free: true, name: 'Фрукты', icon: '🍎', desc: 'Стандартные карточки' },
+    { id: 'ttt_def', kind: 'ttt', free: true, name: 'Классика', icon: '❌', desc: 'Крестики и нолики' }
+  ];
+  const LOTTERY = { id: 'lottery', price: 60 };
+  const priceOf = it => {
+    const v = data.admin.prices && data.admin.prices[it.id];
+    return (v !== undefined && v !== null && v !== '' && Number.isFinite(+v)) ? Math.max(0, Math.round(+v)) : it.price;
+  };
+  const findItem = id => SHOP.concat(DEFAULT_ITEMS).find(i => i.id === id);
+  const SKIN_LABEL = { snake: 'Змейка', t2048: '2048', mem: 'Память', ttt: 'Крестики-нолики' };
+
+  function isOwned(it) { return !!it.free || !!data.owned[it.id]; }
+  function isOn(it) {
+    const e = data.equip;
+    switch (it.kind) {
+      case 'theme': return data.theme === it.theme;
+      case 'snake': return e.snake === (it.skin || 'def');
+      case 't2048': return e.t2048 === (it.skin || 'def');
+      case 'mem': return e.mem === (it.free ? 'def' : it.id);
+      case 'ttt': return e.ttt === (it.free ? 'def' : it.id);
+      case 'badge': return e.badge === it.id;
+      case 'avatar': return e.avatar === it.id;
+      case 'frame': return e.frame === it.id;
+    }
+    return false;
+  }
+  function equipItem(it) {
+    const e = data.equip;
+    switch (it.kind) {
+      case 'theme': applyTheme(it.theme); break;
+      case 'snake': e.snake = it.skin || 'def'; break;
+      case 't2048': e.t2048 = it.skin || 'def'; break;
+      case 'mem': e.mem = it.free ? 'def' : it.id; break;
+      case 'ttt': e.ttt = it.free ? 'def' : it.id; break;
+      case 'badge': e.badge = it.id; break;
+      case 'avatar': e.avatar = it.id; break;
+      case 'frame': e.frame = it.id; break;
+    }
+    save(); updateWallet();
+  }
+  function buyItem(it) {
+    if (isOwned(it) && !it.inv) return;
+    const p = priceOf(it);
+    if (!spendCoins(p)) { toast('Не хватает ' + fmtN(p - data.coins.bal) + ' ✧'); return; }
+    data.cnt.bought++;
+    if (it.inv) { data.inv[it.inv]++; toast('Куплено: ' + it.name + ' · теперь ' + data.inv[it.inv]); }
+    else { data.owned[it.id] = true; equipItem(it); toast('Куплено: ' + it.name + ' ✓'); }
+    save(); syncThemeSwatches(); renderShop(); checkTitles();
+  }
+  function syncThemeSwatches() {
+    const row = document.querySelector('.theme-row'); if (!row) return;
+    row.querySelectorAll('[data-extra]').forEach(x => x.remove());
+    SHOP.filter(i => i.kind === 'theme' && data.owned[i.id]).forEach(i => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'theme-swatch' + (data.theme === i.theme ? ' active' : '');
+      b.dataset.theme = i.theme; b.dataset.extra = '1'; b.style.background = i.sw; b.setAttribute('aria-label', i.name);
+      b.onclick = () => applyTheme(i.theme);
+      row.appendChild(b);
+    });
+  }
+  /* ----- скины в играх ----- */
+  function snakeColor(i) {
+    const sk = data.equip.snake;
+    if (sk === 'neon') return i === 0 ? '#b6ff5c' : '#39ff88';
+    if (sk === 'fire') return i === 0 ? '#fff27a' : 'hsl(' + Math.max(0, 40 - i * 3) + ' 95% 55%)';
+    if (sk === 'rainbow') return 'hsl(' + ((i * 28) % 360) + ' 90% 65%)';
+    return i === 0 ? '#e0a6ff' : '#a78bfa';
+  }
+  const memPack = () => { const it = data.equip.mem !== 'def' && findItem(data.equip.mem); return it && it.pack ? it.pack : null; };
+  const tttSym = () => { const it = data.equip.ttt !== 'def' && findItem(data.equip.ttt); return it && it.sym ? it.sym : ['✕', '◯']; };
+
+  /* ----- звания ----- */
+  const T = (grp, id, icon, name, desc, cur, goal) => ({ grp, id, icon, name, desc, cur, goal });
+  const normsHit = () => {
+    if (!userGroup()) return 0;
+    let c = 0;
+    for (const k in GAME_NORM) {
+      const n = curNorm(k), m = GAME_NORM[k], rec = m.rec();
+      if (n && rec != null && !(m.dir === 'min' && rec <= 0) && (m.dir === 'max' ? rec <= n : rec >= n)) c++;
+    }
+    return c;
+  };
+  const TITLES = [
+    T('Серия дней', 'rookie', '🌱', 'Новичок', 'Звание по умолчанию', () => 1, 1),
+    T('Серия дней', 's3', '🌊', 'На волне', 'Заходи в Luma 3 дня подряд', () => data.streak.best, 3),
+    T('Серия дней', 's7', '🔥', 'Неделя подряд', 'Заходи 7 дней подряд', () => data.streak.best, 7),
+    T('Серия дней', 's14', '⚡', 'Две недели', 'Заходи 14 дней подряд', () => data.streak.best, 14),
+    T('Серия дней', 's30', '🛡️', 'Железный', 'Заходи 30 дней подряд', () => data.streak.best, 30),
+    T('Серия дней', 's100', '🏛️', 'Легенда', 'Заходи 100 дней подряд', () => data.streak.best, 100),
+    T('Серия дней', 's365', '♾️', 'Вечный', 'Заходи целый год подряд', () => data.streak.best, 365),
+    T('Монеты', 'c100', '🐷', 'Копилка', 'Заработай 100 ✧', () => data.coins.earned, 100),
+    T('Монеты', 'c1k', '💰', 'Состоятельный', 'Заработай 1 000 ✧', () => data.coins.earned, 1000),
+    T('Монеты', 'c10k', '🤑', 'Толстосум', 'Заработай 10 000 ✧', () => data.coins.earned, 10000),
+    T('Монеты', 'c100k', '💎', 'Богач', 'Заработай 100 000 ✧', () => data.coins.earned, 100000),
+    T('Монеты', 'c1m', '👑', 'Магнат', 'Заработай 1 000 000 ✧', () => data.coins.earned, 1000000),
+    T('Игры', 'g10', '🎮', 'Игрок', 'Сыграй 10 партий', () => data.cnt.total, 10),
+    T('Игры', 'g100', '🕹️', 'Заядлый игрок', 'Сыграй 100 партий', () => data.cnt.total, 100),
+    T('Игры', 'g500', '👾', 'Геймер', 'Сыграй 500 партий', () => data.cnt.total, 500),
+    T('Игры', 'g2000', '🧙', 'Гуру игр', 'Сыграй 2000 партий', () => data.cnt.total, 2000),
+    T('Мастерство', 'fast', '⚡', 'Молния', 'Реакция 200 мс или быстрее', () => (data.stats.reactionBest != null && data.stats.reactionBest <= 200) ? 1 : 0, 1),
+    T('Мастерство', 'memo', '🧠', 'Мастер памяти', 'Память за 10 ходов или меньше', () => (data.stats.memoryMoves != null && data.stats.memoryMoves <= 10) ? 1 : 0, 1),
+    T('Мастерство', 'tap70', '👆', 'Кликер-бог', '70 нажатий и больше за раунд', () => data.stats.tapBest, 70),
+    T('Мастерство', 'sn30', '🐍', 'Змей-мастер', '30 очков в змейке', () => data.stats.snakeBest, 30),
+    T('Мастерство', 'k2048', '🔢', 'Король 2048', 'Собери плитку 2048', () => data.cnt.won2048, 1),
+    T('Мастерство', 'ttt10', '❌', 'Стратег', '10 побед в крестиках-ноликах', () => data.stats.ttt.w, 10),
+    T('Мастерство', 'ttt50', '🏆', 'Непобедимый', '50 побед в крестиках-ноликах', () => data.stats.ttt.w, 50),
+    T('Мастерство', 'nrm', '✅', 'В норме', 'Рекорды во всех играх в пределах нормы твоего возраста', normsHit, 5),
+    T('Ходьба', 'w10', '🚶', 'Ходок', 'Пройди 10 км', () => data.cnt.dist / 1000, 10),
+    T('Ходьба', 'w42', '🏃', 'Марафонец', 'Пройди 42 км', () => data.cnt.dist / 1000, 42),
+    T('Ходьба', 'w200', '🧭', 'Путешественник', 'Пройди 200 км', () => data.cnt.dist / 1000, 200),
+    T('Ходьба', 'w1000', '🌍', 'Кругосветка', 'Пройди 1000 км', () => data.cnt.dist / 1000, 1000),
+    T('Привычки', 'wa7', '💧', 'Водохлёб', 'Выпей норму воды 7 дней', () => data.cnt.waterDays, 7),
+    T('Привычки', 'wa30', '🌊', 'Океан', 'Выпей норму воды 30 дней', () => data.cnt.waterDays, 30),
+    T('Привычки', 'r10', '⏰', 'Организованный', 'Выполни 10 напоминаний', () => data.cnt.remDone, 10),
+    T('Привычки', 'r100', '📅', 'Планировщик', 'Выполни 100 напоминаний', () => data.cnt.remDone, 100),
+    T('Привычки', 'm30', '🥗', 'Гурман', 'Добавь 30 приёмов пищи', () => data.cnt.meals, 30),
+    T('Привычки', 'm200', '👨‍🍳', 'Шеф', 'Добавь 200 приёмов пищи', () => data.cnt.meals, 200),
+    T('Магазин', 'sh5', '🛍️', 'Шопоголик', 'Купи 5 вещей', () => data.cnt.bought, 5),
+    T('Магазин', 'sh20', '🧺', 'Коллекционер', 'Купи 20 вещей', () => data.cnt.bought, 20),
+    T('Магазин', 'lot20', '🎰', 'Азартный', 'Сыграй в лотерею 20 раз', () => data.cnt.lottery, 20)
+  ];
+  const CREATOR = { grp: 'Особое', id: 'creator', icon: '🛠️', name: 'Создатель', desc: 'Автор Luma. Выдаётся только через админ-панель', cur: () => data.titles.creator ? 1 : 0, goal: 1 };
+  const titleById = id => id === 'creator' ? CREATOR : TITLES.find(t => t.id === id);
+  function activeTitle() {
+    const t = titleById(data.titles.active);
+    return (t && data.titles.got[t.id]) ? t : TITLES[0];
+  }
+  const titleChip = t => '<span class="title-chip' + (t.id === 'creator' ? ' creator' : '') + '">' + t.icon + ' ' + t.name + '</span>';
+  function checkTitles() {
+    const tg = data.titles; if (!tg.got) tg.got = {};
+    const fresh = [];
+    TITLES.forEach(t => { if (!tg.got[t.id] && t.cur() >= t.goal) { tg.got[t.id] = Date.now(); fresh.push(t); } });
+    let changed = fresh.length > 0;
+    if (tg.creator) { if (!tg.got.creator) { tg.got.creator = Date.now(); changed = true; } }
+    else if (tg.got.creator) { delete tg.got.creator; if (tg.active === 'creator') tg.active = 'rookie'; changed = true; }
+    if (changed) {
+      save(); updateWallet();
+      const shown = fresh.filter(t => t.id !== 'rookie');
+      if (shown.length) setTimeout(() => toast('🏅 Новое звание: ' + shown.map(t => t.icon + ' ' + t.name).join(', ')), 1500);
+      const pg = $('page-shop'); if (pg && pg.classList.contains('active')) renderShop();
+    }
+  }
+
+  /* ----- кошелёк на главной, аватар ----- */
+  function updateWallet() {
+    const b = fmtN(data.coins.bal) + ' ✧';
+    ['wBal', 'shopBal', 'adBal'].forEach(id => { const e = $(id); if (e) e.textContent = b; });
+    const st = $('wStreak'); if (st) st.textContent = data.streak.count + ' дн.';
+    const who = $('wWho');
+    if (who) {
+      const bd = findItem(data.equip.badge);
+      who.innerHTML = (bd ? '<span class="badge-em">' + bd.icon + '</span> ' : '') + '<b>' + esc(data.profile.name || 'Игрок') + '</b> ' + titleChip(activeTitle());
+    }
+    const logo = document.querySelector('.logo');
+    if (logo) {
+      const av = findItem(data.equip.avatar), fr = findItem(data.equip.frame);
+      logo.textContent = av ? av.icon : '✧';
+      logo.className = 'logo' + (fr && fr.cls ? ' ' + fr.cls : '');
+    }
+  }
+
+  /* ----- страница магазина ----- */
+  let shopTab = 'theme';
+  const SHOP_TABS = [['theme', '🎨 Темы'], ['skin', '🎮 Скины'], ['boost', '⚡ Бонусы'], ['badge', '🌟 Значки'], ['look', '🦊 Облик'], ['rewards', '🎁 Награды'], ['lottery', '🎰 Лотерея'], ['titles', '🏅 Звания']];
+  let lastSpin = '';
+  function openShop(tab) { if (tab) shopTab = tab; goTab('shop'); }
+  window.openShop = openShop;
+
+  function itemCard(it) {
+    const owned = isOwned(it), on = owned && isOn(it);
+    let ico = it.icon, act;
+    if (it.kind === 'theme') ico = '<span style="width:30px;height:30px;border-radius:50%;background:' + it.sw + ';display:block;border:2px solid rgba(255,255,255,.5)"></span>';
+    if (it.inv) {
+      act = '<button class="btn small" type="button" data-act="buy" data-id="' + it.id + '">' + fmtN(priceOf(it)) + ' ✧</button>';
+      return '<div class="shop-item"><div class="si-ico">' + ico + '</div><div class="si-body"><b>' + it.name + ' · у тебя ' + data.inv[it.inv] + '</b><small>' + it.desc + '</small></div><div class="si-act">' + act + '</div></div>';
+    }
+    if (!owned) act = '<button class="btn small" type="button" data-act="buy" data-id="' + it.id + '">' + fmtN(priceOf(it)) + ' ✧</button>';
+    else if (on && ['badge', 'avatar', 'frame'].includes(it.kind)) act = '<button class="btn secondary small" type="button" data-act="unequip" data-kind="' + it.kind + '">Снять</button>';
+    else if (on) act = '<button class="btn secondary small" type="button" disabled>✓ Выбрано</button>';
+    else act = '<button class="btn secondary small" type="button" data-act="equip" data-id="' + it.id + '">' + (it.kind === 'theme' ? 'Применить' : 'Выбрать') + '</button>';
+    return '<div class="shop-item' + (on ? ' mine' : '') + '"><div class="si-ico">' + ico + '</div><div class="si-body"><b>' + it.name + '</b><small>' + (owned && !it.free ? 'Куплено · ' : '') + it.desc + '</small></div><div class="si-act">' + act + '</div></div>';
+  }
+  function shopTabHTML() {
+    const list = k => SHOP.filter(i => (Array.isArray(k) ? k.includes(i.kind) : i.kind === k));
+    if (shopTab === 'theme') return '<div class="shop-sub">Темы оформления</div>' + list('theme').map(itemCard).join('') + '<p class="notice">Куплённые темы появляются и в «Ещё» → «Тема».</p>';
+    if (shopTab === 'skin') return ['snake', 't2048', 'mem', 'ttt'].map(k => '<div class="shop-sub">' + SKIN_LABEL[k] + '</div>' + DEFAULT_ITEMS.filter(i => i.kind === k).concat(list(k)).map(itemCard).join('')).join('');
+    if (shopTab === 'boost') return '<div class="shop-sub">Расходуемые бонусы</div>' + list('boost').map(itemCard).join('') + '<p class="notice">Бонусы тратятся прямо в играх: кнопки появляются под полем.</p>';
+    if (shopTab === 'badge') return '<div class="shop-sub">Значки рядом с именем</div>' + list('badge').map(itemCard).join('');
+    if (shopTab === 'look') return '<div class="shop-sub">Аватары (вместо логотипа вверху)</div>' + list('avatar').map(itemCard).join('') + '<div class="shop-sub">Рамки</div>' + list('frame').map(itemCard).join('');
+    if (shopTab === 'rewards') {
+      const items = data.rewards.map(r => '<div class="shop-item"><div class="si-ico">🎁</div><div class="si-body"><b>' + esc(r.name) + '</b><small>' + fmtN(r.price) + ' ✧' + (r.count ? ' · получено ' + r.count + ' раз' : '') + '</small></div><div class="si-act"><button class="btn small" type="button" data-act="claim" data-id="' + r.id + '">Получить</button> <button class="btn secondary small" type="button" data-act="rwdel" data-id="' + r.id + '" aria-label="Удалить">✕</button></div></div>').join('');
+      return '<div class="shop-sub">Свои награды</div><p class="notice" style="margin-top:0">Придумай, чем себя порадовать (кино, десерт, прогулка), и назначь цену. Когда накопишь — нажми «Получить».</p>' + (items || '<div class="empty" style="padding:14px">Пока нет своих наград</div>') +
+        '<div class="glass section" style="margin-top:12px"><div class="fields"><div class="field full"><label>Название награды</label><input id="rwName" maxlength="40" placeholder="Например: серия в кино"></div><div class="field full"><label>Цена, ✧</label><input type="number" id="rwPrice" min="1" inputmode="numeric" placeholder="500"></div></div><div class="form-actions"><button class="btn" type="button" data-act="rwadd">＋ Добавить награду</button></div></div>';
+    }
+    if (shopTab === 'lottery') return '<div class="shop-sub">Лотерея</div><div class="glass section"><p class="notice" style="margin-top:0">За ' + priceOf(LOTTERY) + ' ✧ получишь случайный приз: монеты, бонус, а иногда и целый скин, тему или значок бесплатно.</p>' + (lastSpin ? '<div class="spin-res">' + lastSpin + '</div>' : '') + '<div class="form-actions"><button class="btn big" type="button" data-act="spin">🎰 Крутить · ' + priceOf(LOTTERY) + ' ✧</button></div></div>';
+    if (shopTab === 'titles') {
+      const got = data.titles.got, all = (data.titles.creator ? [CREATOR] : []).concat(TITLES);
+      let html = '<div class="shop-sub">Открыто ' + all.filter(t => got[t.id]).length + ' из ' + all.length + '</div>', grp = '';
+      all.forEach(t => {
+        if (t.grp !== grp) { grp = t.grp; html += '<div class="shop-sub">' + grp + '</div>'; }
+        const has = !!got[t.id], cur = Math.min(t.goal, Math.floor(t.cur())), act = data.titles.active === t.id;
+        html += '<div class="shop-item' + (has ? '' : ' locked') + (act ? ' mine' : '') + '"><div class="si-ico">' + (has ? t.icon : '🔒') + '</div><div class="si-body"><b>' + (t.id === 'creator' ? titleChip(t) : t.name) + '</b><small>' + t.desc + '</small>' +
+          (!has && t.goal > 1 ? '<div class="bar mini"><div style="width:' + Math.round(cur / t.goal * 100) + '%"></div></div><small>' + fmtN(cur) + ' / ' + fmtN(t.goal) + '</small>' : '') + '</div><div class="si-act">' +
+          (has ? (act ? '<button class="btn secondary small" type="button" disabled>✓ Выбрано</button>' : '<button class="btn small" type="button" data-act="title" data-id="' + t.id + '">Выбрать</button>') : '') + '</div></div>';
+      });
+      return html;
+    }
+    return '';
+  }
+  function renderShop() {
+    const tabs = $('shopTabs'), body = $('shopBody'); if (!tabs || !body) return;
+    tabs.innerHTML = SHOP_TABS.map(t => '<button type="button" class="chip' + (t[0] === shopTab ? ' on' : '') + '" data-st="' + t[0] + '">' + t[1] + '</button>').join('');
+    body.innerHTML = shopTabHTML();
+    updateWallet();
+  }
+  function spinLottery() {
+    const p = priceOf(LOTTERY);
+    if (!spendCoins(p)) { toast('Не хватает ' + fmtN(p - data.coins.bal) + ' ✧'); return; }
+    data.cnt.lottery++;
+    const r = Math.random(); let msg;
+    const gain = (n, t) => { addCoins(n, { raw: true }); msg = t + ' +' + n + ' ✧'; };
+    if (r < 0.40) gain(10, 'Утешительный приз');
+    else if (r < 0.65) gain(40, 'Почти вернулись');
+    else if (r < 0.80) gain(80, 'Неплохо!');
+    else if (r < 0.88) { const bs = SHOP.filter(i => i.inv), b = bs[Math.floor(Math.random() * bs.length)]; data.inv[b.inv]++; msg = 'Бонус: ' + b.icon + ' ' + b.name; }
+    else if (r < 0.94) gain(150, 'Крупный выигрыш!');
+    else if (r < 0.98) {
+      const pool = SHOP.filter(i => !i.inv && !data.owned[i.id]);
+      if (pool.length) { const it = pool[Math.floor(Math.random() * pool.length)]; data.owned[it.id] = true; msg = '🎉 Джекпот: ' + it.icon + ' ' + it.name + ' — бесплатно!'; }
+      else gain(200, 'Джекпот!');
+    } else gain(500, '🎉 СУПЕРДЖЕКПОТ!');
+    lastSpin = msg; save(); syncThemeSwatches(); checkTitles(); renderShop();
+  }
+  (function setupShopUi() {
+    $('shopTabs').addEventListener('click', e => { const b = e.target.closest('[data-st]'); if (!b) return; shopTab = b.dataset.st; renderShop(); });
+    $('shopBody').addEventListener('click', e => {
+      const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
+      const act = b.dataset.act, id = b.dataset.id, it = id ? findItem(id) : null;
+      if (act === 'buy' && it) buyItem(it);
+      else if (act === 'equip' && it) { equipItem(it); renderShop(); syncThemeSwatches(); toast('Выбрано: ' + it.name); }
+      else if (act === 'unequip') { data.equip[b.dataset.kind] = null; save(); updateWallet(); renderShop(); }
+      else if (act === 'spin') spinLottery();
+      else if (act === 'title') { data.titles.active = id; save(); updateWallet(); renderShop(); }
+      else if (act === 'rwadd') {
+        const name = $('rwName').value.trim(), price = Math.round(+$('rwPrice').value);
+        if (!name) { toast('Напиши название награды'); return; }
+        if (!(price >= 1 && price <= 10000000)) { toast('Укажи цену в монетах'); return; }
+        data.rewards.push({ id: 'rw' + Date.now(), name: name.slice(0, 40), price, count: 0 }); save(); renderShop(); toast('Награда добавлена');
+      } else if (act === 'claim') {
+        const r = data.rewards.find(x => x.id === id); if (!r) return;
+        if (!spendCoins(r.price)) { toast('Не хватает ' + fmtN(r.price - data.coins.bal) + ' ✧'); return; }
+        r.count = (r.count || 0) + 1; save(); renderShop(); toast('🎁 ' + r.name + ' — наслаждайся!');
+      } else if (act === 'rwdel') {
+        if (!confirm('Удалить эту награду?')) return;
+        data.rewards = data.rewards.filter(x => x.id !== id); save(); renderShop();
+      }
+    });
+  })();
+
   /* ----- Нормы по возрасту ----- */
   const AGE_GROUPS = [
     { id: '10-12', lo: 10, hi: 12, name: '10–12 лет' },
@@ -2611,7 +3110,10 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     $('ad2048').value = st.g2048Best || 0;
     $('adTW').value = st.ttt.w; $('adTD').value = st.ttt.d; $('adTL').value = st.ttt.l;
     $('adTapSec').value = data.admin.tapSeconds;
-    renderAdminNorms();
+    $('adMult').value = data.admin.mult; $('adStreak').value = data.streak.count;
+    $('adCreator').textContent = 'Создатель: ' + (data.titles.creator ? 'включено ✓' : 'выключено');
+    updateWallet();
+    renderAdminNorms(); renderAdminPrices();
   }
   function renderAdminNorms() {
     const mine = userGroup();
@@ -2620,6 +3122,10 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       const inputs = NORM_FIELDS.map(f => '<div class="field"><label>' + f.label + '</label><input type="number" min="0" inputmode="numeric" data-g="' + g.id + '" data-k="' + f.k + '" value="' + (n[f.k] != null && n[f.k] !== '' ? n[f.k] : '') + '"' + (f.k === 'walk' ? ' placeholder="авто"' : '') + '></div>').join('');
       return '<details class="norm-group"' + (mine && mine.id === g.id ? ' open' : '') + '><summary>' + g.name + '<small>' + (mine && mine.id === g.id ? 'твоя группа' : '') + '</small></summary><div class="fields">' + inputs + '</div></details>';
     }).join('');
+  }
+  const PRICE_ITEMS = () => SHOP.concat([{ id: 'lottery', name: 'Лотерея (один спин)', icon: '🎰', price: LOTTERY.price }]);
+  function renderAdminPrices() {
+    $('adPrices').innerHTML = PRICE_ITEMS().map(i => '<div class="field"><label>' + i.icon + ' ' + i.name + '</label><input type="number" min="0" inputmode="numeric" data-pid="' + i.id + '" value="' + priceOf(i) + '"></div>').join('');
   }
   function openAdmin() {
     closeSheets(true);
@@ -2634,7 +3140,14 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   }
   function tryAdminLogin() {
     const inp = $('adminPass');
-    if (inp.value.trim() === ADMIN_PASS) { inp.value = ''; openAdmin(); toast('Админ-панель открыта'); }
+    if (inp.value.trim() === ADMIN_PASS) {
+      inp.value = '';
+      if (!data.titles.creatorAuto) {
+        data.titles.creatorAuto = true; data.titles.creator = true; data.titles.active = 'creator'; save(); checkTitles();
+        setTimeout(() => toast('🛠️ Тебе выдано звание «Создатель»'), 900);
+      }
+      openAdmin(); toast('Админ-панель открыта');
+    }
     else {
       toast('Неверный пароль'); inp.value = '';
       inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake'); inp.focus();
@@ -2655,6 +3168,49 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       }
     });
   })();
+  const adAmt = () => { const n = Math.round(+$('adCoinAmt').value); if (!(n > 0)) { toast('Введи сумму больше нуля'); return null; } return n; };
+  $('adCoinAdd').onclick = () => { const n = adAmt(); if (n == null) return; addCoins(n, { raw: true }); fillAdmin(); toast('Добавлено ' + fmtN(n) + ' ✧'); };
+  $('adCoinSub').onclick = () => { const n = adAmt(); if (n == null) return; data.coins.bal = Math.max(0, data.coins.bal - n); save(); fillAdmin(); toast('Списано ' + fmtN(n) + ' ✧'); };
+  $('adCoinSet').onclick = () => { const n = adAmt(); if (n == null) return; data.coins.bal = n; data.coins.earned = Math.max(data.coins.earned, n); save(); checkTitles(); fillAdmin(); toast('Баланс: ' + fmtN(n) + ' ✧'); };
+  $('adQuick').addEventListener('click', e => { const b = e.target.closest('[data-q]'); if (!b) return; const n = +b.dataset.q; addCoins(n, { raw: true }); fillAdmin(); toast('+' + fmtN(n) + ' ✧'); });
+  $('adSaveMisc').onclick = () => {
+    const m = Math.round(+$('adMult').value), st = Math.round(+$('adStreak').value);
+    if (!(m >= 1 && m <= 1000)) { toast('Множитель — от 1 до 1000'); return; }
+    if (!(st >= 0 && st <= 9999)) { toast('Серия — от 0 до 9999'); return; }
+    data.admin.mult = m; data.streak.count = st; data.streak.best = Math.max(data.streak.best || 0, st); data.streak.last = st > 0 ? todayStr() : null;
+    save(); checkTitles(); fillAdmin(); toast('Сохранено ✓');
+  };
+  $('adCreator').onclick = () => {
+    data.titles.creator = !data.titles.creator;
+    if (data.titles.creator) data.titles.active = 'creator';
+    save(); checkTitles(); fillAdmin(); toast(data.titles.creator ? 'Звание «Создатель» включено' : 'Звание «Создатель» выключено');
+  };
+  $('adAllTitles').onclick = () => { TITLES.forEach(t => { if (!data.titles.got[t.id]) data.titles.got[t.id] = Date.now(); }); save(); updateWallet(); toast('Все звания открыты'); };
+  $('adNoTitles').onclick = () => {
+    if (!confirm('Закрыть все звания? Они откроются заново, когда условия выполнятся.')) return;
+    data.titles.got = { rookie: 1 }; if (data.titles.creator) data.titles.got.creator = Date.now();
+    if (!(data.titles.active === 'creator' && data.titles.creator)) data.titles.active = 'rookie';
+    save(); updateWallet(); toast('Звания закрыты');
+  };
+  $('adAllShop').onclick = () => { SHOP.filter(i => !i.inv).forEach(i => { data.owned[i.id] = true; }); save(); syncThemeSwatches(); toast('Весь магазин открыт'); };
+  $('adResetShop').onclick = () => {
+    if (!confirm('Сбросить все покупки, бонусы и выбранный облик?')) return;
+    data.owned = {}; data.inv = { life: 0, undo: 0, hint: 0, slow: 0 };
+    data.equip = { snake: 'def', t2048: 'def', mem: 'def', ttt: 'def', badge: null, avatar: null, frame: null };
+    if (!['violet', 'ocean', 'rose', 'forest', 'sunset'].includes(data.theme)) applyTheme('violet');
+    save(); syncThemeSwatches(); updateWallet(); toast('Покупки сброшены');
+  };
+  $('adSavePrices').onclick = () => {
+    const out = {}; let bad = false;
+    document.querySelectorAll('#adPrices input').forEach(i => {
+      const n = Math.round(+i.value), it = PRICE_ITEMS().find(x => x.id === i.dataset.pid);
+      if (i.value.trim() === '' || !(n >= 0)) { bad = true; return; }
+      if (it && n !== it.price) out[it.id] = n;
+    });
+    if (bad) { toast('Цены — целые числа от 0'); return; }
+    data.admin.prices = out; save(); toast('Цены сохранены ✓');
+  };
+  $('adResetPrices').onclick = () => { data.admin.prices = {}; save(); renderAdminPrices(); toast('Стандартные цены возвращены'); };
   $('adSaveRec').onclick = () => {
     const v = { rea: numOrNull('adRea'), tap: numOrNull('adTap'), mm: numOrNull('adMemM'), mt: numOrNull('adMemT'), sn: numOrNull('adSnake'), g: numOrNull('ad2048'), w: numOrNull('adTW'), d: numOrNull('adTD'), l: numOrNull('adTL') };
     if (Object.values(v).some(x => Number.isNaN(x))) { toast('Проверь числа: только целые, без минуса'); return; }
@@ -2768,19 +3324,21 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
         $('lastR').textContent = ms + ' мс';
         const nr = curNorm('reaction');
         status.textContent = nr ? (ms <= nr ? 'В пределах нормы для твоего возраста ✓' : 'Медленнее нормы на ' + (ms - nr) + ' мс — ещё раз') : (ms < 230 ? 'Молния! ⚡' : ms < 330 ? 'Хорошо' : 'Можно быстрее');
-        if (data.stats.reactionBest == null || ms < data.stats.reactionBest) {
+        const recHit = data.stats.reactionBest == null || ms < data.stats.reactionBest;
+        if (recHit) {
           data.stats.reactionBest = ms;
           save();
           $('bestR').textContent = ms + ' мс';
           toast('Новый рекорд! ' + ms + ' мс');
           updateNormLine('reaction');
         }
+        gameDone('reaction', 2, recHit, nr ? ms <= nr : false);
       }
     };
   }
 
   function initMemory(box) {
-    const emojis = ['🍎','🍊','🍋','🍇','🍓','🍑','🥝','🫐'];
+    const emojis = memPack() || ['🍎','🍊','🍋','🍇','🍓','🍑','🥝','🫐'];
     const cards = shuffle([...emojis, ...emojis]);
     let flipped = [], lock = false, matched = 0, moves = 0, t0 = 0, tmr = null;
     const recText = () => data.stats.memoryMoves != null ? data.stats.memoryMoves + ' ходов · ' + data.stats.memoryTime + ' с' : '—';
@@ -2790,8 +3348,23 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       <p class="muted" style="text-align:center;margin-bottom:4px">Рекорд: <b id="memBest">${recText()}</b></p>
       <p class="norm-line" id="normLine">${normLineHTML('memory')}</p>
       <div class="memory-grid" id="memGrid"></div>
-      <div class="game-bar"><button class="btn secondary small" type="button" id="memRestart">Заново</button></div>`;
+      <div class="game-bar"><button class="btn secondary small" type="button" id="memHint">💡 Подсказка (${data.inv.hint})</button><button class="btn secondary small" type="button" id="memRestart">Заново</button></div>`;
     $('memRestart').onclick = () => { clearInterval(tmr); initMemory(box); };
+    $('memHint').onclick = () => {
+      if (lock) return;
+      if (data.inv.hint <= 0) { toast('Подсказок нет — купи в магазине'); return; }
+      const free = [...grid.children].filter(c => !c.classList.contains('on') && !c.classList.contains('matched'));
+      const by = {}; free.forEach(c => (by[c.dataset.emoji] = by[c.dataset.emoji] || []).push(c));
+      const pairs = Object.values(by).filter(a => a.length >= 2);
+      if (!pairs.length) { toast('Подсказывать нечего'); return; }
+      const pr = pairs[Math.floor(Math.random() * pairs.length)].slice(0, 2);
+      data.inv.hint--; save();
+      $('memHint').textContent = '💡 Подсказка (' + data.inv.hint + ')';
+      lock = true;
+      pr.forEach(c => { c.classList.add('on'); c.textContent = c.dataset.emoji; });
+      const t = setTimeout(() => { pr.forEach(c => { c.classList.remove('on'); c.textContent = '?'; }); lock = false; }, 1100);
+      gameCleanups.push(() => clearTimeout(t));
+    };
     gameCleanups.push(() => clearInterval(tmr));
     const grid = $('memGrid');
     const startTimer = () => {
@@ -2835,6 +3408,8 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
                 toast('Новый рекорд! ' + moves + ' ходов, ' + secs + ' с 🏆');
               } else toast('Победа! ' + moves + ' ходов, ' + secs + ' с 🎉');
               updateNormLine('memory');
+              const nm = curNorm('memory');
+              gameDone('memory', 15, better, nm ? moves <= nm : false);
             }
           } else {
             const t = setTimeout(() => {
@@ -2878,13 +3453,15 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
             btn.textContent = 'Ещё раз';
             const nt = curNorm('tap');
             $('tapStatus').textContent = 'Результат: ' + score + (nt ? (score >= nt ? ' · в пределах нормы ✓' : ' · до нормы ещё ' + (nt - score)) : '');
-            if (score > data.stats.tapBest) {
+            const recHit = score > data.stats.tapBest;
+            if (recHit) {
               data.stats.tapBest = score;
               save();
               $('tapBest').textContent = score;
               toast('Новый рекорд! 🏆');
               updateNormLine('tap');
             }
+            gameDone('tap', Math.floor(score / 4), recHit, nt ? score >= nt : false);
           }
         }, 1000);
       } else {
@@ -2910,7 +3487,9 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       <div class="game-bar">
         <button class="btn secondary small" type="button" id="snPause">⏸ Пауза</button>
         <button class="btn secondary small" type="button" id="snRestart">Заново</button>
-      </div>`;
+        <button class="btn secondary small" type="button" id="snSlow">🐢 Замедление</button>
+      </div>
+      <p class="norm-line" id="snInfo"></p>`;
     const canvas = $('snakeCanvas');
     const ctx = canvas.getContext('2d');
     const COLS = 16, ROWS = 16;
@@ -2920,7 +3499,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     canvas.style.width = SIZE + 'px'; canvas.style.height = SIZE + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const S = SIZE / COLS;
-    let snake, dir, queue, food, score, alive, paused, started, last = 0, speed;
+    let snake, dir, queue, food, score, alive, paused, started, last = 0, speed, slowUntil = 0;
 
     function placeFood() {
       let p;
@@ -2962,12 +3541,31 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       ctx.fillStyle = '#f472b6';
       rr(food.x * S + 2, food.y * S + 2, S - 4, S - 4, S / 3);
       snake.forEach((s, i) => {
-        ctx.fillStyle = i === 0 ? '#e0a6ff' : '#a78bfa';
+        ctx.fillStyle = snakeColor(i);
         rr(s.x * S + 1, s.y * S + 1, S - 2, S - 2, S / 4);
       });
       if (!alive) overlay('Игра окончена', 'Счёт ' + score + ' · нажми «Заново»');
       else if (!started) overlay('Готов?', 'Свайп или кнопка — старт');
       else if (paused) overlay('Пауза', 'Нажми «Пауза», чтобы продолжить');
+    }
+    function saveLife() {
+      if (data.inv.life <= 0) return false;
+      const body = snake.slice(0, -1);
+      const opts = [{ x: -dir.y, y: dir.x }, { x: dir.y, y: -dir.x }];
+      for (const d of opts) {
+        const nx = snake[0].x + d.x, ny = snake[0].y + d.y;
+        if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS && !body.some(s => s.x === nx && s.y === ny)) {
+          dir = d; queue = []; data.inv.life--; save(); boostInfo();
+          toast('❤️ Вторая жизнь спасла тебя!');
+          return true;
+        }
+      }
+      return false;
+    }
+    function boostInfo() {
+      const a = $('snSlow'), b = $('snInfo');
+      if (a) a.textContent = '🐢 Замедление (' + data.inv.slow + ')';
+      if (b) b.textContent = '❤️ Вторых жизней: ' + data.inv.life + ' · бонусы продаются в магазине';
     }
     function step() {
       if (queue.length) dir = queue.shift();
@@ -2975,14 +3573,19 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       const willEat = head.x === food.x && head.y === food.y;
       const body = willEat ? snake : snake.slice(0, -1);
       if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS || body.some(s => s.x === head.x && s.y === head.y)) {
+        if (saveLife()) return;
         alive = false;
         try { navigator.vibrate && navigator.vibrate(120); } catch {}
+        let recHitSn = false;
         if (score > (data.stats.snakeBest || 0)) {
           data.stats.snakeBest = score; save();
           $('snBest').textContent = score;
           toast('Рекорд змейки! 🐍');
           updateNormLine('snake');
+          recHitSn = true;
         } else toast('Игра окончена · ' + score);
+        const ns = curNorm('snake');
+        gameDone('snake', score, recHitSn, ns ? score >= ns : false);
         draw();
         return;
       }
@@ -2999,7 +3602,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       if (activeGame !== 'snake') return;
       window._snakeRAF = requestAnimationFrame(loop);
       if (!alive || paused || !started) return;
-      if (ts - last < speed) return;
+      if (ts - last < speed * (Date.now() < slowUntil ? 1.7 : 1)) return;
       last = ts;
       step();
       if (alive) draw();
@@ -3056,6 +3659,13 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     document.addEventListener('visibilitychange', onHide);
     gameCleanups.push(() => document.removeEventListener('visibilitychange', onHide));
     $('snPause').onclick = togglePause;
+    $('snSlow').onclick = () => {
+      if (!alive || !started) { toast('Сначала начни игру'); return; }
+      if (Date.now() < slowUntil) { toast('Замедление уже действует'); return; }
+      if (data.inv.slow <= 0) { toast('Замедлений нет — купи в магазине'); return; }
+      data.inv.slow--; save(); slowUntil = Date.now() + 10000; boostInfo(); toast('🐢 Замедление на 10 секунд');
+    };
+    boostInfo();
     $('snRestart').onclick = () => { reset(); draw(); last = 0; };
     reset(); draw();
     window._snakeRAF = requestAnimationFrame(loop);
@@ -3065,7 +3675,18 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   function init2048(box) {
     const N = 4;
     const COLORS = { 0: ['rgba(255,255,255,.06)', '#fff'], 2: ['#e9dcff', '#3b1f6b'], 4: ['#d9c2ff', '#3b1f6b'], 8: ['#c29bff', '#fff'], 16: ['#a978ff', '#fff'], 32: ['#f08ad6', '#fff'], 64: ['#ec5fa8', '#fff'], 128: ['#fbbf24', '#3b2a00'], 256: ['#f59e0b', '#fff'], 512: ['#34d399', '#053b2a'], 1024: ['#22d3ee', '#04323b'], 2048: ['#fff27a', '#3b3300'] };
-    let grid, score, over, won;
+    let grid, score, over, won, prev = null, paid = 0, counted = false, recPaid = false, normPaid = false;
+    function tileStyle(v) {
+      const sk = data.equip.t2048;
+      if (!v) return COLORS[0];
+      if (sk === 'pastel') return ['hsl(' + ((Math.log2(v) * 37) % 360) + ' 70% 82%)', '#3a2a5a'];
+      if (sk === 'neon') return ['#0d0724', 'hsl(' + ((Math.log2(v) * 37 + 200) % 360) + ' 100% 68%)'];
+      return COLORS[v] || ['#fff', '#000'];
+    }
+    function finish48() {
+      if (counted || !(score > 0)) return;
+      counted = true; data.cnt.games.g2048 = (data.cnt.games.g2048 || 0) + 1; data.cnt.total++; save(); checkTitles();
+    }
     let best = data.stats.g2048Best || 0;
     box.innerHTML = `
       <h2 style="margin-bottom:8px;text-align:center">🔢 2048</h2>
@@ -3073,7 +3694,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       <p class="norm-line" id="normLine">${normLineHTML('g2048')}</p>
       <div class="g2048" id="g2048"></div>
       <p class="notice" style="text-align:center">Свайпай по полю · на ПК: стрелки / WASD</p>
-      <div class="game-bar"><button class="btn secondary small" type="button" id="gRestart">Заново</button></div>`;
+      <div class="game-bar"><button class="btn secondary small" type="button" id="gUndo">↩ Отмена (${data.inv.undo})</button><button class="btn secondary small" type="button" id="gRestart">Заново</button></div>`;
     const board = $('g2048');
     function empty() { const e = []; for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) if (!grid[r][c]) e.push([r, c]); return e; }
     let newest = null;
@@ -3088,14 +3709,22 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
         const v = grid[r][c];
         const t = document.createElement('div');
         t.className = 't2048' + (newest === r + ',' + c ? ' pop' : '');
-        const col = COLORS[v] || ['#fff', '#000'];
+        const col = tileStyle(v);
         t.style.background = col[0]; t.style.color = col[1];
+        if (v && data.equip.t2048 === 'neon') t.style.boxShadow = 'inset 0 0 0 2px ' + col[1] + ', 0 0 10px ' + col[1] + '66';
         if (v >= 1024) t.style.fontSize = 'clamp(13px,5vw,21px)';
         t.textContent = v || '';
         board.appendChild(t);
       }
       $('gScore').textContent = score;
-      if (score > best) { best = score; data.stats.g2048Best = best; save(); $('gBest').textContent = best; updateNormLine('g2048'); }
+      const dc = Math.floor(score / 100) - paid;
+      if (dc > 0) { paid += dc; addCoins(dc, { pop: '2048' }); }
+      const n48 = curNorm('g2048');
+      if (n48 && !normPaid && score >= n48) { normPaid = true; addCoins(10, { pop: 'в норме' }); }
+      if (score > best) {
+        if (best > 0 && !recPaid) { recPaid = true; addCoins(20, { pop: 'рекорд!' }); }
+        best = score; data.stats.g2048Best = best; save(); $('gBest').textContent = best; updateNormLine('g2048');
+      }
     }
     function slideLine(line) {
       const a = line.filter(Boolean); const out = []; let gain = 0;
@@ -3123,10 +3752,11 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
         }
       }
       if (!moved) return;
+      prev = { grid: grid, score: score };
       grid = ng; score += gain; spawn(); render();
       try { navigator.vibrate && navigator.vibrate(8); } catch {}
-      if (!won && grid.some(r => r.includes(2048))) { won = true; toast('2048! Ты победил 🎉 Можно играть дальше'); }
-      if (!canMove()) { over = true; toast('Ходов нет · счёт ' + score); }
+      if (!won && grid.some(r => r.includes(2048))) { won = true; data.cnt.won2048++; save(); checkTitles(); toast('2048! Ты победил 🎉 Можно играть дальше'); }
+      if (!canMove()) { over = true; finish48(); toast('Ходов нет · счёт ' + score); }
     }
     function canMove() {
       if (empty().length) return true;
@@ -3138,7 +3768,8 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     }
     function reset() {
       grid = Array.from({ length: N }, () => Array(N).fill(0));
-      score = 0; over = false; won = false; spawn(); spawn(); render();
+      finish48();
+      score = 0; over = false; won = false; paid = 0; counted = false; recPaid = false; normPaid = false; prev = null; spawn(); spawn(); render();
     }
     let sx = 0, sy = 0;
     board.addEventListener('touchstart', e => { const t = e.changedTouches[0]; sx = t.clientX; sy = t.clientY; e.preventDefault(); }, { passive: false });
@@ -3158,6 +3789,13 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     document.addEventListener('keydown', onKey);
     gameCleanups.push(() => document.removeEventListener('keydown', onKey));
     $('gRestart').onclick = reset;
+    $('gUndo').onclick = () => {
+      if (!prev) { toast('Нечего отменять'); return; }
+      if (data.inv.undo <= 0) { toast('Отмен нет — купи в магазине'); return; }
+      grid = prev.grid; score = prev.score; prev = null; over = false; newest = null;
+      data.inv.undo--; save(); $('gUndo').textContent = '↩ Отмена (' + data.inv.undo + ')'; render();
+    };
+    gameCleanups.push(finish48);
     reset();
   }
 
@@ -3166,6 +3804,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
     let b, over, level = 'hard';
     const stats = data.stats.ttt;
+    const SYM = tttSym();
     box.innerHTML = `
       <h2 style="margin-bottom:8px;text-align:center">❌ Крестики-нолики</h2>
       <div class="scoreline"><span>Победы <b id="tW">${stats.w}</b></span><span>Ничьи <b id="tD">${stats.d}</b></span><span>Поражения <b id="tL">${stats.l}</b></span></div>
@@ -3174,7 +3813,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
         <button class="btn small" type="button" data-lv="hard">Умный</button>
       </div>
       <div class="ttt" id="ttt"></div>
-      <p class="notice" style="text-align:center" id="tStatus">Твой ход — ты играешь ❌</p>
+      <p class="notice" style="text-align:center" id="tStatus">Твой ход — ты играешь ${SYM[0]}</p>
       <div class="game-bar"><button class="btn secondary small" type="button" id="tRestart">Новая партия</button></div>`;
     const grid = $('ttt');
     const winner = (bd) => { for (const l of LINES) if (bd[l[0]] && bd[l[0]] === bd[l[1]] && bd[l[0]] === bd[l[2]]) return { p: bd[l[0]], l }; return null; };
@@ -3210,15 +3849,15 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
         const c = document.createElement('button');
         c.type = 'button';
         c.className = (v === 'X' ? 'x' : v === 'O' ? 'o' : '') + (w && w.l.includes(i) ? ' win' : '');
-        c.textContent = v === 'X' ? '✕' : v === 'O' ? '◯' : '';
+        c.textContent = v === 'X' ? SYM[0] : v === 'O' ? SYM[1] : '';
         c.onclick = () => play(i);
         grid.appendChild(c);
       });
     }
     function finish() {
       const w = winner(b);
-      if (w) { over = true; if (w.p === 'X') { stats.w++; $('tStatus').textContent = 'Ты победил! 🎉'; } else { stats.l++; $('tStatus').textContent = 'Бот победил 🤖'; } saveStats(); return true; }
-      if (b.every(Boolean)) { over = true; stats.d++; $('tStatus').textContent = 'Ничья'; saveStats(); return true; }
+      if (w) { over = true; if (w.p === 'X') { stats.w++; $('tStatus').textContent = 'Ты победил! 🎉'; } else { stats.l++; $('tStatus').textContent = 'Бот победил 🤖'; } saveStats(); gameDone('ttt', w.p === 'X' ? 8 : 1, false, false); return true; }
+      if (b.every(Boolean)) { over = true; stats.d++; $('tStatus').textContent = 'Ничья'; saveStats(); gameDone('ttt', 3, false, false); return true; }
       return false;
     }
     function play(i) {
@@ -3229,11 +3868,11 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
       const t = setTimeout(() => {
         const m = botMove(); if (m !== undefined) b[m] = 'O';
         render();
-        if (!finish()) $('tStatus').textContent = 'Твой ход — ты играешь ❌';
+        if (!finish()) $('tStatus').textContent = 'Твой ход — ты играешь ' + SYM[0];
       }, 350);
       gameCleanups.push(() => clearTimeout(t));
     }
-    function reset() { b = Array(9).fill(null); over = false; $('tStatus').textContent = 'Твой ход — ты играешь ❌'; render(); }
+    function reset() { b = Array(9).fill(null); over = false; $('tStatus').textContent = 'Твой ход — ты играешь ' + SYM[0]; render(); }
     box.querySelectorAll('[data-lv]').forEach(btn => {
       btn.onclick = () => {
         level = btn.dataset.lv;
@@ -3510,6 +4149,10 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     data.walks = data.walks.filter(x => x.start > cutoff);
     save();
     toast('Прогулка сохранена: ' + f1(dist / 1000).replace('.0', '') + ' км, ' + Math.max(1, Math.round(ms / 60000)) + ' мин ✓');
+    data.cnt.dist += dist;
+    let wc = Math.floor(dist / 100);
+    if (Math.floor(todayWalkMs() / 60000) >= normMin() && data.daily.walk !== todayStr()) { data.daily.walk = todayStr(); wc += 20; }
+    if (wc > 0) addCoins(wc, { pop: 'прогулка' }); else { save(); checkTitles(); }
     renderWalk(); renderHome();
   }
   $('walkStart').onclick = startWalk;
@@ -3666,6 +4309,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
         save();
         applyTheme(data.theme);
         applyMode(data.mode);
+        syncThemeSwatches(); updateWallet(); checkTitles();
         window._refreshFoods && window._refreshFoods();
         renderHome();
         renderNutrition();
@@ -3683,6 +4327,7 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
     save();
     applyTheme('violet');
     applyMode('dark');
+    syncThemeSwatches(); updateWallet();
     window._refreshFoods && window._refreshFoods();
     renderHome();
     renderNutrition();
@@ -3699,6 +4344,8 @@ html[data-mode="light"] .geo-pill.ok { color: #047857; } html[data-mode="light"]
   /* ----- Init ----- */
   applyTheme(data.theme || 'violet');
   applyMode(data.mode || 'dark');
+  syncThemeSwatches(); updateStreak(); checkTitles();
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { updateStreak(); renderHome(); } });
   initRemDefaults();
   checkDue();
   setInterval(checkDue, 5000);
