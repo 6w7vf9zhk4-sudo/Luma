@@ -1310,13 +1310,53 @@ input[type=time]::-webkit-calendar-picker-indicator {
       <div class="body"><strong>${esc(r.text)}</strong><span>${sub}</span></div>
       ${compact ? '' : `<div class="item-actions">
         <button type="button" class="done" data-done="${r.id}">Выполнено</button>
+        <button type="button" data-cal="${r.id}">В календарь</button>
         <button type="button" data-del="${r.id}">Удалить</button>
       </div>`}`;
     if (!compact) {
+      el.querySelector('[data-cal]')?.addEventListener('click', () => addToCalendar(r));
       el.querySelector('[data-done]')?.addEventListener('click', () => completeRem(r.id));
       el.querySelector('[data-del]')?.addEventListener('click', () => deleteRem(r.id));
     }
     return el;
+  }
+
+  // Add reminder to the phone's own Calendar (.ics) -> real notifications, no server needed
+  function addToCalendar(r) {
+    try {
+      const fmt = t => new Date(t).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+      const esc2 = t => String(t).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+      const rrule = r.repeat === 'daily' ? 'RRULE:FREQ=DAILY' : r.repeat === 'weekly' ? 'RRULE:FREQ=WEEKLY' : '';
+      const lines = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Luma//RU',
+        'CALSCALE:GREGORIAN',
+        'BEGIN:VEVENT',
+        'UID:luma-' + r.id + '@luma.app',
+        'DTSTAMP:' + fmt(Date.now()),
+        'DTSTART:' + fmt(r.when),
+        'DTEND:' + fmt(r.when + 15 * 60000),
+        'SUMMARY:' + esc2('Luma: ' + r.text),
+        rrule,
+        'BEGIN:VALARM',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:' + esc2(r.text),
+        'TRIGGER:PT0S',
+        'END:VALARM',
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].filter(Boolean);
+      const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'luma-reminder.ics';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 4000);
+      toast('Открой файл и нажми «Добавить»');
+    } catch (e) { console.error(e); toast('Не удалось создать файл'); }
   }
 
   function renderReminders() {
