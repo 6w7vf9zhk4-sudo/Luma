@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="29"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="30"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);if(_d.ui==='beta')document.documentElement.setAttribute('data-ui','beta');}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -966,145 +966,222 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
 .footer { opacity: .6; }
 
 
-/* ===== Beta UI (inspired by health-style summary apps, not a copy) ===== */
+/* ===== Beta UI — Fitness-inspired full shell (original, not a copy) ===== */
 html[data-ui="beta"] {
-  --beta-card: rgba(255,255,255,.06);
-  --beta-line: rgba(255,255,255,.1);
-  --beta-radius: 18px;
+  --fit-bg: #000000;
+  --fit-card: #1c1c1e;
+  --fit-card2: #2c2c2e;
+  --fit-line: #3a3a3c;
+  --fit-text: #f5f5f7;
+  --fit-muted: #8e8e93;
+  --fit-green: #64d2ff;
+  --fit-red: #ff375f;
+  --fit-yellow: #ffd60a;
+  --fit-blue: #64d2ff;
+  --fit-ring-move: #ff375f;
+  --fit-ring-ex: #64d2ff;
+  --fit-ring-stand: #daff63;
+  --fit-radius: 20px;
+  --fit-accent: #64d2ff;
 }
 html[data-ui="beta"][data-mode="light"] {
-  --beta-card: #ffffff;
-  --beta-line: rgba(0,0,0,.08);
+  --fit-bg: #f2f2f7;
+  --fit-card: #ffffff;
+  --fit-card2: #f2f2f7;
+  --fit-line: #e5e5ea;
+  --fit-text: #1c1c1e;
+  --fit-muted: #8e8e93;
 }
 html[data-ui="beta"] body {
-  background: #0b0f14 !important;
+  background: var(--fit-bg) !important;
   background-image: none !important;
-}
-html[data-ui="beta"][data-mode="light"] body {
-  background: #f2f2f7 !important;
-  color: #1c1c1e;
+  color: var(--fit-text) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif !important;
 }
 html[data-ui="beta"] body::before { display: none !important; }
-html[data-ui="beta"] .glass {
-  background: var(--beta-card) !important;
-  border: 1px solid var(--beta-line) !important;
-  border-radius: var(--beta-radius) !important;
+html[data-ui="beta"] .app { max-width: 440px; margin: 0 auto; padding: 12px 16px 100px; }
+html[data-ui="beta"] .top {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 8px 0 4px !important;
+  position: sticky; top: 0; z-index: 20;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+html[data-ui="beta"] .brand span { font-weight: 700; letter-spacing: -.3px; }
+html[data-ui="beta"] .pill {
+  background: var(--fit-card2) !important;
+  border: 0 !important;
+  color: var(--fit-muted) !important;
+  font-size: 11px !important;
+  border-radius: 999px !important;
+}
+html[data-ui="beta"] .glass,
+html[data-ui="beta"] .stat-card {
+  background: var(--fit-card) !important;
+  border: 0 !important;
+  border-radius: var(--fit-radius) !important;
   box-shadow: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+html[data-ui="beta"] .hero {
+  padding: 8px 0 4px !important;
+  margin-bottom: 4px;
+}
+html[data-ui="beta"] .hero .eyebrow {
+  color: var(--fit-muted) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: .6px !important;
+  text-transform: uppercase;
+}
 html[data-ui="beta"] .hero h1 {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.4px;
+  font-size: 32px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.8px !important;
+  line-height: 1.1 !important;
+  color: var(--fit-text) !important;
 }
 html[data-ui="beta"] .hero h1 span {
   background: none !important;
-  -webkit-text-fill-color: inherit;
-  color: #32d74b;
+  -webkit-text-fill-color: inherit !important;
+  color: var(--fit-red) !important;
 }
-html[data-ui="beta"][data-mode="light"] .hero h1 span { color: #34c759; }
-html[data-ui="beta"] .eyebrow { letter-spacing: 1.2px; opacity: .55; font-size: 11px; }
-html[data-ui="beta"] .bottom-nav {
-  background: rgba(11,15,20,.92) !important;
-  border-top: 1px solid var(--beta-line) !important;
+html[data-ui="beta"] .hero .muted { color: var(--fit-muted) !important; font-size: 14px; }
+html[data-ui="beta"] .section-head h2 {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.3px;
 }
-html[data-ui="beta"][data-mode="light"] .bottom-nav {
-  background: rgba(242,242,247,.94) !important;
-}
-html[data-ui="beta"] .nav-btn.active::after { background: #32d74b; }
-html[data-ui="beta"] .btn {
-  border-radius: 14px;
+html[data-ui="beta"] .tag {
+  background: var(--fit-card2) !important;
+  border: 0 !important;
+  color: var(--fit-muted) !important;
+  border-radius: 999px !important;
   font-weight: 600;
 }
+html[data-ui="beta"] .btn {
+  border-radius: 14px !important;
+  font-weight: 650 !important;
+  border: 0 !important;
+}
 html[data-ui="beta"] .btn:not(.secondary):not(.danger) {
-  background: #32d74b;
-  color: #06210c;
+  background: var(--fit-red) !important;
+  color: #fff !important;
 }
-html[data-ui="beta"] .stats-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+html[data-ui="beta"] .btn.secondary {
+  background: var(--fit-card2) !important;
+  color: var(--fit-text) !important;
 }
-html[data-ui="beta"] .stat-card {
-  text-align: left;
-  padding: 14px 12px;
-  border-radius: 16px;
+html[data-ui="beta"] .bottom-nav {
+  background: rgba(0,0,0,.86) !important;
+  border-top: 1px solid var(--fit-line) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
 }
-html[data-ui="beta"] .stat-card span {
-  display: block;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: .4px;
-  opacity: .65;
-  margin-bottom: 6px;
+html[data-ui="beta"][data-mode="light"] .bottom-nav {
+  background: rgba(242,242,247,.92) !important;
 }
-html[data-ui="beta"] .stat-card b {
-  font-size: 22px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+html[data-ui="beta"] .nav-btn { color: var(--fit-muted) !important; }
+html[data-ui="beta"] .nav-btn span { filter: none !important; opacity: 1 !important; }
+html[data-ui="beta"] .nav-btn.active { color: var(--fit-red) !important; }
+html[data-ui="beta"] .nav-btn.active::after { background: var(--fit-red) !important; width: 4px; height: 4px; border-radius: 50%; }
+html[data-ui="beta"] .stats-row { display: none !important; }
+html[data-ui="beta"] .wallet,
+html[data-ui="beta"] #petHomeCard,
+html[data-ui="beta"] #weekCard { border-radius: var(--fit-radius) !important; }
+html[data-ui="beta"] input, html[data-ui="beta"] select {
+  background: var(--fit-card2) !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  color: var(--fit-text) !important;
 }
-html[data-ui="beta"] .beta-summary {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin: 12px 0 16px;
+html[data-ui="beta"] .bar { background: var(--fit-card2) !important; height: 8px !important; border-radius: 99px !important; }
+html[data-ui="beta"] .bar > div { border-radius: 99px !important; }
+html[data-ui="beta"] .chip {
+  background: var(--fit-card2) !important;
+  border: 0 !important;
+  border-radius: 999px !important;
 }
-html[data-ui="beta"] .beta-ring-card {
-  padding: 16px;
-  border-radius: 18px;
-  background: var(--beta-card);
-  border: 1px solid var(--beta-line);
+html[data-ui="beta"] .chip.on {
+  background: var(--fit-red) !important;
+  color: #fff !important;
 }
-html[data-ui="beta"] .beta-ring-card small {
-  display: block;
-  font-size: 12px;
-  opacity: .6;
-  margin-bottom: 4px;
+html[data-ui="beta"] .item {
+  background: var(--fit-card) !important;
+  border: 0 !important;
+  border-radius: 16px !important;
 }
-html[data-ui="beta"] .beta-ring-card b {
-  font-size: 26px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+html[data-ui="beta"] .sheet {
+  background: var(--fit-card) !important;
+  border: 0 !important;
+  border-radius: 24px 24px 0 0 !important;
 }
-html[data-ui="beta"] .beta-cat-list { display: grid; gap: 8px; margin: 12px 0; }
+/* Fitness-style rings block */
+html[data-ui="beta"] .fit-wrap { margin: 8px 0 18px; }
+html[data-ui="beta"] .fit-rings {
+  display: flex; align-items: center; justify-content: center;
+  gap: 18px; padding: 20px 12px 8px;
+  background: var(--fit-card); border-radius: 24px;
+}
+html[data-ui="beta"] .fit-ring-svg { width: 168px; height: 168px; }
+html[data-ui="beta"] .fit-legend { display: grid; gap: 12px; min-width: 110px; }
+html[data-ui="beta"] .fit-leg {
+  display: flex; flex-direction: column; gap: 2px;
+}
+html[data-ui="beta"] .fit-leg b {
+  font-size: 20px; font-weight: 750; font-variant-numeric: tabular-nums; letter-spacing: -.3px;
+}
+html[data-ui="beta"] .fit-leg small {
+  font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px;
+}
+html[data-ui="beta"] .fit-leg.move small, html[data-ui="beta"] .fit-leg.move b { color: var(--fit-ring-move); }
+html[data-ui="beta"] .fit-leg.ex small, html[data-ui="beta"] .fit-leg.ex b { color: var(--fit-ring-ex); }
+html[data-ui="beta"] .fit-leg.stand small, html[data-ui="beta"] .fit-leg.stand b { color: var(--fit-ring-stand); }
+html[data-ui="beta"] .fit-actions {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;
+}
+html[data-ui="beta"] .fit-actions .btn { width: 100%; justify-content: center; }
+html[data-ui="beta"] .beta-cat-list { display: grid; gap: 8px; margin: 14px 0; }
 html[data-ui="beta"] .beta-cat {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 14px;
-  border-radius: 16px;
-  background: var(--beta-card);
-  border: 1px solid var(--beta-line);
-  cursor: pointer;
-  text-align: left;
-  color: inherit;
-  font: inherit;
-  width: 100%;
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 14px; border-radius: 16px;
+  background: var(--fit-card); border: 0; cursor: pointer;
+  text-align: left; color: inherit; font: inherit; width: 100%;
 }
 html[data-ui="beta"] .beta-cat .ic {
-  width: 36px; height: 36px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; flex-shrink: 0;
+  width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
 }
 html[data-ui="beta"] .beta-cat .meta { flex: 1; min-width: 0; }
-html[data-ui="beta"] .beta-cat .meta b { display: block; font-size: 15px; font-weight: 600; }
-html[data-ui="beta"] .beta-cat .meta small { display: block; font-size: 12px; opacity: .55; margin-top: 2px; }
-html[data-ui="beta"] .beta-cat .chev { opacity: .35; font-size: 18px; }
-html[data-ui="beta"] .ach-grid { display: grid; gap: 8px; }
-html[data-ui="beta"] .ach-card, .ach-card {
-  display: flex; gap: 12px; align-items: flex-start;
-  padding: 12px 14px; border-radius: 16px;
-  border: 1px solid var(--line, rgba(255,255,255,.12));
-  background: rgba(255,255,255,.04);
+html[data-ui="beta"] .beta-cat .meta b { display: block; font-size: 16px; font-weight: 650; }
+html[data-ui="beta"] .beta-cat .meta small { display: block; font-size: 13px; color: var(--fit-muted); margin-top: 2px; }
+html[data-ui="beta"] .beta-cat .chev { color: var(--fit-muted); font-size: 22px; font-weight: 300; }
+html[data-ui="beta"] .fit-plan-card {
+  background: var(--fit-card); border-radius: 20px; padding: 16px; margin: 10px 0 16px;
 }
-.ach-card.locked { opacity: .48; }
-.ach-card .ach-ic { font-size: 26px; line-height: 1; width: 36px; text-align: center; }
-.ach-card .ach-body b { display: block; font-size: 14px; margin-bottom: 2px; }
-.ach-card .ach-body small { display: block; font-size: 12px; color: var(--muted); line-height: 1.35; }
-.ach-card .ach-ok { margin-left: auto; color: #32d74b; font-weight: 700; font-size: 13px; }
-html[data-ui="beta"] .pill { border-radius: 999px; font-weight: 600; }
-html[data-ui="beta"] .section-head h2 { font-weight: 700; letter-spacing: -.2px; }
+html[data-ui="beta"] .fit-plan-card h3 {
+  margin: 0 0 8px; font-size: 17px; font-weight: 700;
+}
+html[data-ui="beta"] .fit-plan-meta {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  color: var(--fit-muted); font-size: 13px; margin-bottom: 10px;
+}
+html[data-ui="beta"] .fit-plan-bar {
+  height: 8px; border-radius: 99px; background: var(--fit-card2); overflow: hidden;
+}
+html[data-ui="beta"] .fit-plan-bar > i {
+  display: block; height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--fit-ring-move), var(--fit-ring-ex));
+}
+html[data-ui="beta"] .ach-card {
+  background: var(--fit-card) !important; border: 0 !important; border-radius: 16px !important;
+}
+html[data-ui="beta"] .page > .glass.section { margin-bottom: 12px; }
+html[data-ui="beta"] .nova-msg.bot { background: var(--fit-card2) !important; border: 0 !important; }
+html[data-ui="beta"] .nova-msg.user { background: var(--fit-red) !important; }
+
 
 /* Luma v23: illustrated companions and Nova assistant */
 .pet-art{display:block;width:100%;height:100%;max-width:118px;max-height:118px;overflow:visible;filter:drop-shadow(0 8px 9px #0002)}
@@ -1246,7 +1323,7 @@ html[data-ui="beta"] .section-head h2 { font-weight: 700; letter-spacing: -.2px;
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v29 · планировщик Новы</span>
+      <span class="pill" id="topPill">v30 · планировщик Новы</span>
     </header>
 
     <!-- HOME -->
@@ -1808,12 +1885,12 @@ html[data-ui="beta"] .section-head h2 { font-weight: 700; letter-spacing: -.2px;
 
       <div class="glass section">
         <div class="section-head"><h2>Бета-дизайн</h2><span class="tag">UI</span></div>
-        <p class="notice" style="margin-top:0">Более спокойный вид в духе приложений здоровья: крупные цифры, простые карточки. Не копия другого приложения.</p>
+        <p class="notice" style="margin-top:0">Полностью другой каркас интерфейса в духе Fitness на iPhone: кольца прогресса, чёрный фон, крупные блоки. Это не смена цвета, а отдельный UI. Не копия Apple Fitness.</p>
         <div class="form-actions">
           <button class="btn" type="button" id="uiBetaOn">Включить бета-UI</button>
           <button class="btn secondary" type="button" id="uiBetaOff">Классика</button>
         </div>
-        <p class="notice" id="uiBetaStatus">Сейчас: классический дизайн</p>
+        <p class="notice" id="uiBetaStatus">Сейчас: классический дизайн (включи бета для Fitness-стиля)</p>
       </div>
 
       <div class="glass section">
@@ -1840,7 +1917,7 @@ html[data-ui="beta"] .section-head h2 { font-weight: 700; letter-spacing: -.2px;
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v29 · планировщик Новы</p>
+      <p class="footer" id="appFooter">Luma · v30 · планировщик Новы</p>
     </section>
   </main>
 
@@ -1996,7 +2073,7 @@ html[data-ui="beta"] .section-head h2 { font-weight: 700; letter-spacing: -.2px;
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '29';
+  const BUILD = '30';
   /* ----- Роли и пароли: хранятся только хеши (SHA-256, соль, 4000 итераций) ----- */
   function sha256(str) {
     const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
@@ -2117,7 +2194,8 @@ html[data-ui="beta"] .section-head h2 { font-weight: 700; letter-spacing: -.2px;
     hist: {},
     lastExport: 0,
     ui: 'classic',
-    ach: {}
+    ach: {},
+    planLog: {}
   });
 
   let data = load();
@@ -2162,6 +2240,7 @@ html[data-ui="beta"] .section-head h2 { font-weight: 700; letter-spacing: -.2px;
     ['meals', 'reminders', 'customFoods', 'walks'].forEach(k => { if (!Array.isArray(d[k])) d[k] = []; });
     if (d.ui !== 'beta') d.ui = 'classic';
     if (!d.ach || typeof d.ach !== 'object') d.ach = {};
+    if (!d.planLog || typeof d.planLog !== 'object') d.planLog = {};
     cleanData(d);
     enforceRoles(d);
     return d;
@@ -3668,7 +3747,58 @@ html[data-ui="beta"] .section-head h2 { font-weight: 700; letter-spacing: -.2px;
 
   /* ----- кошелёк на главной, аватар ----- */
 
-  /* ===== Достижения ===== */
+  /* ===== Достижения + план дня ===== */
+  function todayKey(){ return (typeof todayStr === 'function' ? todayStr() : new Date().toISOString().slice(0,10)); }
+  function planDayStats(dateStr){
+    const day = dateStr || todayKey();
+    const meals = (data.meals || []).filter(m => m.date === day).length;
+    const waterOk = !!(data.water && data.water.date === day && data.water.current >= (data.water.goal || 2000));
+    const waterAny = !!(data.water && data.water.date === day && data.water.current > 0);
+    const walk = (data.walks || []).some(w => w.date === day);
+    const start = new Date(day + 'T00:00:00').getTime();
+    const end = start + 86400000;
+    const rems = (data.reminders || []).filter(r => r.when >= start && r.when < end);
+    const remDone = rems.length ? rems.every(r => r.done) : false;
+    const remProgress = rems.length ? rems.filter(r => r.done).length / rems.length : 1;
+    // День «по плану»: вода к цели + (еда или прогулка) + напоминания закрыты (если были)
+    const complete = waterOk && (meals > 0 || walk) && (rems.length === 0 || remDone);
+    const score = Math.round(100 * (
+      (waterOk ? 0.4 : waterAny ? 0.15 : 0) +
+      ((meals > 0 || walk) ? 0.35 : 0) +
+      (0.25 * remProgress)
+    ));
+    return { day, meals, waterOk, waterAny, walk, rems: rems.length, remDone, complete, score };
+  }
+  function countPlanDays(daysBack){
+    if (!data.planLog || typeof data.planLog !== 'object') return 0;
+    let n = 0;
+    const now = new Date(); now.setHours(0,0,0,0);
+    for (let i = 0; i < daysBack; i++){
+      const d = new Date(now.getTime() - i * 86400000);
+      const k = d.toISOString().slice(0,10);
+      if (data.planLog[k]) n++;
+    }
+    return n;
+  }
+  function markPlanDay(force){
+    const st = planDayStats();
+    if (!data.planLog) data.planLog = {};
+    if (st.complete || force){
+      data.planLog[st.day] = 1;
+      // keep last ~120 days
+      const keys = Object.keys(data.planLog).sort();
+      if (keys.length > 120) keys.slice(0, keys.length - 120).forEach(k => delete data.planLog[k]);
+      save();
+      checkAchievements();
+      try { renderBetaHomeExtras(); } catch {}
+      toast(force && !st.complete ? 'День отмечен вручную' : 'План на день выполнен ✓');
+      return true;
+    }
+    toast('Чтобы засчитать день: вода по цели, еда или прогулка, и закрытые напоминания на сегодня');
+    return false;
+  }
+  window.markPlanDay = markPlanDay;
+
   const ACHIEVEMENTS = [
     { id: 'first_open', ic: '👋', name: 'Первый шаг', desc: 'Открыть Luma', test: () => true },
     { id: 'water1', ic: '💧', name: 'Глоток', desc: 'Добавить воду', test: () => (data.cnt.waterDays || 0) >= 1 || (data.water && data.water.current > 0) },
@@ -3681,6 +3811,9 @@ html[data-ui="beta"] .section-head h2 { font-weight: 700; letter-spacing: -.2px;
     { id: 'walk5', ic: '🛤', name: 'Маршруты', desc: '5 прогулок', test: () => (data.walks || []).length >= 5 },
     { id: 'streak3', ic: '🔥', name: '3 дня подряд', desc: 'Серия входов 3 дня', test: () => (data.streak && data.streak.best) >= 3 },
     { id: 'streak7', ic: '⚡', name: 'Неделя с Luma', desc: 'Серия 7 дней', test: () => (data.streak && data.streak.best) >= 7 },
+    { id: 'plan_day', ic: '📋', name: 'День по плану', desc: 'Выполнить план за день', test: () => data.planLog && Object.keys(data.planLog).length >= 1 },
+    { id: 'plan_week', ic: '🗓', name: 'Неделя по плану', desc: '7 дней с выполненным планом', test: () => countPlanDays(7) >= 7 || Object.keys(data.planLog || {}).length >= 7 },
+    { id: 'plan_month', ic: '📅', name: 'Месяц по плану', desc: '20 дней с планом за 30 дней', test: () => countPlanDays(30) >= 20 },
     { id: 'pet_feed', ic: '🐾', name: 'Забота', desc: 'Покормить питомца', test: () => (data.cnt.petFeed || 0) >= 1 },
     { id: 'game1', ic: '🎮', name: 'Разминка ума', desc: 'Сыграть 1 партию', test: () => (data.cnt.total || 0) >= 1 },
     { id: 'coins50', ic: '✨', name: 'Искорки', desc: 'Заработать 50 ✧', test: () => (data.coins && data.coins.earned) >= 50 },
@@ -3693,18 +3826,13 @@ html[data-ui="beta"] .section-head h2 { font-weight: 700; letter-spacing: -.2px;
     const fresh = [];
     ACHIEVEMENTS.forEach(a => {
       if (data.ach[a.id]) return;
-      try {
-        if (a.test()) {
-          data.ach[a.id] = Date.now();
-          fresh.push(a);
-        }
-      } catch {}
+      try { if (a.test()) { data.ach[a.id] = Date.now(); fresh.push(a); } } catch {}
     });
     if (fresh.length) {
       save();
       const names = fresh.map(a => a.ic + ' ' + a.name).join(', ');
       setTimeout(() => toast('🏅 Достижение: ' + names), 900);
-      if ($('page-achievements')?.classList.contains('active')) renderAchievements();
+      if ($('page-achievements') && $('page-achievements').classList.contains('active')) renderAchievements();
     }
   }
   function renderAchievements() {
@@ -3722,29 +3850,81 @@ html[data-ui="beta"] .section-head h2 { font-weight: 700; letter-spacing: -.2px;
     else document.documentElement.removeAttribute('data-ui');
     save();
     const st = $('uiBetaStatus');
-    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: бета-дизайн' : 'Сейчас: классический дизайн';
+    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: бета-дизайн (Fitness-стиль)' : 'Сейчас: классический дизайн';
     checkAchievements();
     try { renderHome(); } catch {}
-    toast(data.ui === 'beta' ? 'Бета-UI включён' : 'Классический дизайн');
+    toast(data.ui === 'beta' ? 'Бета-UI: вид как у спортивного приложения' : 'Классический дизайн');
+  }
+  function fitRingSvg(move, ex, stand){
+    // progress 0..1
+    const c = 2 * Math.PI * 42;
+    const c2 = 2 * Math.PI * 30;
+    const c3 = 2 * Math.PI * 18;
+    const a = (v, circ) => circ * (1 - Math.max(0, Math.min(1, v)));
+    return '<svg class="fit-ring-svg" viewBox="0 0 100 100" aria-hidden="true">' +
+      '<circle cx="50" cy="50" r="42" fill="none" stroke="#2c2c2e" stroke-width="8"/>' +
+      '<circle cx="50" cy="50" r="42" fill="none" stroke="#ff375f" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + c + '" stroke-dashoffset="' + a(move,c) + '" transform="rotate(-90 50 50)"/>' +
+      '<circle cx="50" cy="50" r="30" fill="none" stroke="#2c2c2e" stroke-width="8"/>' +
+      '<circle cx="50" cy="50" r="30" fill="none" stroke="#64d2ff" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + c2 + '" stroke-dashoffset="' + a(ex,c2) + '" transform="rotate(-90 50 50)"/>' +
+      '<circle cx="50" cy="50" r="18" fill="none" stroke="#2c2c2e" stroke-width="8"/>' +
+      '<circle cx="50" cy="50" r="18" fill="none" stroke="#daff63" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + c3 + '" stroke-dashoffset="' + a(stand,c3) + '" transform="rotate(-90 50 50)"/>' +
+      '</svg>';
   }
   function renderBetaHomeExtras() {
     const host = $('betaHomeExtras');
     if (!host) return;
     if (data.ui !== 'beta') { host.innerHTML = ''; host.hidden = true; return; }
     host.hidden = false;
-    const cal = $('homeCal')?.textContent || '0';
-    const water = $('homeWater')?.textContent || '0';
-    const rem = $('homeRem')?.textContent || '0';
+    const st = planDayStats();
+    const goal = data.water && data.water.goal ? data.water.goal : 2000;
+    const curW = (data.water && data.water.date === st.day) ? (data.water.current || 0) : 0;
+    const move = Math.min(1, curW / goal); // water as "move"
+    const walkMin = 30;
+    // walk progress from today walk ms if any
+    let walkP = 0;
+    const walksToday = (data.walks || []).filter(w => w.date === st.day);
+    if (walksToday.length) {
+      const ms = walksToday.reduce((a,w)=>a+(+w.ms||0),0);
+      walkP = Math.min(1, ms / (walkMin * 60000));
+    }
+    const remP = st.rems ? (st.remDone ? 1 : Math.max(0.05, (data.reminders||[]).filter(r=>{
+      const start = new Date(st.day+'T00:00:00').getTime();
+      return r.when>=start && r.when<start+86400000 && r.done;
+    }).length / st.rems)) : (st.meals > 0 ? 1 : 0.15);
+    const weekN = countPlanDays(7);
+    const monthN = countPlanDays(30);
+    const marked = !!(data.planLog && data.planLog[st.day]);
     const achN = ACHIEVEMENTS.filter(a => data.ach && data.ach[a.id]).length;
-    host.innerHTML = '<div class="beta-summary">' +
-      '<div class="beta-ring-card"><small>Калории</small><b>' + cal + '</b></div>' +
-      '<div class="beta-ring-card"><small>Вода, мл</small><b>' + water + '</b></div>' +
-      '</div><div class="beta-cat-list">' +
-      '<button type="button" class="beta-cat" onclick="goTab(\'nutrition\')"><span class="ic" style="background:#ff375f33">🍽</span><span class="meta"><b>Рацион</b><small>Ккал и приёмы пищи</small></span><span class="chev">›</span></button>' +
-      '<button type="button" class="beta-cat" onclick="goTab(\'walk\')"><span class="ic" style="background:#32d74b33">🚶</span><span class="meta"><b>Ходьба</b><small>Прогулки и шаги</small></span><span class="chev">›</span></button>' +
-      '<button type="button" class="beta-cat" onclick="goTab(\'reminders\')"><span class="ic" style="background:#64d2ff33">⏰</span><span class="meta"><b>Планы</b><small>Напоминания · ' + rem + '</small></span><span class="chev">›</span></button>' +
-      '<button type="button" class="beta-cat" onclick="goTab(\'achievements\')"><span class="ic" style="background:#bf5af233">🏅</span><span class="meta"><b>Достижения</b><small>' + achN + ' из ' + ACHIEVEMENTS.length + '</small></span><span class="chev">›</span></button>' +
+    host.innerHTML =
+      '<div class="fit-wrap">' +
+        '<div class="fit-rings">' +
+          fitRingSvg(move, walkP, remP) +
+          '<div class="fit-legend">' +
+            '<div class="fit-leg move"><small>Вода</small><b>' + Math.round(curW) + '</b></div>' +
+            '<div class="fit-leg ex"><small>Ходьба</small><b>' + Math.round(walkP*100) + '%</b></div>' +
+            '<div class="fit-leg stand"><small>План</small><b>' + Math.round(remP*100) + '%</b></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="fit-plan-card">' +
+          '<div class="fit-plan-meta"><span>Прогресс дня</span><span>' + st.score + '%</span></div>' +
+          '<div class="fit-plan-bar"><i style="width:' + st.score + '%"></i></div>' +
+          '<div class="fit-plan-meta" style="margin-top:10px"><span>План: неделя ' + weekN + '/7 · месяц ' + monthN + '/20</span><span>' + (marked ? '✓ день' : '—') + '</span></div>' +
+          '<div class="fit-actions">' +
+            '<button type="button" class="btn" onclick="markPlanDay()">Засчитать день</button>' +
+            '<button type="button" class="btn secondary" onclick="goTab(\'nova\')">План Новы</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="beta-cat-list">' +
+          '<button type="button" class="beta-cat" onclick="goTab(\'nutrition\')"><span class="ic" style="background:#ff375f33">🍽</span><span class="meta"><b>Рацион</b><small>' + st.meals + ' записей сегодня</small></span><span class="chev">›</span></button>' +
+          '<button type="button" class="beta-cat" onclick="goTab(\'walk\')"><span class="ic" style="background:#64d2ff33">🚶</span><span class="meta"><b>Ходьба</b><small>' + (walkP>0?'Есть активность':'Начать прогулку') + '</small></span><span class="chev">›</span></button>' +
+          '<button type="button" class="beta-cat" onclick="goTab(\'reminders\')"><span class="ic" style="background:#daff6333">⏰</span><span class="meta"><b>Планы</b><small>' + st.rems + ' на сегодня</small></span><span class="chev">›</span></button>' +
+          '<button type="button" class="beta-cat" onclick="goTab(\'achievements\')"><span class="ic" style="background:#bf5af233">🏅</span><span class="meta"><b>Достижения</b><small>' + achN + ' из ' + ACHIEVEMENTS.length + '</small></span><span class="chev">›</span></button>' +
+        '</div>' +
       '</div>';
+    // auto-mark if complete
+    if (st.complete && !marked) {
+      data.planLog[st.day] = 1; save(); checkAchievements();
+    }
   }
 
   function updateWallet() {
