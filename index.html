@@ -1779,6 +1779,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   }
   /* приводит списки из хранилища/импорта к безопасному виду (строки, числа, id без спецсимволов) */
   function cleanData(d) {
+    const base = defaultData();
     const sid = v => String(v == null ? '' : v).replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64) || ('x' + Math.random().toString(36).slice(2, 10));
     const num = (v, lo, hi) => { v = +v; if (!Number.isFinite(v)) return lo; return Math.min(hi, Math.max(lo, v)); };
     const str = (v, n) => String(v == null ? '' : v).slice(0, n);
@@ -4632,7 +4633,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   /* ================= Профиль, план и прогулки ================= */
   const ACT = [1.2, 1.375, 1.55, 1.725, 1.9];
   const GOAL_NAME = { lose: 'Похудеть', keep: 'Остаться в весе', gain: 'Набрать массу' };
-  const prof = () => data.profile || (data.profile = { name: '', done: false });
+  function prof() { return data.profile || (data.profile = { name: '', done: false }); }
 
   /* ИМТ: классификация ВОЗ; калории: формула Миффлина—Сан Жеора;
      активность: рекомендации ВОЗ 2020 (взрослые 150–300 мин/нед, подростки 60 мин/день) */
