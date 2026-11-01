@@ -1864,7 +1864,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
         </div>
         <div class="nova-chat" id="novaChat" aria-live="polite"><div class="nova-msg bot">Выбери действие или напиши, что хочешь узнать. Я отвечаю на основе данных, сохранённых в Luma.</div></div>
         <form id="novaForm" class="nova-input-row"><input id="novaInput" maxlength="180" placeholder="Например: что у меня сегодня?" autocomplete="off"><button class="btn" type="submit">Отправить</button></form>
-        <p class="notice">Нова не подключена к внешнему ИИ: она использует встроенные правила и данные Luma. Переписка не отправляется на сервер.</p>
+        <p class="notice">Нова не подключена к ИИ: она использует встроенные правила и данные Luma. Вопросы вроде «что такое …» и калории незнакомых продуктов уходят напрямую в Википедию и Open Food Facts (своего сервера у Luma нет), найденные ответы запоминаются на устройстве.</p>
       </div>
     </section>
 
@@ -1873,7 +1873,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
       <div class="hero">
         <div class="eyebrow">SPORTS CHAT</div>
         <h1>Чат<br><span>про спорт</span></h1>
-        <p class="muted">Вопросы про тренировки, упражнения и активность. Может открыть поиск в интернете.</p>
+        <p class="muted">Вопросы про тренировки, упражнения и активность. Если нет в подсказках — найдёт ответ в Википедии прямо в чате.</p>
       </div>
       <div class="glass section">
         <div class="nova-head">
@@ -1889,7 +1889,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
           <button class="btn secondary small" type="button" data-sport="rest">Восстановление</button>
         </div>
         <div class="nova-chat" id="sportChat" aria-live="polite">
-          <div class="nova-msg bot">Привет! Спроси про разминку, кардио, силовые, шаги или восстановление. Для редких тем могу открыть поиск в интернете.</div>
+          <div class="nova-msg bot">Привет! Спроси про разминку, кардио, силовые, шаги или восстановление. Для редких тем найду ответ в интернете и покажу здесь.</div>
         </div>
         <form class="nova-input-row" id="sportForm" style="margin-top:10px">
           <input id="sportInput" maxlength="200" placeholder="Например: как разминаться перед бегом" autocomplete="off">
@@ -4413,6 +4413,9 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     const rows=buildNovaPlan();
     return rows.length?'План на сегодня:\n'+rows.map(r=>(r.time?r.time+' — ':'')+r.title+(r.note?' ('+r.note+')':'')).join('\n'):'На сегодня пока нет записанных дел. Добавь напоминания или укажи расписание.';
   }
+  const NOVA_FALLBACK='Я могу: план на сегодня/неделю, задачи, свободное время, калории в еде, сводку дня или создать напоминание. А ещё отвечаю на вопросы из интернета: напиши «что такое …» или «найди …». Для точного плана заполни профиль Новы.';
+  const NOVA_FOOD_MISS='Не нашла продукт ни в локальной базе, ни онлайн. Добавь его в «Мои блюда» (раздел «Рацион») — тогда я смогу отвечать и офлайн.';
+  const NOVA_KNOW=/^(что такое|что значит|кто такой|кто такая|кто такие|найди|поиск|расскажи|объясни|погугли|узнай|как работает|почему|зачем)(\s|$)/;
   function novaReply(kind,query=''){
     const pending=novaPending();
     const todayStart=new Date(); todayStart.setHours(0,0,0,0); const tomorrow=todayStart.getTime()+86400000;
@@ -4421,7 +4424,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     if(/ккал|калор|сколько .* в |бжу|белк|углевод/.test(query) || kind==='food'){
       const ans=novaCalorieAnswer(query);
       if(ans) return ans;
-      return 'Не нашла продукт в локальной базе. Открой «Рацион» и найди его через Open Food Facts или добавь в «Мои блюда» — тогда я смогу отвечать и офлайн.';
+      return NOVA_FOOD_MISS;
     }
     if(kind==='status'||/статус|как дела|сегодня у меня|сводка|прогресс/.test(query)) return novaStatusText();
     if(kind==='evening'||/собери вечер|вечерний|подведи итог|итог дня/.test(query)){
@@ -4449,12 +4452,16 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
       return tips[Math.floor(Math.random()*tips.length)];
     }
     if(kind==='remind'||/создай напомин|добавь напомин/.test(query)){goTab('reminders');return 'Открыла раздел напоминаний. Введи текст, дату и время — затем сохрани.';}
-    return 'Я могу: план на сегодня/неделю, задачи, свободное время, калории в еде (гречка, курица, яйца…), сводку дня или создать напоминание. Для точного плана заполни профиль Новы.';
+    return NOVA_FALLBACK;
   }
   function novaAction(kind){const labels={plan:'План на сегодня',week:'План на неделю',tasks:'Мои задачи',free:'Свободное время',tip:'Совет',remind:'Создать напоминание',status:'Сводка дня',evening:'Собери вечер'};novaSay(labels[kind]||kind,'user');novaSay(novaReply(kind));if(kind==='plan')renderNovaPlan();if(kind==='week')renderNovaWeekPlan();}
   const novaPage=$('page-nova'); if(novaPage){
     novaPage.addEventListener('click',e=>{const b=e.target.closest('[data-nova]');if(b)novaAction(b.dataset.nova);});
-    const f=$('novaForm');if(f)f.addEventListener('submit',e=>{e.preventDefault();const input=$('novaInput'),q=(input.value||'').trim();if(!q)return;novaSay(q,'user');novaSay(novaReply('',q.toLowerCase()));input.value='';});
+    const f=$('novaForm');if(f)f.addEventListener('submit',async e=>{e.preventDefault();const input=$('novaInput'),q=(input.value||'').trim();if(!q)return;novaSay(q,'user');input.value='';const low=q.toLowerCase();
+      let mode=null,miss=NOVA_FALLBACK;
+      if(NOVA_KNOW.test(low)) mode='wiki';
+      else { const r=novaReply('',low); if(r===NOVA_FOOD_MISS){mode='food';miss=NOVA_FOOD_MISS;} else if(r===NOVA_FALLBACK){mode='wiki';} else { novaSay(r); return; } }
+      const a=await lookupAnswer(q,'novaChat',mode); novaSay(a===LOOKUP_NONE?miss:a);});
     const saveBtn=$('novaProfileSave');if(saveBtn)saveBtn.addEventListener('click',saveNovaProfile);
     const planBtn=$('novaBuildPlan');if(planBtn)planBtn.addEventListener('click',()=>{renderNovaPlan();novaSay(novaPlanText());});
     const weekBtn=$('novaBuildWeek');if(weekBtn)weekBtn.addEventListener('click',()=>{renderNovaWeekPlan();novaSay(novaReply('week'));});
@@ -4540,6 +4547,74 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     return 'Неделя: план ' + week + '/7 дней · прогулок ' + walks + ' · достижений ' + ach + '/' + ACHIEVEMENTS.length + ' · вода (всего дней с нормой): ' + waterDays + ' · месяц плана ' + month + '/20';
   }
 
+  /* ===== Ответы из интернета прямо в чате (без своего сервера): Википедия + Open Food Facts =====
+     Запросы идут из браузера к открытым API (CORS), ключи и сервер не нужны.
+     Удачные ответы запоминаются в localStorage — повторный вопрос работает офлайн. */
+  const LOOKUP_KEY = 'luma-lookup-cache';
+  const LOOKUP_NONET = 'Сейчас нет интернета, а этого ответа нет среди сохранённых. Попробуй, когда появится сеть: найденные ответы я запоминаю и потом показываю офлайн.';
+  const LOOKUP_NONE = 'Не нашла ответа. Попробуй короче и точнее, например: «что такое креатин» или «кардио».';
+  const LOOKUP_STOP = new Set(['сколько','калорий','калории','калория','ккал','бжу','белков','белки','жиров','жиры','углеводов','углеводы','содержится','есть','в','во','на','у','и']);
+  function lookupCache() { try { const o = JSON.parse(localStorage.getItem(LOOKUP_KEY) || '{}'); return o && typeof o === 'object' ? o : {}; } catch { return {}; } }
+  function lookupCacheSet(k, text) {
+    try {
+      const o = lookupCache(); o[k] = { t: Date.now(), text };
+      Object.keys(o).sort((a, b) => o[b].t - o[a].t).slice(40).forEach(x => delete o[x]);
+      localStorage.setItem(LOOKUP_KEY, JSON.stringify(o));
+    } catch {}
+  }
+  function lookupClean(q) {
+    let t = String(q || '').toLowerCase().replace(/ё/g, 'е').trim();
+    const pre = /^(поиск|найди в интернете|найди|погугли|открой поиск|узнай|расскажи(?: мне)? (?:про|о|об)|что такое|что значит|кто такой|кто такая|кто такие|объясни)\s+/;
+    for (let i = 0; i < 2; i++) t = t.replace(pre, '');
+    return t.replace(/[?!.…]+$/, '').trim().slice(0, 80);
+  }
+  async function lookupWiki(q) {
+    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 8000);
+    try {
+      const url = 'https://ru.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&generator=search&gsrlimit=1&gsrsearch=' + encodeURIComponent(q) + '&prop=extracts|info&inprop=url&exintro=1&explaintext=1&exchars=900';
+      const r = await fetch(url, { signal: ctl.signal });
+      if (!r.ok) return null;
+      const j = await r.json();
+      const pg = j && j.query && j.query.pages ? Object.values(j.query.pages)[0] : null;
+      if (!pg || !pg.extract || pg.extract.length < 40) return null;
+      let ex = pg.extract.replace(/[ \t]*\n[ \t]*/g, '\n').trim();
+      if (ex.length > 600) { const cut = ex.slice(0, 600), i = cut.lastIndexOf('. '); ex = i > 250 ? cut.slice(0, i + 1) : cut + '…'; }
+      return pg.title + '\n' + ex + '\n\nИсточник: Википедия — ' + (pg.fullurl || 'https://ru.wikipedia.org/wiki/' + encodeURIComponent(pg.title));
+    } catch { return null; } finally { clearTimeout(to); }
+  }
+  async function lookupFood(raw) {
+    const m = String(raw).match(/(\d+[.,]?\d*)\s*(кг|гр|г|грамм\w*)?/);
+    let grams = 100;
+    if (m) { grams = parseFloat(m[1].replace(',', '.')); if ((m[2] || '').startsWith('кг')) grams *= 1000; if (!(grams > 0 && grams <= 5000)) grams = 100; }
+    const name = lookupClean(raw).replace(/\d+[.,]?\d*\s*(кг|гр|г|грамм\w*)?/g, ' ').split(/\s+/).filter(w => w && !LOOKUP_STOP.has(w)).join(' ');
+    if (name.length < 2) return null;
+    const j = await offFetch(OFF.base + '/cgi/search.pl?search_simple=1&action=process&json=1&page_size=10&lc=ru&fields=' + OFF.fields + '&search_terms=' + encodeURIComponent(name), new AbortController());
+    const items = (j && Array.isArray(j.products) ? j.products : []).map(offItem).filter(Boolean).slice(0, 3);
+    if (!items.length) return null;
+    const k = grams / 100, r1 = v => Math.round(v * 10) / 10;
+    return 'По Open Food Facts на ' + Math.round(grams) + ' г:\n' + items.map(it => '• ' + it.n + ' — ' + Math.round(it.c * k) + ' ккал · Б ' + r1(it.p * k) + ' · Ж ' + r1(it.f * k) + ' · У ' + r1(it.u * k)).join('\n') + '\n\nДанные вносят пользователи — сверяй с упаковкой.';
+  }
+  function lookupPending(chatId) {
+    const chat = $(chatId); if (!chat) return null;
+    const el = document.createElement('div'); el.className = 'nova-msg bot'; el.textContent = 'Ищу ответ…';
+    chat.appendChild(el); chat.scrollTop = chat.scrollHeight; return el;
+  }
+  /* всегда возвращает строку; LOOKUP_NONE — если ничего не нашлось (вызывающий подставит свой запасной ответ) */
+  async function lookupAnswer(raw, chatId, mode) {
+    const q = lookupClean(raw);
+    if (q.length < 2) return LOOKUP_NONE;
+    const key = (mode === 'food' ? 'f:' : 'w:') + q;
+    const hit = lookupCache()[key];
+    if (hit && hit.text) return hit.text;
+    if (navigator.onLine === false) return LOOKUP_NONET;
+    const ph = lookupPending(chatId);
+    let text = null;
+    try { text = mode === 'food' ? await lookupFood(raw) : await lookupWiki(q); } catch { text = null; }
+    if (ph) ph.remove();
+    if (text) { lookupCacheSet(key, text); return text; }
+    return LOOKUP_NONE;
+  }
+
   /* ===== Спорт-чат (не планирование) ===== */
   const SPORT_KEY = 'luma-sport-chat';
   function sportSay(text, who='bot'){
@@ -4551,23 +4626,6 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
       hist.push({who,text,t:Date.now()});
       localStorage.setItem(SPORT_KEY, JSON.stringify(hist.slice(-40)));
     } catch {}
-  }
-  function sportOpenSearch(q){
-    const url='https://duckduckgo.com/?q='+encodeURIComponent(q+' спорт тренировка');
-    try { window.open(url,'_blank','noopener'); } catch { location.href=url; }
-    return 'Открыла поиск в интернете по запросу: «'+q+'». Если окно не открылось — проверь блокировку всплывающих окон.';
-  }
-  async function sportWiki(q){
-    try {
-      if (navigator.onLine===false) return null;
-      const url='https://ru.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(q);
-      const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),5000);
-      const r=await fetch(url,{signal:ctl.signal}); clearTimeout(tm);
-      if(!r.ok) return null;
-      const j=await r.json();
-      if(j && j.extract) return (j.title?j.title+'\n':'')+j.extract.slice(0,500)+(j.extract.length>500?'…':'');
-    } catch { return null; }
-    return null;
   }
   function sportLocal(q){
     q=(q||'').toLowerCase().replace(/ё/g,'е');
@@ -4588,15 +4646,8 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     q=(q||'').trim(); if(!q) return 'Напиши вопрос про спорт или выбери кнопку выше.';
     const local=sportLocal(q);
     if(local) return local;
-    // try wiki for specific terms
-    const wikiQ = q.replace(/как |что такое |сколько |нужно ли /gi,'').trim().slice(0,60);
-    const wiki=await sportWiki(wikiQ);
-    if(wiki) return wiki+'\n\nЕсли нужно подробнее — могу открыть поиск в интернете. Напиши: «поиск '+wikiQ+'».';
-    if(/^поиск\s+/i.test(q) || /найди в интернет|погугли|открой поиск/.test(q.toLowerCase())){
-      return sportOpenSearch(q.replace(/^поиск\s+/i,'').trim()||q);
-    }
-    // default: offer search
-    return 'В локальных подсказках точного ответа нет. Могу открыть поиск в интернете по этой теме.\nНапиши «поиск '+q.slice(0,80)+'» или нажми кнопку ниже — и я открою DuckDuckGo.';
+    const a=await lookupAnswer(q,'sportChat','wiki');
+    return a===LOOKUP_NONE ? 'В моих подсказках и в Википедии точного ответа не нашлось. Попробуй уточнить, например: «кардио», «растяжка», «планка».' : a;
   }
   function sportAction(kind){
     const map={warmup:'Как правильно разминаться',steps:'Какая норма шагов в день',home:'Домашняя тренировка без зала',water:'Сколько воды пить при спорте',rest:'Как восстанавливаться после тренировки'};
@@ -4609,8 +4660,6 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     const f=$('sportForm'); if(f) f.addEventListener('submit',async e=>{
       e.preventDefault(); const input=$('sportInput'); const q=(input.value||'').trim(); if(!q) return;
       sportSay(q,'user'); input.value='';
-      const low=q.toLowerCase();
-      if(/поиск|найди|погугли|интернет/.test(low)){ sportSay(sportOpenSearch(q.replace(/^(поиск|найди в интернете|погугли)\s*/i,'').trim()||q)); return; }
       sportSay(await sportReply(q));
     });
     // restore short history
