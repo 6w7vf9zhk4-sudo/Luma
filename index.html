@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="31"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="32"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);if(_d.ui==='beta')document.documentElement.setAttribute('data-ui','beta');}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -966,6 +966,120 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
 .footer { opacity: .6; }
 
 
+
+/* ===== Liquid glass bottom nav (iOS-like) ===== */
+
+main, .app { padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important; }
+
+.bottom-nav {
+  background: transparent !important;
+  border-top: 0 !important;
+  padding: 0 10px calc(10px + env(safe-area-inset-bottom)) !important;
+  pointer-events: none;
+}
+.bottom-nav .nav-inner {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 2px;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 6px 6px !important;
+  border-radius: 28px !important;
+  background: rgba(28, 22, 48, 0.55) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  box-shadow:
+    0 10px 40px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.18) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(180%) !important;
+  backdrop-filter: blur(22px) saturate(180%) !important;
+}
+html[data-mode="light"] .bottom-nav .nav-inner {
+  background: rgba(255,255,255,0.72) !important;
+  border-color: rgba(255,255,255,0.65) !important;
+  box-shadow: 0 10px 36px rgba(60,40,120,.18), inset 0 1px 0 #fff !important;
+}
+.bottom-nav .nav-btn {
+  position: relative;
+  border-radius: 22px !important;
+  padding: 8px 2px 6px !important;
+  gap: 2px !important;
+  transition: background .25s, color .2s, transform .2s;
+}
+.bottom-nav .nav-btn span {
+  filter: none !important;
+  opacity: .75 !important;
+  font-size: 18px !important;
+}
+.bottom-nav .nav-btn.active {
+  background: rgba(255,255,255,0.14) !important;
+  color: var(--ink, #fff) !important;
+}
+html[data-mode="light"] .bottom-nav .nav-btn.active {
+  background: rgba(139,92,246,0.16) !important;
+  color: #24113f !important;
+}
+.bottom-nav .nav-btn.active span { opacity: 1 !important; }
+.bottom-nav .nav-btn.active::after {
+  content: "" !important;
+  width: 5px !important; height: 5px !important;
+  border-radius: 50% !important;
+  background: var(--accent, #a78bfa) !important;
+  margin-top: 1px !important;
+}
+html[data-ui="beta"] .bottom-nav {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 10px calc(10px + env(safe-area-inset-bottom)) !important;
+}
+html[data-ui="beta"] .bottom-nav .nav-inner {
+  background: rgba(28,28,30,0.72) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+}
+html[data-ui="beta"] .bottom-nav .nav-btn.active {
+  background: rgba(255,55,95,0.18) !important;
+  color: #ff375f !important;
+}
+html[data-ui="beta"] .bottom-nav .nav-btn.active::after { background: #ff375f !important; }
+html[data-ui="beta"][data-mode="light"] .bottom-nav .nav-inner {
+  background: rgba(255,255,255,0.8) !important;
+}
+/* What's new modal */
+.wn-back {
+  position: fixed; inset: 0; z-index: 12000;
+  background: rgba(0,0,0,.55);
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+.wn-card {
+  width: min(420px, 100%);
+  background: var(--sheet-bg, #1a1230);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 22px;
+  padding: 18px 16px 14px;
+  max-height: 80vh; overflow: auto;
+}
+html[data-mode="light"] .wn-card { background: #fff; color: #24113f; }
+.wn-card h3 { margin: 0 0 6px; font-size: 18px; }
+.wn-card ul { margin: 8px 0 14px; padding-left: 18px; line-height: 1.45; font-size: 14px; }
+.wn-card li { margin: 4px 0; }
+.fit-check {
+  display: grid; gap: 6px; margin: 8px 0;
+  background: var(--fit-card, rgba(255,255,255,.06));
+  border-radius: 14px; padding: 10px 12px;
+}
+.fit-check label {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 600; cursor: default;
+}
+.fit-check input { width: 18px; height: 18px; accent-color: #ff375f; }
+.rem-templates { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.week-report {
+  font-size: 13px; line-height: 1.45; padding: 10px 0 0;
+  color: var(--muted, #a99bc0);
+}
+.week-report b { color: inherit; opacity: .95; }
+
 /* ===== Beta UI v31 — minimal Fitness-like shell ===== */
 html[data-ui="beta"] {
   --fit-bg: #000;
@@ -1341,7 +1455,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v31 · планировщик Новы</span>
+      <span class="pill" id="topPill">v32 · планировщик Новы</span>
     </header>
 
     <!-- HOME -->
@@ -1570,6 +1684,18 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
       </div>
 
       <div class="glass section">
+        <div class="section-head"><h2>Шаблоны</h2><span class="tag">Быстро</span></div>
+        <div class="rem-templates" id="remTemplates">
+          <button type="button" class="btn secondary small" data-remtpl="water">💧 Вода</button>
+          <button type="button" class="btn secondary small" data-remtpl="study">📚 Учёба</button>
+          <button type="button" class="btn secondary small" data-remtpl="train">🏃 Тренировка</button>
+          <button type="button" class="btn secondary small" data-remtpl="med">💊 Лекарство</button>
+          <button type="button" class="btn secondary small" data-remtpl="sleep">😴 Сон</button>
+        </div>
+        <p class="notice" style="margin:0">Создаст напоминание через 1–3 часа (можно потом изменить).</p>
+      </div>
+
+      <div class="glass section">
         <div class="section-head"><h2>Твои напоминания</h2><span class="tag" id="remCount">0</span></div>
         <div class="list" id="remList">
           <div class="empty"><div class="orb"></div>Добавь первое напоминание</div>
@@ -1729,6 +1855,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
           <button class="btn secondary small" type="button" data-nova="plan">📅 План на сегодня</button>
           <button class="btn secondary small" type="button" data-nova="week">🗓 План на неделю</button>
           <button class="btn secondary small" type="button" data-nova="status">📊 Сводка дня</button>
+          <button class="btn secondary small" type="button" data-nova="evening">🌙 Собери вечер</button>
           <button class="btn secondary small" type="button" data-nova="tasks">☑ Мои задачи</button>
           <button class="btn secondary small" type="button" data-nova="free">⌛ Свободное время</button>
           <button class="btn secondary small" type="button" data-nova="tip">💡 Совет</button>
@@ -1936,7 +2063,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v31 · планировщик Новы</p>
+      <p class="footer" id="appFooter">Luma · v32 · планировщик Новы</p>
     </section>
   </main>
 
@@ -2043,6 +2170,14 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
   <div class="admin" id="adminPanel" aria-hidden="true"></div>
 
   <div class="coin-pop" id="coinPop" aria-live="polite"></div>
+  <div class="wn-back" id="whatsNew" hidden>
+    <div class="wn-card" role="dialog" aria-labelledby="wnTitle">
+      <h3 id="wnTitle">Что нового</h3>
+      <p class="notice" id="wnVer" style="margin:0 0 6px"></p>
+      <ul id="wnList"></ul>
+      <button class="btn" type="button" id="wnClose" style="width:100%">Продолжить</button>
+    </div>
+  </div>
   <div class="toast" id="toast"></div>
 
   
@@ -2092,7 +2227,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '31';
+  const BUILD = '32';
   /* ----- Роли и пароли: хранятся только хеши (SHA-256, соль, 4000 итераций) ----- */
   function sha256(str) {
     const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
@@ -3942,7 +4077,14 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
           '<button type="button" onclick="goTab(\'nutrition\')"><span>🍽</span>Еда · ' + cal + '</button>' +
           '<button type="button" onclick="goTab(\'walk\')"><span>🚶</span>Ходьба</button>' +
         '</div>' +
+        '<div class="fit-check">' +
+          '<label><input type="checkbox" disabled ' + (curW>=goal?'checked':'') + '> Вода к цели</label>' +
+          '<label><input type="checkbox" disabled ' + (st.meals>0?'checked':'') + '> Еда записана</label>' +
+          '<label><input type="checkbox" disabled ' + (st.walk?'checked':'') + '> Прогулка</label>' +
+          '<label><input type="checkbox" disabled ' + ((st.rems===0||st.remDone)?'checked':'') + '> Дела закрыты</label>' +
+        '</div>' +
         '<div class="fit-next"><b>Дальше</b>' + nextTxt + '</div>' +
+        '<div class="week-report">' + weekReportText() + '</div>' +
         '<div class="fit-plan-card">' +
           '<div class="fit-plan-meta"><span>День</span><span>' + st.score + '%' + (marked ? ' · ✓' : '') + '</span></div>' +
           '<div class="fit-plan-bar"><i style="width:' + st.score + '%"></i></div>' +
@@ -4225,7 +4367,19 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     {k:['морков'],n:'Морковь',c:41,p:0.9,f:0.2,u:10},
     {k:['шоколад'],n:'Шоколад тёмный',c:546,p:5,f:31,u:61},
     {k:['кофе'],n:'Кофе чёрный',c:2,p:0.1,f:0,u:0},
-    {k:['чай '],n:'Чай без сахара',c:1,p:0,f:0,u:0}
+    {k:['чай '],n:'Чай без сахара',c:1,p:0,f:0,u:0},
+    {k:['творог 0','обезжирен'],n:'Творог 0%',c:71,p:16,f:0.3,u:1.8},
+    {k:['йогурт'],n:'Йогурт натуральный',c:60,p:5,f:1.5,u:3.5},
+    {k:['куриная груд','грудка'],n:'Куриная грудка',c:165,p:31,f:3.6,u:0},
+    {k:['говядин'],n:'Говядина тушёная',c:232,p:25,f:14,u:0},
+    {k:['рис бурый','бурый рис'],n:'Рис бурый варёный',c:111,p:2.6,f:0.9,u:23},
+    {k:['киноа'],n:'Киноа варёная',c:120,p:4.4,f:1.9,u:21},
+    {k:['орех грец','грецк'],n:'Грецкий орех',c:654,p:15,f:65,u:14},
+    {k:['миндал'],n:'Миндаль',c:579,p:21,f:50,u:22},
+    {k:['апельсин'],n:'Апельсин',c:47,p:0.9,f:0.1,u:12},
+    {k:['груш'],n:'Груша',c:57,p:0.4,f:0.1,u:15},
+    {k:['broccoli','брокколи'],n:'Брокколи',c:34,p:2.8,f:0.4,u:7},
+    {k:['сыр творож'],n:'Сыр творожный',c:140,p:8,f:10,u:3},
   ];
   function novaFindFood(q){
     q=(q||'').toLowerCase().replace(/ё/g,'е');
@@ -4269,6 +4423,18 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
       return 'Не нашла продукт в локальной базе. Открой «Рацион» и найди его через Open Food Facts или добавь в «Мои блюда» — тогда я смогу отвечать и офлайн.';
     }
     if(kind==='status'||/статус|как дела|сегодня у меня|сводка|прогресс/.test(query)) return novaStatusText();
+    if(kind==='evening'||/собери вечер|вечерний|подведи итог|итог дня/.test(query)){
+      const st = typeof planDayStats==='function' ? planDayStats() : null;
+      const wr = typeof weekReportText==='function' ? weekReportText() : '';
+      const left = novaPending().filter(r=>!r.done).slice(0,5);
+      let t = 'Вечерняя сводка:\n';
+      if(st) t += '· День: ' + st.score + '%' + (st.complete?' (план выполнен)':'') + '\n· Еда: ' + st.meals + ' · вода: ' + (st.waterOk?'норма':'ещё нет') + ' · прогулка: ' + (st.walk?'да':'нет') + '\n';
+      if(wr) t += '· ' + wr + '\n';
+      if(left.length) t += 'Осталось:\n' + left.map(r=>'• '+r.text).join('\n');
+      else t += 'Активных напоминаний нет — можно спокойно завершать день.';
+      t += '\nНа завтра: одно главное дело в «Планы» и вода с утра.';
+      return t;
+    }
     if(kind==='week'||/недел|на неделю|недельный/.test(query)){
       const days=buildNovaWeekPlan();
       renderNovaWeekPlan();
@@ -4284,7 +4450,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     if(kind==='remind'||/создай напомин|добавь напомин/.test(query)){goTab('reminders');return 'Открыла раздел напоминаний. Введи текст, дату и время — затем сохрани.';}
     return 'Я могу: план на сегодня/неделю, задачи, свободное время, калории в еде (гречка, курица, яйца…), сводку дня или создать напоминание. Для точного плана заполни профиль Новы.';
   }
-  function novaAction(kind){const labels={plan:'План на сегодня',week:'План на неделю',tasks:'Мои задачи',free:'Свободное время',tip:'Совет',remind:'Создать напоминание',status:'Сводка дня'};novaSay(labels[kind]||kind,'user');novaSay(novaReply(kind));if(kind==='plan')renderNovaPlan();if(kind==='week')renderNovaWeekPlan();}
+  function novaAction(kind){const labels={plan:'План на сегодня',week:'План на неделю',tasks:'Мои задачи',free:'Свободное время',tip:'Совет',remind:'Создать напоминание',status:'Сводка дня',evening:'Собери вечер'};novaSay(labels[kind]||kind,'user');novaSay(novaReply(kind));if(kind==='plan')renderNovaPlan();if(kind==='week')renderNovaWeekPlan();}
   const novaPage=$('page-nova'); if(novaPage){
     novaPage.addEventListener('click',e=>{const b=e.target.closest('[data-nova]');if(b)novaAction(b.dataset.nova);});
     const f=$('novaForm');if(f)f.addEventListener('submit',e=>{e.preventDefault();const input=$('novaInput'),q=(input.value||'').trim();if(!q)return;novaSay(q,'user');novaSay(novaReply('',q.toLowerCase()));input.value='';});
@@ -4294,6 +4460,84 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     const modeEl=$('novaMode'); if(modeEl) modeEl.addEventListener('change',()=>{ const n=novaProfileData(); n.mode=modeEl.value; renderNovaProfile(); });
   }
   renderNovaProfile();renderNovaPlan();
+
+
+  /* ===== Шаблоны напоминаний ===== */
+  function addReminderTemplate(kind){
+    const map = {
+      water: { text: 'Выпить воду', mins: 60 },
+      study: { text: 'Учёба / занятия', mins: 60 },
+      train: { text: 'Тренировка', mins: 120 },
+      med: { text: 'Лекарство / витамины', mins: 60 },
+      sleep: { text: 'Готовиться ко сну', mins: 180 }
+    };
+    const t = map[kind] || map.water;
+    const when = Date.now() + t.mins * 60000;
+    if (!Array.isArray(data.reminders)) data.reminders = [];
+    const id = 'r' + Date.now() + Math.floor(Math.random()*1000);
+    data.reminders.push({ id, text: t.text, when, done: false, repeat: 'none', fired: false });
+    save();
+    try { if (typeof renderReminders === 'function') renderReminders(); } catch {}
+    try { if (typeof syncRemindersToSW === 'function') syncRemindersToSW(); } catch {}
+    try { renderHome(); } catch {}
+    toast('⏰ ' + t.text + ' · через ~' + t.mins + ' мин');
+    goTab('reminders');
+  }
+  (function setupRemTemplates(){
+    const box = $('remTemplates'); if (!box) return;
+    box.addEventListener('click', e => {
+      const b = e.target.closest('[data-remtpl]'); if (!b) return;
+      addReminderTemplate(b.dataset.remtpl);
+    });
+  })();
+
+  /* ===== Что нового ===== */
+  const WHATS_NEW = {
+    '32': [
+      'Чек-лист дня в бета-сводке',
+      'Шаблоны напоминаний (вода, учёба, тренировка…)',
+      'Недельный отчёт на главной (бета)',
+      'Нова: команда «собери вечер»',
+      'Нижнее меню — liquid glass, как на iPhone',
+      'Больше продуктов в офлайн-базе калорий'
+    ],
+    '31': [
+      'Минималистичная бета-главная в стиле Fitness',
+      'Скрыты игры, магазин и лишние блоки с главной (бета)'
+    ],
+    '30': [
+      'Кольца прогресса и достижения за план недели/месяца'
+    ]
+  };
+  function showWhatsNewIfNeeded(){
+    try {
+      const seen = localStorage.getItem('luma-seen-build');
+      if (seen === BUILD) return;
+      const list = $('wnList'); const ver = $('wnVer'); const box = $('whatsNew');
+      if (!list || !box) { localStorage.setItem('luma-seen-build', BUILD); return; }
+      const items = WHATS_NEW[BUILD] || ['Обновление Luma v' + BUILD];
+      list.innerHTML = items.map(x => '<li>' + x + '</li>').join('');
+      if (ver) ver.textContent = 'Luma v' + BUILD;
+      box.hidden = false;
+      const close = () => { box.hidden = true; localStorage.setItem('luma-seen-build', BUILD); };
+      $('wnClose')?.addEventListener('click', close, { once: true });
+      box.addEventListener('click', e => { if (e.target === box) close(); }, { once: true });
+    } catch {}
+  }
+
+  function weekReportText(){
+    const week = countPlanDays(7);
+    const month = countPlanDays(30);
+    let waterDays = 0;
+    // approximate from planLog + waterDays cnt
+    waterDays = data.cnt?.waterDays || 0;
+    const walks = (data.walks || []).filter(w => {
+      const t = new Date(w.date + 'T12:00:00').getTime();
+      return t >= Date.now() - 7*86400000;
+    }).length;
+    const ach = ACHIEVEMENTS.filter(a => data.ach && data.ach[a.id]).length;
+    return 'Неделя: план ' + week + '/7 дней · прогулок ' + walks + ' · достижений ' + ach + '/' + ACHIEVEMENTS.length + ' · вода (всего дней с нормой): ' + waterDays + ' · месяц плана ' + month + '/20';
+  }
 
   /* ===== Спорт-чат (не планирование) ===== */
   const SPORT_KEY = 'luma-sport-chat';
@@ -5962,6 +6206,8 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
   window.addEventListener('error', e => { try { console.error(e.error || e.message); const t = Date.now(); if (!window._errT || t - window._errT > 30000) { window._errT = t; toast('Что-то пошло не так. Данные сохранены, обнови страницу'); } } catch {} });
   window.addEventListener('unhandledrejection', e => { try { console.error(e.reason); } catch {} });
   maybeOnboard();
+  try { showWhatsNewIfNeeded(); } catch (e) {}
+
 
   /* UI beta buttons + initial ui */
   try {
