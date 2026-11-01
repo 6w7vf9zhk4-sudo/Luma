@@ -1,5 +1,5 @@
 /* Luma service worker v28 — offline-first for iOS Safari */
-const CACHE = 'luma-v30';
+const CACHE = 'luma-v31';
 const ASSETS = [
   './',
   './index.html',
