@@ -8,8 +8,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="28"><title>Luma — время для себя</title>
-  <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);}catch(e){}</script>
+  <meta name="luma-build" content="29"><title>Luma — время для себя</title>
+  <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);if(_d.ui==='beta')document.documentElement.setAttribute('data-ui','beta');}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" href="icon-192.png">
@@ -965,6 +965,147 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
 .off-save:active { background: var(--surface); }
 .footer { opacity: .6; }
 
+
+/* ===== Beta UI (inspired by health-style summary apps, not a copy) ===== */
+html[data-ui="beta"] {
+  --beta-card: rgba(255,255,255,.06);
+  --beta-line: rgba(255,255,255,.1);
+  --beta-radius: 18px;
+}
+html[data-ui="beta"][data-mode="light"] {
+  --beta-card: #ffffff;
+  --beta-line: rgba(0,0,0,.08);
+}
+html[data-ui="beta"] body {
+  background: #0b0f14 !important;
+  background-image: none !important;
+}
+html[data-ui="beta"][data-mode="light"] body {
+  background: #f2f2f7 !important;
+  color: #1c1c1e;
+}
+html[data-ui="beta"] body::before { display: none !important; }
+html[data-ui="beta"] .glass {
+  background: var(--beta-card) !important;
+  border: 1px solid var(--beta-line) !important;
+  border-radius: var(--beta-radius) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html[data-ui="beta"] .hero h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+html[data-ui="beta"] .hero h1 span {
+  background: none !important;
+  -webkit-text-fill-color: inherit;
+  color: #32d74b;
+}
+html[data-ui="beta"][data-mode="light"] .hero h1 span { color: #34c759; }
+html[data-ui="beta"] .eyebrow { letter-spacing: 1.2px; opacity: .55; font-size: 11px; }
+html[data-ui="beta"] .bottom-nav {
+  background: rgba(11,15,20,.92) !important;
+  border-top: 1px solid var(--beta-line) !important;
+}
+html[data-ui="beta"][data-mode="light"] .bottom-nav {
+  background: rgba(242,242,247,.94) !important;
+}
+html[data-ui="beta"] .nav-btn.active::after { background: #32d74b; }
+html[data-ui="beta"] .btn {
+  border-radius: 14px;
+  font-weight: 600;
+}
+html[data-ui="beta"] .btn:not(.secondary):not(.danger) {
+  background: #32d74b;
+  color: #06210c;
+}
+html[data-ui="beta"] .stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+html[data-ui="beta"] .stat-card {
+  text-align: left;
+  padding: 14px 12px;
+  border-radius: 16px;
+}
+html[data-ui="beta"] .stat-card span {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  opacity: .65;
+  margin-bottom: 6px;
+}
+html[data-ui="beta"] .stat-card b {
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+html[data-ui="beta"] .beta-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 12px 0 16px;
+}
+html[data-ui="beta"] .beta-ring-card {
+  padding: 16px;
+  border-radius: 18px;
+  background: var(--beta-card);
+  border: 1px solid var(--beta-line);
+}
+html[data-ui="beta"] .beta-ring-card small {
+  display: block;
+  font-size: 12px;
+  opacity: .6;
+  margin-bottom: 4px;
+}
+html[data-ui="beta"] .beta-ring-card b {
+  font-size: 26px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+html[data-ui="beta"] .beta-cat-list { display: grid; gap: 8px; margin: 12px 0; }
+html[data-ui="beta"] .beta-cat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px;
+  border-radius: 16px;
+  background: var(--beta-card);
+  border: 1px solid var(--beta-line);
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  width: 100%;
+}
+html[data-ui="beta"] .beta-cat .ic {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+html[data-ui="beta"] .beta-cat .meta { flex: 1; min-width: 0; }
+html[data-ui="beta"] .beta-cat .meta b { display: block; font-size: 15px; font-weight: 600; }
+html[data-ui="beta"] .beta-cat .meta small { display: block; font-size: 12px; opacity: .55; margin-top: 2px; }
+html[data-ui="beta"] .beta-cat .chev { opacity: .35; font-size: 18px; }
+html[data-ui="beta"] .ach-grid { display: grid; gap: 8px; }
+html[data-ui="beta"] .ach-card, .ach-card {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 12px 14px; border-radius: 16px;
+  border: 1px solid var(--line, rgba(255,255,255,.12));
+  background: rgba(255,255,255,.04);
+}
+.ach-card.locked { opacity: .48; }
+.ach-card .ach-ic { font-size: 26px; line-height: 1; width: 36px; text-align: center; }
+.ach-card .ach-body b { display: block; font-size: 14px; margin-bottom: 2px; }
+.ach-card .ach-body small { display: block; font-size: 12px; color: var(--muted); line-height: 1.35; }
+.ach-card .ach-ok { margin-left: auto; color: #32d74b; font-weight: 700; font-size: 13px; }
+html[data-ui="beta"] .pill { border-radius: 999px; font-weight: 600; }
+html[data-ui="beta"] .section-head h2 { font-weight: 700; letter-spacing: -.2px; }
+
 /* Luma v23: illustrated companions and Nova assistant */
 .pet-art{display:block;width:100%;height:100%;max-width:118px;max-height:118px;overflow:visible;filter:drop-shadow(0 8px 9px #0002)}
 .pet-avatar .pet-art{width:118px;height:118px;max-width:none;max-height:none}
@@ -1105,7 +1246,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v28 · планировщик Новы</span>
+      <span class="pill" id="topPill">v29 · планировщик Новы</span>
     </header>
 
     <!-- HOME -->
@@ -1134,6 +1275,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         <div id="homePet"></div>
       </div>
 
+      <div id="betaHomeExtras" hidden></div>
       <div class="stats-row">
         <div class="stat-card glass"><span>ккал сегодня</span><b id="homeCal">0</b></div>
         <div class="stat-card glass"><span>вода, мл</span><b id="homeWater">0</b></div>
@@ -1568,6 +1710,18 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
       </div>
     </section>
 
+    <section class="page" id="page-achievements">
+      <div class="hero">
+        <div class="eyebrow">PROGRESS</div>
+        <h1>Достижения<br><span>твой прогресс</span></h1>
+        <p class="muted">Открываются автоматически за привычки и активность в Luma.</p>
+      </div>
+      <div class="glass section">
+        <div class="section-head"><h2>Открыто</h2><span class="tag" id="achCount">0</span></div>
+        <div class="ach-grid" id="achList"></div>
+      </div>
+    </section>
+
     <section class="page" id="page-settings">
       <div class="hero center">
         <div class="eyebrow">SETTINGS</div>
@@ -1653,6 +1807,23 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
       </div>
 
       <div class="glass section">
+        <div class="section-head"><h2>Бета-дизайн</h2><span class="tag">UI</span></div>
+        <p class="notice" style="margin-top:0">Более спокойный вид в духе приложений здоровья: крупные цифры, простые карточки. Не копия другого приложения.</p>
+        <div class="form-actions">
+          <button class="btn" type="button" id="uiBetaOn">Включить бета-UI</button>
+          <button class="btn secondary" type="button" id="uiBetaOff">Классика</button>
+        </div>
+        <p class="notice" id="uiBetaStatus">Сейчас: классический дизайн</p>
+      </div>
+
+      <div class="glass section">
+        <div class="section-head"><h2>Достижения</h2><span class="tag">Прогресс</span></div>
+        <div class="form-actions">
+          <button class="btn secondary" type="button" onclick="goTab('achievements')">🏅 Смотреть достижения</button>
+        </div>
+      </div>
+
+      <div class="glass section">
         <div class="section-head"><h2>Чаты</h2><span class="tag">Помощь</span></div>
         <div class="form-actions" style="flex-direction:column;align-items:stretch;gap:8px">
           <button class="btn" type="button" onclick="goTab('support')">🛟 Поддержка</button>
@@ -1669,7 +1840,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v28 · планировщик Новы</p>
+      <p class="footer" id="appFooter">Luma · v29 · планировщик Новы</p>
     </section>
   </main>
 
@@ -1801,6 +1972,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         if (name === 'games' && typeof exitGame === 'function') exitGame();
         if (name === 'settings' && typeof updateNotifUI === 'function') updateNotifUI();
         if (name === 'nova') { renderNovaProfile(); renderNovaPlan(); }
+        if (name === 'achievements') { try { renderAchievements(); } catch (e) {} }
       } catch (e) { console.error(e); }
     } catch (e) { console.error('goTab', e); }
   };
@@ -1824,7 +1996,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '28';
+  const BUILD = '29';
   /* ----- Роли и пароли: хранятся только хеши (SHA-256, соль, 4000 итераций) ----- */
   function sha256(str) {
     const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
@@ -1943,7 +2115,9 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     mode: 'dark',
     auth: { a: null, c: null },
     hist: {},
-    lastExport: 0
+    lastExport: 0,
+    ui: 'classic',
+    ach: {}
   });
 
   let data = load();
@@ -1986,6 +2160,8 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     }
     ['goals', 'water'].forEach(k => { if (!d[k] || typeof d[k] !== 'object') d[k] = base[k]; });
     ['meals', 'reminders', 'customFoods', 'walks'].forEach(k => { if (!Array.isArray(d[k])) d[k] = []; });
+    if (d.ui !== 'beta') d.ui = 'classic';
+    if (!d.ach || typeof d.ach !== 'object') d.ach = {};
     cleanData(d);
     enforceRoles(d);
     return d;
@@ -2172,6 +2348,8 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     $('waterTag').textContent = `${data.water.current} / ${data.water.goal}`;
 
     try { renderWeek(); } catch (e) { console.error(e); }
+    try { renderBetaHomeExtras(); } catch (e) {}
+    try { if ($('page-achievements')?.classList.contains('active')) renderAchievements(); } catch (e) {}
     const list = $('homeRemList');
     const upcoming = data.reminders
       .filter(r => !r.done)
@@ -3485,9 +3663,90 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
       if (shown.length) setTimeout(() => toast('🏅 Новое звание: ' + shown.map(t => t.icon + ' ' + t.name).join(', ')), 1500);
       const pg = $('page-shop'); if (pg && pg.classList.contains('active')) renderShop();
     }
+      try { checkAchievements(); } catch {}
   }
 
   /* ----- кошелёк на главной, аватар ----- */
+
+  /* ===== Достижения ===== */
+  const ACHIEVEMENTS = [
+    { id: 'first_open', ic: '👋', name: 'Первый шаг', desc: 'Открыть Luma', test: () => true },
+    { id: 'water1', ic: '💧', name: 'Глоток', desc: 'Добавить воду', test: () => (data.cnt.waterDays || 0) >= 1 || (data.water && data.water.current > 0) },
+    { id: 'water7', ic: '🌊', name: 'Неделя воды', desc: '7 дней с водой', test: () => (data.cnt.waterDays || 0) >= 7 },
+    { id: 'meal1', ic: '🍽', name: 'Записал еду', desc: 'Добавить приём пищи', test: () => (data.cnt.meals || 0) >= 1 || (data.meals || []).length >= 1 },
+    { id: 'meal20', ic: '🥗', name: 'Дневник еды', desc: '20 записей о еде', test: () => (data.cnt.meals || (data.meals || []).length) >= 20 },
+    { id: 'rem1', ic: '⏰', name: 'Напоминалка', desc: 'Создать напоминание', test: () => (data.reminders || []).length >= 1 },
+    { id: 'rem_done5', ic: '✅', name: 'Сделал дела', desc: 'Закрыть 5 напоминаний', test: () => (data.cnt.remDone || 0) >= 5 },
+    { id: 'walk1', ic: '🚶', name: 'Прогулка', desc: 'Завершить прогулку', test: () => (data.walks || []).length >= 1 },
+    { id: 'walk5', ic: '🛤', name: 'Маршруты', desc: '5 прогулок', test: () => (data.walks || []).length >= 5 },
+    { id: 'streak3', ic: '🔥', name: '3 дня подряд', desc: 'Серия входов 3 дня', test: () => (data.streak && data.streak.best) >= 3 },
+    { id: 'streak7', ic: '⚡', name: 'Неделя с Luma', desc: 'Серия 7 дней', test: () => (data.streak && data.streak.best) >= 7 },
+    { id: 'pet_feed', ic: '🐾', name: 'Забота', desc: 'Покормить питомца', test: () => (data.cnt.petFeed || 0) >= 1 },
+    { id: 'game1', ic: '🎮', name: 'Разминка ума', desc: 'Сыграть 1 партию', test: () => (data.cnt.total || 0) >= 1 },
+    { id: 'coins50', ic: '✨', name: 'Искорки', desc: 'Заработать 50 ✧', test: () => (data.coins && data.coins.earned) >= 50 },
+    { id: 'nova_setup', ic: '✦', name: 'Знакомство с Новой', desc: 'Заполнить профиль Новы', test: () => !!(data.profile && data.profile.nova && data.profile.nova.setup) },
+    { id: 'backup1', ic: '💾', name: 'Бэкап', desc: 'Сделать экспорт данных', test: () => (data.lastExport || 0) > 0 },
+    { id: 'beta_ui', ic: '🧪', name: 'Испытатель', desc: 'Включить бета-дизайн', test: () => data.ui === 'beta' },
+  ];
+  function checkAchievements() {
+    if (!data.ach || typeof data.ach !== 'object') data.ach = {};
+    const fresh = [];
+    ACHIEVEMENTS.forEach(a => {
+      if (data.ach[a.id]) return;
+      try {
+        if (a.test()) {
+          data.ach[a.id] = Date.now();
+          fresh.push(a);
+        }
+      } catch {}
+    });
+    if (fresh.length) {
+      save();
+      const names = fresh.map(a => a.ic + ' ' + a.name).join(', ');
+      setTimeout(() => toast('🏅 Достижение: ' + names), 900);
+      if ($('page-achievements')?.classList.contains('active')) renderAchievements();
+    }
+  }
+  function renderAchievements() {
+    const list = $('achList'); const cnt = $('achCount'); if (!list) return;
+    const got = ACHIEVEMENTS.filter(a => data.ach && data.ach[a.id]);
+    if (cnt) cnt.textContent = got.length + ' / ' + ACHIEVEMENTS.length;
+    list.innerHTML = ACHIEVEMENTS.map(a => {
+      const on = !!(data.ach && data.ach[a.id]);
+      return '<div class="ach-card' + (on ? '' : ' locked') + '"><div class="ach-ic">' + a.ic + '</div><div class="ach-body"><b>' + a.name + '</b><small>' + a.desc + '</small></div>' + (on ? '<div class="ach-ok">✓</div>' : '') + '</div>';
+    }).join('');
+  }
+  function setUIMode(mode) {
+    data.ui = mode === 'beta' ? 'beta' : 'classic';
+    if (data.ui === 'beta') document.documentElement.setAttribute('data-ui', 'beta');
+    else document.documentElement.removeAttribute('data-ui');
+    save();
+    const st = $('uiBetaStatus');
+    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: бета-дизайн' : 'Сейчас: классический дизайн';
+    checkAchievements();
+    try { renderHome(); } catch {}
+    toast(data.ui === 'beta' ? 'Бета-UI включён' : 'Классический дизайн');
+  }
+  function renderBetaHomeExtras() {
+    const host = $('betaHomeExtras');
+    if (!host) return;
+    if (data.ui !== 'beta') { host.innerHTML = ''; host.hidden = true; return; }
+    host.hidden = false;
+    const cal = $('homeCal')?.textContent || '0';
+    const water = $('homeWater')?.textContent || '0';
+    const rem = $('homeRem')?.textContent || '0';
+    const achN = ACHIEVEMENTS.filter(a => data.ach && data.ach[a.id]).length;
+    host.innerHTML = '<div class="beta-summary">' +
+      '<div class="beta-ring-card"><small>Калории</small><b>' + cal + '</b></div>' +
+      '<div class="beta-ring-card"><small>Вода, мл</small><b>' + water + '</b></div>' +
+      '</div><div class="beta-cat-list">' +
+      '<button type="button" class="beta-cat" onclick="goTab(\'nutrition\')"><span class="ic" style="background:#ff375f33">🍽</span><span class="meta"><b>Рацион</b><small>Ккал и приёмы пищи</small></span><span class="chev">›</span></button>' +
+      '<button type="button" class="beta-cat" onclick="goTab(\'walk\')"><span class="ic" style="background:#32d74b33">🚶</span><span class="meta"><b>Ходьба</b><small>Прогулки и шаги</small></span><span class="chev">›</span></button>' +
+      '<button type="button" class="beta-cat" onclick="goTab(\'reminders\')"><span class="ic" style="background:#64d2ff33">⏰</span><span class="meta"><b>Планы</b><small>Напоминания · ' + rem + '</small></span><span class="chev">›</span></button>' +
+      '<button type="button" class="beta-cat" onclick="goTab(\'achievements\')"><span class="ic" style="background:#bf5af233">🏅</span><span class="meta"><b>Достижения</b><small>' + achN + ' из ' + ACHIEVEMENTS.length + '</small></span><span class="chev">›</span></button>' +
+      '</div>';
+  }
+
   function updateWallet() {
     const b = fmtN(data.coins.bal) + ' ✧';
     ['wBal', 'shopBal', 'adBal'].forEach(id => { const e = $(id); if (e) e.textContent = b; });
@@ -3583,7 +3842,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     const food=$('petFoodShop');if(food)food.innerHTML='<div class="pet-food-grid">'+PET_FOODS.map(f=>'<div class="pet-food-card"><span class="food-icon">'+f.icon+'</span><div class="food-copy"><b>'+f.name+'</b><small>'+f.desc+' · есть: '+(data.pets.food[f.id]||0)+'</small><small>'+f.price+' ✧</small><button class="btn small" style="margin-top:7px" data-petfood="buy" data-id="'+f.id+'">Купить</button></div></div>').join('')+'</div>';
     save();
   }
-  function petCare(action){petUpdateNeeds();const stage=$('petStage');if(action==='feed'){const p=PETS.find(x=>x.id===data.pets.active)||PETS[0];const foodId=p.food||'berry';if(!data.pets.food[foodId]){toast('Нет подходящей еды. Купи её в магазине еды.');return;}data.pets.food[foodId]--;data.pets.hunger=Math.min(100,data.pets.hunger+ (PET_FOODS.find(x=>x.id===foodId)?.gain||18));petAnim='eating';toast('Питомец поел '+(PET_FOODS.find(x=>x.id===foodId)?.name||'')+'!');}
+  function petCare(action){petUpdateNeeds();const stage=$('petStage');if(action==='feed'){const p=PETS.find(x=>x.id===data.pets.active)||PETS[0];const foodId=p.food||'berry';if(!data.pets.food[foodId]){toast('Нет подходящей еды. Купи её в магазине еды.');return;}data.pets.food[foodId]--;data.pets.hunger=Math.min(100,data.pets.hunger+ (PET_FOODS.find(x=>x.id===foodId)?.gain||18));data.cnt.petFeed=(data.cnt.petFeed||0)+1;petAnim='eating';toast('Питомец поел '+(PET_FOODS.find(x=>x.id===foodId)?.name||'')+'!');}
     else if(action==='sleep'){data.pets.mood='sleeping';data.pets.energy=Math.min(100,data.pets.energy+12);petAnim='sleeping';toast('Питомец отдыхает.');}
     else if(action==='wake'){data.pets.mood='awake';data.pets.energy=Math.min(100,data.pets.energy+4);petAnim='waking';toast('Питомец проснулся!');}
     else if(action==='play'){if(data.pets.mood==='sleeping'){toast('Сначала разбуди питомца.');return;}if(data.pets.energy<10){toast('Питомец устал. Пусть отдохнёт.');return;}data.pets.energy=Math.max(0,data.pets.energy-12);data.pets.hunger=Math.max(0,data.pets.hunger-5);petAnim='playing';toast('Вы отлично поиграли!');}
@@ -5487,6 +5746,19 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   window.addEventListener('error', e => { try { console.error(e.error || e.message); const t = Date.now(); if (!window._errT || t - window._errT > 30000) { window._errT = t; toast('Что-то пошло не так. Данные сохранены, обнови страницу'); } } catch {} });
   window.addEventListener('unhandledrejection', e => { try { console.error(e.reason); } catch {} });
   maybeOnboard();
+
+  /* UI beta buttons + initial ui */
+  try {
+    if (data.ui === 'beta') document.documentElement.setAttribute('data-ui', 'beta');
+    else document.documentElement.removeAttribute('data-ui');
+    const st = $('uiBetaStatus');
+    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: бета-дизайн' : 'Сейчас: классический дизайн';
+    $('uiBetaOn')?.addEventListener('click', () => setUIMode('beta'));
+    $('uiBetaOff')?.addEventListener('click', () => setUIMode('classic'));
+    checkAchievements();
+    renderAchievements();
+  } catch (e) { console.error(e); }
+
 
   /* Offline banner (iOS black-screen prevention feedback) */
   (function offlineBanner(){
