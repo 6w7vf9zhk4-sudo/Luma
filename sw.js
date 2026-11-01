@@ -1,6 +1,14 @@
-/* Luma service worker v24 */
-const CACHE = 'luma-v27';
-const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
+/* Luma service worker v28 — offline-first for iOS Safari */
+const CACHE = 'luma-v28';
+const ASSETS = [
+  './',
+  './index.html',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
+  './apple-touch-icon.png',
+  './sw.js'
+];
 const ICON = './icon-192.png';
 
 function openDB() {
@@ -50,7 +58,6 @@ async function showNotif(title, body, tag) {
   });
 }
 
-/* Schedule at exact time if browser supports Notification Triggers */
 async function scheduleAt(title, body, tag, when) {
   const opts = {
     body: body || '',
@@ -61,7 +68,6 @@ async function scheduleAt(title, body, tag, when) {
     silent: false,
     vibrate: [200, 100, 200]
   };
-  // Experimental: Notification Triggers (Chrome)
   try {
     if (typeof TimestampTrigger !== 'undefined') {
       opts.showTrigger = new TimestampTrigger(when);
@@ -69,7 +75,6 @@ async function scheduleAt(title, body, tag, when) {
       return 'trigger';
     }
   } catch (e) {}
-  // Fallback: setTimeout inside SW (works while SW is alive, short delays after background)
   const delay = Math.max(0, when - Date.now());
   if (delay > 2147480000) return 'too-far';
   setTimeout(() => {
@@ -85,17 +90,19 @@ async function scheduleAt(title, body, tag, when) {
   return 'timeout';
 }
 
-async function syncAndSchedule(list) {
-  // Only store the list. Notifications are scheduled once via SCHEDULE_ONE and
-  // due ones are handled by checkStoredReminders (prevents duplicate spam / crashes).
-  await idbSet('reminders', list || []);
+async function syncAndSchedule(reminders) {
+  try {
+    await idbSet('reminders', Array.isArray(reminders) ? reminders : []);
+    await checkStoredReminders(true);
+  } catch {}
 }
 
-let lastCheck = 0;
 let checkingNow = false;
+let lastCheck = 0;
 async function checkStoredReminders(force) {
   const t = Date.now();
-  if (checkingNow || (!force && t - lastCheck < 5000)) return;
+  if (checkingNow) return;
+  if (!force && t - lastCheck < 8000) return;
   checkingNow = true;
   lastCheck = t;
   try {
@@ -115,10 +122,75 @@ async function checkStoredReminders(force) {
   checkingNow = false;
 }
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE).then((c) => Promise.allSettled(ASSETS.map((a) => c.add(a)))).then(() => self.skipWaiting())
+/** Precache shell under several URL keys (iOS navigates to /, /index.html, full URL) */
+async function precacheShell() {
+  const cache = await caches.open(CACHE);
+  const results = await Promise.allSettled(
+    ASSETS.map(async (a) => {
+      try {
+        const res = await fetch(a, { cache: 'reload' });
+        if (res && res.ok) await cache.put(a, res.clone());
+      } catch {}
+    })
   );
+  // Mirror index under common navigation keys
+  try {
+    const idx = await cache.match('./index.html') || await cache.match('index.html');
+    if (idx) {
+      const base = self.registration.scope;
+      await cache.put(base, idx.clone());
+      await cache.put(base + 'index.html', idx.clone());
+      await cache.put('./', idx.clone());
+      await cache.put('./index.html', idx.clone());
+    }
+  } catch {}
+  return results;
+}
+
+async function matchShell(req) {
+  const cache = await caches.open(CACHE);
+  const url = new URL(req.url);
+  const candidates = [
+    req,
+    './index.html',
+    'index.html',
+    './',
+    url.pathname,
+    url.pathname.replace(/\/$/, '') + '/index.html',
+    self.registration.scope,
+    self.registration.scope + 'index.html'
+  ];
+  for (const c of candidates) {
+    try {
+      const hit = await cache.match(c, { ignoreSearch: true });
+      if (hit) return hit;
+    } catch {}
+  }
+  // last resort: any cached HTML
+  try {
+    const keys = await cache.keys();
+    for (const k of keys) {
+      if (k.url.includes('index.html') || k.url.endsWith('/')) {
+        const hit = await cache.match(k);
+        if (hit) return hit;
+      }
+    }
+  } catch {}
+  return null;
+}
+
+function offlinePage() {
+  const html = `<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#170d32"><title>Luma</title>
+<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:-apple-system,system-ui,sans-serif;background:#100820;color:#fbf8ff;padding:24px;text-align:center}
+.card{max-width:340px;padding:28px 22px;border-radius:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15)}
+h1{font-size:22px;margin:0 0 10px}p{margin:0 0 12px;line-height:1.5;color:#c2b6dc;font-size:14px}
+button{margin-top:8px;padding:12px 18px;border:0;border-radius:12px;background:#a78bfa;color:#1a1028;font-weight:700;font-size:15px}</style></head>
+<body><div class="card"><h1>Luma офлайн</h1><p>Страница ещё не сохранилась в кэш на этом устройстве. Открой Luma <b>один раз с интернетом</b>, затем добавь на экран «Домой».</p><p>Если уже открывала онлайн — обнови страницу, когда появится сеть.</p><button onclick="location.reload()">Обновить</button></div></body></html>`;
+  return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
+}
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(precacheShell().then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (event) => {
@@ -126,6 +198,8 @@ self.addEventListener('activate', (event) => {
     const keys = await caches.keys();
     await Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)));
     await self.clients.claim();
+    // refresh shell once activated (when online)
+    try { await precacheShell(); } catch {}
     await checkStoredReminders();
   })());
 });
@@ -134,23 +208,54 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.origin !== self.location.origin) return; // внешние API (Open Food Facts) идут напрямую
-  const isDoc = req.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/');
-  const isCode = url.pathname.endsWith('.js') || url.pathname.endsWith('.css');
-  if (isDoc || isCode) {
-    event.respondWith(
-      fetch(req).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
-        return res;
-      }).catch(() => caches.match(req).then((c) => c || caches.match('./index.html') || Response.error()))
-    );
+  if (url.origin !== self.location.origin) return;
+
+  const isNav = req.mode === 'navigate' || (req.headers.get('accept') || '').includes('text/html');
+  const isShell = isNav || url.pathname.endsWith('.html') || url.pathname.endsWith('/') || /\/sw\.js$/.test(url.pathname);
+
+  if (isShell) {
+    event.respondWith((async () => {
+      // Prefer network when available, always update cache
+      try {
+        const net = await fetch(req);
+        if (net && net.ok) {
+          try {
+            const cache = await caches.open(CACHE);
+            await cache.put(req, net.clone());
+            if (isNav) {
+              await cache.put('./index.html', net.clone());
+              await cache.put('./', net.clone());
+            }
+          } catch {}
+          return net;
+        }
+      } catch {}
+      // Offline / failed network
+      const cached = await matchShell(req);
+      if (cached) return cached;
+      return offlinePage();
+    })());
     event.waitUntil(checkStoredReminders());
     return;
   }
-  event.respondWith(
-    caches.match(req).then((c) => c || fetch(req).catch(() => caches.match('./index.html')))
-  );
+
+  // icons and static: cache-first
+  event.respondWith((async () => {
+    const cached = await caches.match(req, { ignoreSearch: true });
+    if (cached) return cached;
+    try {
+      const net = await fetch(req);
+      if (net && net.ok) {
+        try {
+          const cache = await caches.open(CACHE);
+          await cache.put(req, net.clone());
+        } catch {}
+      }
+      return net;
+    } catch {
+      return (await matchShell(req)) || offlinePage();
+    }
+  })());
 });
 
 self.addEventListener('message', (event) => {
@@ -168,6 +273,7 @@ self.addEventListener('message', (event) => {
     event.waitUntil(checkStoredReminders(true));
   }
   if (data.type === 'SKIP_WAITING') self.skipWaiting();
+  if (data.type === 'PRECACHE') event.waitUntil(precacheShell());
 });
 
 self.addEventListener('notificationclick', (event) => {

@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="27"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="28"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1105,7 +1105,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v27 · планировщик Новы</span>
+      <span class="pill" id="topPill">v28 · планировщик Новы</span>
     </header>
 
     <!-- HOME -->
@@ -1669,7 +1669,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v27 · планировщик Новы</p>
+      <p class="footer" id="appFooter">Luma · v28 · планировщик Новы</p>
     </section>
   </main>
 
@@ -1824,7 +1824,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '27';
+  const BUILD = '28';
   /* ----- Роли и пароли: хранятся только хеши (SHA-256, соль, 4000 итераций) ----- */
   function sha256(str) {
     const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
@@ -2757,18 +2757,23 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   async function setupBackgroundSync() {
     try {
       if (!('serviceWorker' in navigator)) return;
-      const reg = await navigator.serviceWorker.register('./sw.js?v=' + BUILD);
+      const reg = await navigator.serviceWorker.register('./sw.js?v=' + BUILD, { scope: './', updateViaCache: 'none' });
       if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
       reg.addEventListener('updatefound', () => {
         const w = reg.installing;
         if (!w) return;
         w.addEventListener('statechange', () => {
           if (w.state === 'installed' && navigator.serviceWorker.controller) {
-            // new version ready
+            // new version ready — activate on next load
           }
         });
       });
       await navigator.serviceWorker.ready;
+      try {
+        const ctrl = navigator.serviceWorker.controller;
+        if (ctrl) ctrl.postMessage({ type: 'PRECACHE' });
+        else if (reg.active) reg.active.postMessage({ type: 'PRECACHE' });
+      } catch {}
       // Periodic Background Sync (Chrome Android, installed PWA)
       if (reg.periodicSync && 'periodicsync' in self) {
         try {
@@ -5482,6 +5487,25 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   window.addEventListener('error', e => { try { console.error(e.error || e.message); const t = Date.now(); if (!window._errT || t - window._errT > 30000) { window._errT = t; toast('Что-то пошло не так. Данные сохранены, обнови страницу'); } } catch {} });
   window.addEventListener('unhandledrejection', e => { try { console.error(e.reason); } catch {} });
   maybeOnboard();
+
+  /* Offline banner (iOS black-screen prevention feedback) */
+  (function offlineBanner(){
+    function show(on){
+      let el = document.getElementById('offlineBanner');
+      if (!on) { if (el) el.remove(); return; }
+      if (el) return;
+      el = document.createElement('div');
+      el.id = 'offlineBanner';
+      el.setAttribute('role','status');
+      el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top));background:#3b0764;color:#f5e9ff;font-size:13px;text-align:center;border-bottom:1px solid rgba(255,255,255,.12)';
+      el.textContent = 'Офлайн-режим · данные на этом устройстве';
+      document.body.appendChild(el);
+    }
+    window.addEventListener('offline', () => show(true));
+    window.addEventListener('online', () => { show(false); try { navigator.serviceWorker?.controller?.postMessage({ type: 'PRECACHE' }); } catch {} });
+    if (navigator.onLine === false) show(true);
+  })();
+
   setupBackgroundSync();
   function onLeaveBackground() {
     syncRemindersToSW();
