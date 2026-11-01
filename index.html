@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="26"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="27"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1105,7 +1105,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v26 · планировщик Новы</span>
+      <span class="pill" id="topPill">v27 · планировщик Новы</span>
     </header>
 
     <!-- HOME -->
@@ -1114,7 +1114,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         <div class="eyebrow">YOUR GENTLE SPACE</div>
         <h1>Меньше забывай.<br><span>Больше успевай.</span></h1>
         <p class="muted" id="greeting">Добро пожаловать</p>
-        <div class="form-actions" style="margin-top:12px;flex-wrap:wrap;gap:8px"><button class="btn" type="button" onclick="openNova()">✦ Спросить Нову</button><button class="btn secondary" type="button" onclick="goTab('chat')">🏃 Спорт-чат</button><button class="btn secondary" type="button" onclick="goTab('support')">🛟 Поддержка</button></div>
+        <div class="form-actions" style="margin-top:12px"><button class="btn" type="button" onclick="openNova()">✦ Спросить Нову</button><span class="tag">Помощник</span></div>
       </div>
 
       <div class="glass section wallet" id="walletCard">
@@ -1458,6 +1458,9 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
       <div class="glass section nova-card">
         <div class="nova-head"><div class="nova-orb" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M14 27 Q8 9 22 17 L28 22 Q36 12 46 17 Q57 20 51 31 L49 43 Q44 55 31 54 Q17 54 14 42Z" fill="#e9ddff" stroke="#7550d8" stroke-width="3"/><path d="M16 25 L7 15 Q5 30 17 34 M48 24 L58 14 Q60 29 48 34" fill="#c4b5fd" stroke="#7550d8" stroke-width="3"/><rect x="17" y="26" width="30" height="19" rx="9" fill="#21154f"/><path d="M23 34 Q27 28 31 34 M34 34 Q38 28 42 34" fill="none" stroke="#65e8ff" stroke-width="3" stroke-linecap="round"/><path d="M28 48 Q32 52 36 48" fill="none" stroke="#9b78ff" stroke-width="2" stroke-linecap="round"/><path d="M32 2 L35 10 L43 13 L35 16 L32 24 L29 16 L21 13 L29 10Z" fill="#ffe69a" stroke="#fff4c4" stroke-width="1"/></svg></div><div><b>Нова</b><small>Локальный помощник · без аккаунта и сервера</small></div><span class="tag">Готова</span></div>
         <div class="nova-welcome"><b>Привет! Я Нова.</b><br>Я могу посмотреть твои планы, помочь составить расписание и подготовить напоминание.</div>
+        <div class="form-actions" style="margin:12px 0 4px;gap:8px;flex-wrap:wrap">
+          <button class="btn secondary" type="button" onclick="goTab('chat')">💬 Чат про спорт</button>
+        </div>
         <div class="glass section" style="margin:14px 0;padding:15px;background:rgba(255,255,255,.035)">
           <div class="section-head"><h2>Твой профиль для планирования</h2><span class="tag" id="novaProfileStatus">Нужно заполнить</span></div>
           <p class="notice" style="margin-top:0">Укажи занятия и распорядок. Возраст, рост и масса берутся из уже заполненного профиля, но не используются для оценки тела или назначения веса.</p>
@@ -1526,6 +1529,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
           <input id="sportInput" maxlength="200" placeholder="Например: как разминаться перед бегом" autocomplete="off">
           <button class="btn" type="submit">Спросить</button>
         </form>
+        <button class="btn secondary small" type="button" id="sportClear" style="margin-top:8px">Очистить чат</button>
         <p class="notice">Это не медицинская консультация. При травмах и заболеваниях обращайся к врачу.</p>
       </div>
     </section>
@@ -1556,6 +1560,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
           <input id="supportInput" maxlength="200" placeholder="Опишите вопрос по приложению" autocomplete="off">
           <button class="btn" type="submit">Спросить</button>
         </form>
+        <button class="btn secondary small" type="button" id="supportClear" style="margin-top:8px">Очистить чат</button>
         <div class="form-actions" style="margin-top:12px">
           <a class="btn" id="supportMail" href="mailto:help.luma2020@gmail.com?subject=Luma%20поддержка&body=Опишите%20проблему%3A%0A%0AУстройство%3A%0AБраузер%3A%0A">✉ Написать автору</a>
         </div>
@@ -1650,11 +1655,10 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
       <div class="glass section">
         <div class="section-head"><h2>Чаты</h2><span class="tag">Помощь</span></div>
         <div class="form-actions" style="flex-direction:column;align-items:stretch;gap:8px">
-          <button class="btn" type="button" onclick="goTab('chat')">🏃 Чат про спорт</button>
-          <button class="btn secondary" type="button" onclick="goTab('support')">🛟 Поддержка</button>
-          <button class="btn secondary" type="button" onclick="goTab('nova')">✦ Нова (планы)</button>
+          <button class="btn" type="button" onclick="goTab('support')">🛟 Поддержка</button>
+          <button class="btn secondary" type="button" onclick="goTab('chat')">💬 Чат про спорт</button>
         </div>
-        <p class="notice" style="margin-top:10px">Спорт-чат — про тренировки и поиск в сети. Поддержка — про само приложение. Нова — планы и напоминания.</p>
+        <p class="notice" style="margin-top:10px">Поддержка — вопросы по приложению и связь с автором. Чат про спорт — тренировки и поиск в интернете. Планы — у Новы (кнопка «Спросить Нову» на главной).</p>
       </div>
 
       <div class="glass section">
@@ -1665,7 +1669,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v26 · планировщик Новы</p>
+      <p class="footer" id="appFooter">Luma · v27 · планировщик Новы</p>
     </section>
   </main>
 
@@ -1820,7 +1824,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '26';
+  const BUILD = '27';
   /* ----- Роли и пароли: хранятся только хеши (SHA-256, соль, 4000 итераций) ----- */
   function sha256(str) {
     const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
@@ -3629,6 +3633,12 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     if(status)status.textContent=n.setup?'Заполнен':'Нужно заполнить';
     const hint=$('novaProfileHint');
     if(hint)hint.textContent=n.setup?'Профиль сохранён на этом устройстве. Его можно изменить в любое время.':'Заполни хотя бы активность и распорядок, чтобы план был точнее.';
+    // подписи блока учёба/работа
+    const mode=n.mode||'study';
+    const labStart=$('novaSchoolStart')?.previousElementSibling || document.querySelector('label[for=novaSchoolStart]');
+    const labEnd=$('novaSchoolEnd')?.previousElementSibling || document.querySelector('label[for=novaSchoolEnd]');
+    if(labStart) labStart.textContent = mode==='work' ? 'Начало работы' : mode==='free' ? 'Начало основного блока' : 'Начало учёбы';
+    if(labEnd) labEnd.textContent = mode==='work' ? 'Окончание работы' : mode==='free' ? 'Конец основного блока' : 'Окончание учёбы';
   }
   function saveNovaProfile(){
     const n=novaProfileData();
@@ -3801,6 +3811,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     const saveBtn=$('novaProfileSave');if(saveBtn)saveBtn.addEventListener('click',saveNovaProfile);
     const planBtn=$('novaBuildPlan');if(planBtn)planBtn.addEventListener('click',()=>{renderNovaPlan();novaSay(novaPlanText());});
     const weekBtn=$('novaBuildWeek');if(weekBtn)weekBtn.addEventListener('click',()=>{renderNovaWeekPlan();novaSay(novaReply('week'));});
+    const modeEl=$('novaMode'); if(modeEl) modeEl.addEventListener('change',()=>{ const n=novaProfileData(); n.mode=modeEl.value; renderNovaProfile(); });
   }
   renderNovaProfile();renderNovaPlan();
 
@@ -3825,7 +3836,8 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     try {
       if (navigator.onLine===false) return null;
       const url='https://ru.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(q);
-      const r=await fetch(url,{signal:AbortSignal.timeout(5000)});
+      const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),5000);
+      const r=await fetch(url,{signal:ctl.signal}); clearTimeout(tm);
       if(!r.ok) return null;
       const j=await r.json();
       if(j && j.extract) return (j.title?j.title+'\n':'')+j.extract.slice(0,500)+(j.extract.length>500?'…':'');
@@ -3882,6 +3894,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
       const chat=$('sportChat');
       if(chat && hist.length){ chat.innerHTML=''; hist.slice(-12).forEach(m=>sportSay(m.text,m.who)); }
     } catch {}
+    const clr=$('sportClear'); if(clr) clr.addEventListener('click',()=>{ try{localStorage.removeItem(SPORT_KEY);}catch{} const chat=$('sportChat'); if(chat) chat.innerHTML='<div class="nova-msg bot">Чат очищен. Спроси про разминку, кардио или восстановление.</div>'; toast('Спорт-чат очищен'); });
   })();
 
   /* ===== Поддержка ===== */
@@ -3899,7 +3912,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     if(/начать|с чего|онборд|профил/.test(q) && !/iphone|айфон|спорт/.test(q)) return 'С чего начать:\n1) Заполните профиль (имя, возраст — в «Ещё»).\n2) Укажите режим дня у Новы (Учёба/Работа/Свободный).\n3) Добавьте напоминания в «Планы».\n4) При желании ведите воду и рацион.\nДанные хранятся только на этом устройстве.';
     if(/бэкап|экспорт|импорт|данн|пропал|сброс|очист/.test(q)) return 'Данные и бэкап:\n• Всё хранится в браузере этого устройства.\n• «Ещё» → Экспорт — сохраните JSON-файл.\n• Импорт — восстановление из файла.\n• Очистка данных браузера удалит прогресс, если не было экспорта.\nСервера у Luma нет: мы не можем восстановить данные «из облака».';
     if(/нова|план на|помощник/.test(q)) return 'Нова — помощник по планам и напоминаниям внутри Luma. Она составляет план дня/недели из вашего профиля, может ответить про калории из локальной базы и показать сводку дня.\nСпорт-чат — отдельно: про тренировки и поиск в интернете.\nПоддержка — про само приложение.';
-    if(/спорт.?чат|трениров|упражн/.test(q)) return 'Спорт-чат открывается из «Ещё» → «Чат про спорт» или с главной. Там можно спросить про разминку, шаги, домашние тренировки. Для редких тем напишите «поиск …» — откроется интернет-поиск.';
+    if(/спорт.?чат|трениров|упражн/.test(q)) return 'Спорт-чат открывается из Новы (кнопка «Чат про спорт») или из «Ещё». Там можно спросить про разминку, шаги, домашние тренировки. Для редких тем напишите «поиск …» — откроется интернет-поиск.';
     if(/почт|автор|написать|связ|help/.test(q)) return 'Чтобы связаться с автором, нажмите «Написать автору» ниже. Откроется письмо на help.luma2020@gmail.com. Опишите устройство, браузер и что произошло.';
     if(/темн|светл|тема|цвет/.test(q)) return 'Тема и режим оформления меняются в «Ещё» → блок «Тема». Доступны цветовые палитры и тёмный/светлый/системный режим.';
     if(/питом|игр/.test(q)) return 'Питомцы: раздел ухода и коллекции (кормление, сон, игра). Игры — в нижней вкладке «Игры». Это необязательные элементы; основные функции — планы, рацион, ходьба.';
@@ -3920,6 +3933,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
       const h=JSON.parse(localStorage.getItem(SUP_KEY)||'[]'); const chat=$('supportChat');
       if(chat && h.length){ chat.innerHTML=''; h.slice(-12).forEach(m=>supportSay(m.text,m.who)); }
     }catch{}
+    const clr=$('supportClear'); if(clr) clr.addEventListener('click',()=>{ try{localStorage.removeItem(SUP_KEY);}catch{} const chat=$('supportChat'); if(chat) chat.innerHTML='<div class="nova-msg bot">История очищена. Задайте вопрос по приложению или напишите автору.</div>'; toast('Чат поддержки очищен'); });
   })();
 
 
