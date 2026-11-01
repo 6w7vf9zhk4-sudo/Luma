@@ -965,6 +965,25 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
 .off-save:active { background: var(--surface); }
 .footer { opacity: .6; }
 
+/* Luma v23: illustrated companions and Nova assistant */
+.pet-art{display:block;width:100%;height:100%;max-width:118px;max-height:118px;overflow:visible;filter:drop-shadow(0 8px 9px #0002)}
+.pet-avatar .pet-art{width:118px;height:118px;max-width:none;max-height:none}
+.pet-emoji{display:flex;align-items:center;justify-content:center;width:62px;height:62px;flex:0 0 62px;border-radius:18px;background:radial-gradient(circle at 35% 25%,#fff8,transparent 60%),linear-gradient(145deg,#a78bfa44,#7c3aed22)}
+.pet-preview .pet-art{width:58px;height:58px}
+.pet-stage .pet-avatar{width:124px;height:124px;display:flex;align-items:center;justify-content:center;font-size:0}
+.pet-stage .pet-avatar .pet-art{width:124px;height:124px}
+.pet-stage.eating .pet-avatar .pet-art{animation:pet-art-bob .42s ease-in-out infinite alternate}
+.pet-stage.sleeping .pet-avatar .pet-art{animation:pet-art-sleep 3s ease-in-out infinite}
+.pet-stage.playing .pet-avatar .pet-art{animation:pet-art-play .52s ease-in-out infinite alternate}
+.pet-stage.waking .pet-avatar .pet-art{animation:pet-art-wake .9s ease-out 1}
+@keyframes pet-art-bob{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(4px) rotate(4deg)}}
+@keyframes pet-art-sleep{0%,100%{transform:translateY(5px) scale(.97)}50%{transform:translateY(8px) scale(.94)}}
+@keyframes pet-art-play{from{transform:translateY(0) rotate(-8deg)}to{transform:translateY(-15px) rotate(8deg)}}
+@keyframes pet-art-wake{0%{transform:scale(.7)}60%{transform:scale(1.13)}100%{transform:scale(1)}}
+.nova-card{overflow:hidden}.nova-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}.nova-head>div:nth-child(2){flex:1;min-width:0}.nova-head b{display:block;font-size:18px}.nova-head small{display:block;color:var(--muted);font-size:12px;margin-top:3px}.nova-orb{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#fff,#c4b5fd 25%,#7c3aed 65%,#312e81);box-shadow:0 0 24px #8b5cf688;color:white;font-size:28px;animation:nova-float 3s ease-in-out infinite}@keyframes nova-float{50%{transform:translateY(-5px) rotate(5deg)}}
+.nova-welcome{padding:14px;border-radius:16px;background:linear-gradient(135deg,#8b5cf622,#a78bfa12);border:1px solid var(--bd);line-height:1.55}.nova-quick{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.nova-chat{display:flex;flex-direction:column;gap:9px;max-height:320px;overflow:auto;padding:4px 0 12px}.nova-msg{max-width:92%;padding:11px 13px;border-radius:15px;line-height:1.45;font-size:14px;white-space:pre-wrap}.nova-msg.bot{align-self:flex-start;background:var(--surface);border:1px solid var(--bd)}.nova-msg.user{align-self:flex-end;background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:white}.nova-input-row{display:flex;gap:8px}.nova-input-row input{min-width:0;flex:1}.nova-input-row .btn{white-space:nowrap}
+@media(prefers-reduced-motion:reduce){.nova-orb{animation:none}.pet-stage .pet-avatar .pet-art{animation:none!important}}
+
 /* Luma v22: enhanced pet motion and neutral weight history */
 .welcome-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(circle at 20% 15%,#5635a5 0,transparent 42%),linear-gradient(145deg,#120b29f5,#241344f5);backdrop-filter:blur(18px);transition:opacity .35s ease}
 .welcome-overlay.hide{opacity:0;pointer-events:none}
@@ -1032,7 +1051,17 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
 .weight-history{display:grid;gap:10px}.weight-entry{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--bd);border-radius:13px;background:var(--surface)}.weight-entry small{color:var(--muted)}.weight-bars{height:90px;display:flex;align-items:end;gap:6px;padding:8px 4px;border-bottom:1px solid var(--bd)}.weight-bar{flex:1;min-width:8px;border-radius:7px 7px 2px 2px;background:linear-gradient(180deg,#b69cff,#7552c7);position:relative}.weight-bar span{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--muted);white-space:nowrap}
 
 
-  </style>
+  
+/* v23 character rendering */
+.pet-emoji{display:flex;align-items:center;justify-content:center;width:68px;height:68px;flex:0 0 68px;font-size:0;border-radius:18px;background:radial-gradient(circle at 35% 25%,#fff8,transparent 62%),linear-gradient(145deg,#a78bfa33,#7c3aed18)}
+.pet-emoji .pet-art{width:64px;height:64px;max-width:64px;max-height:64px;display:block;overflow:visible}
+.pet-stage .pet-avatar{font-size:0;display:flex;align-items:center;justify-content:center;width:140px;height:140px}
+.pet-stage .pet-avatar .pet-art{width:136px;height:136px;max-width:136px;max-height:136px;display:block;overflow:visible}
+.pet-preview .pet-emoji{width:64px;height:64px;flex-basis:64px}
+.nova-orb{position:relative;overflow:visible}
+.nova-orb svg{width:48px;height:48px;display:block;filter:drop-shadow(0 2px 5px #fff8)}
+
+</style>
 </head>
 <body>
 <div class="welcome-overlay" id="welcomeOverlay" role="dialog" aria-modal="true" aria-label="Приветствие">
@@ -1047,7 +1076,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v22 · питомцы и история</span>
+      <span class="pill" id="topPill">v23 · питомцы и Нова</span>
     </header>
 
     <!-- HOME -->
@@ -1056,6 +1085,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         <div class="eyebrow">YOUR GENTLE SPACE</div>
         <h1>Меньше забывай.<br><span>Больше успевай.</span></h1>
         <p class="muted" id="greeting">Добро пожаловать</p>
+        <div class="form-actions" style="margin-top:12px"><button class="btn" type="button" onclick="openNova()">✦ Спросить Нову</button><span class="tag">Новый помощник</span></div>
       </div>
 
       <div class="glass section wallet" id="walletCard">
@@ -1389,6 +1419,29 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
       <div class="glass section"><div class="section-head"><h2>🥕 Магазин еды</h2><span class="tag">За ✧</span></div><p class="notice" style="margin-top:0">Покупай еду за игровые монеты. Запас еды хранится в твоём профиле.</p><div id="petFoodShop"></div></div>
     </section>
 
+    <!-- NOVA ASSISTANT -->
+    <section class="page" id="page-nova">
+      <div class="hero">
+        <div class="eyebrow">LOCAL SMART ASSISTANT</div>
+        <h1>Нова<br><span>твой помощник</span></h1>
+        <p class="muted">Помогает разбирать планы и напоминания. Работает прямо на устройстве.</p>
+      </div>
+      <div class="glass section nova-card">
+        <div class="nova-head"><div class="nova-orb" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M14 27 Q8 9 22 17 L28 22 Q36 12 46 17 Q57 20 51 31 L49 43 Q44 55 31 54 Q17 54 14 42Z" fill="#e9ddff" stroke="#7550d8" stroke-width="3"/><path d="M16 25 L7 15 Q5 30 17 34 M48 24 L58 14 Q60 29 48 34" fill="#c4b5fd" stroke="#7550d8" stroke-width="3"/><rect x="17" y="26" width="30" height="19" rx="9" fill="#21154f"/><path d="M23 34 Q27 28 31 34 M34 34 Q38 28 42 34" fill="none" stroke="#65e8ff" stroke-width="3" stroke-linecap="round"/><path d="M28 48 Q32 52 36 48" fill="none" stroke="#9b78ff" stroke-width="2" stroke-linecap="round"/><path d="M32 2 L35 10 L43 13 L35 16 L32 24 L29 16 L21 13 L29 10Z" fill="#ffe69a" stroke="#fff4c4" stroke-width="1"/></svg></div><div><b>Нова</b><small>Локальный помощник · без аккаунта и сервера</small></div><span class="tag">Готова</span></div>
+        <div class="nova-welcome"><b>Привет! Я Нова.</b><br>Я могу посмотреть твои планы, помочь составить расписание и подготовить напоминание.</div>
+        <div class="nova-quick">
+          <button class="btn secondary small" type="button" data-nova="plan">📅 План на сегодня</button>
+          <button class="btn secondary small" type="button" data-nova="tasks">☑ Мои задачи</button>
+          <button class="btn secondary small" type="button" data-nova="free">⌛ Свободное время</button>
+          <button class="btn secondary small" type="button" data-nova="tip">💡 Совет</button>
+          <button class="btn secondary small" type="button" data-nova="remind">⏰ Создать напоминание</button>
+        </div>
+        <div class="nova-chat" id="novaChat" aria-live="polite"><div class="nova-msg bot">Выбери действие или напиши, что хочешь узнать. Я отвечаю на основе данных, сохранённых в Luma.</div></div>
+        <form id="novaForm" class="nova-input-row"><input id="novaInput" maxlength="180" placeholder="Например: что у меня сегодня?" autocomplete="off"><button class="btn" type="submit">Отправить</button></form>
+        <p class="notice">Нова не подключена к внешнему ИИ: она использует встроенные правила и данные Luma. Переписка не отправляется на сервер.</p>
+      </div>
+    </section>
+
     <!-- SETTINGS -->
     <section class="page" id="page-settings">
       <div class="hero center">
@@ -1482,7 +1535,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v19 · данные остаются на устройстве</p>
+      <p class="footer" id="appFooter">Luma · v23 · питомцы и Нова</p>
     </section>
   </main>
 
@@ -1610,6 +1663,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         if (name === 'reminders') { if (typeof renderReminders === 'function') renderReminders(); if (typeof initRemDefaults === 'function') initRemDefaults(); }
         if (name === 'games' && typeof exitGame === 'function') exitGame();
         if (name === 'settings' && typeof updateNotifUI === 'function') updateNotifUI();
+        if (name === 'nova') { /* Nova uses current local data */ }
       } catch (e) { console.error(e); }
     } catch (e) { console.error('goTab', e); }
   };
@@ -1929,6 +1983,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
       if (name === 'games') { exitGame(); }
       if (name === 'settings') { updateNotifUI(); renderBackupInfo(); }
       if (name === 'shop') renderShop();
+      if (name === 'nova') { /* Nova uses current local data */ }
     } catch (e) { console.error(e); }
     try { window.scrollTo(0, 0); } catch {}
   }
@@ -3350,13 +3405,31 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   let petAnim='';
   function petUpdateNeeds(){ const now=Date.now(), mins=Math.max(0,Math.min(720,(now-(data.pets.updated||now))/60000)); if(data.pets.mood==='sleeping') data.pets.energy=Math.min(100,data.pets.energy+mins*.55); else data.pets.energy=Math.max(0,data.pets.energy-mins*.12); data.pets.hunger=Math.max(0,data.pets.hunger-mins*.08); data.pets.updated=now; }
   function petMeters(){return '<div class="fields"><div class="field"><label>Сытость · '+Math.round(data.pets.hunger)+'%</label><div class="pet-meter"><i style="width:'+data.pets.hunger+'%"></i></div></div><div class="field"><label>Энергия · '+Math.round(data.pets.energy)+'%</label><div class="pet-meter"><i style="width:'+data.pets.energy+'%"></i></div></div></div>';}
+  function petCharacter(id){
+    const palettes={sprout:['#8bdc9b','#4cae78','#d9ffe0'],cat:['#d9c7ff','#9273d4','#fff1ff'],fox:['#ffb16e','#e87838','#fff0d9'],penguin:['#8edcf4','#315c8d','#f5fdff'],owl:['#c9a7f5','#7954ae','#fff4c9'],rabbit:['#f8c8df','#d887b6','#fff7fb'],dog:['#d6b18c','#9b6c48','#fff0d8'],panda:['#dce5f3','#34394c','#ffffff'],raccoon:['#aab6ca','#5b667d','#f5f7ff'],turtle:['#9bd69b','#468b61','#e7f6b4'],unicorn:['#e9c4ff','#9a67d2','#fff5ff'],dragon:['#9bd8cb','#347d76','#ffe2a6'],phoenix:['#ffbd65','#e05a37','#fff0a8']};
+    const c=palettes[id]||palettes.sprout; const ear=id==='rabbit'||id==='cat'||id==='fox'||id==='dog'||id==='unicorn';
+    let extra='';
+    if(id==='panda') extra='<ellipse cx="39" cy="57" rx="10" ry="14" fill="#303747"/><ellipse cx="81" cy="57" rx="10" ry="14" fill="#303747"/>';
+    if(id==='owl') extra='<path d="M35 48 L25 23 L49 38 M65 38 L89 23 L79 48" fill="'+c[1]+'"/><path d="M50 86 L60 99 L70 86" fill="#f3bd55"/>';
+    if(id==='turtle') extra='<ellipse cx="60" cy="72" rx="38" ry="27" fill="#43885e"/><path d="M38 72 Q60 42 82 72 Q60 96 38 72" fill="#79bd7e" stroke="#367b58" stroke-width="3"/>';
+    if(id==='dragon') extra='<path d="M35 52 L12 28 L18 65 M85 52 L108 28 L102 65" fill="#67bcae" stroke="#347d76" stroke-width="4"/><path d="M55 22 Q60 7 66 22" stroke="#f4d38b" stroke-width="5" fill="none"/>';
+    if(id==='phoenix') extra='<path d="M34 66 Q5 38 18 20 Q43 28 48 58 M86 66 Q115 38 102 20 Q77 28 72 58" fill="#ff8b42" stroke="#d94c35" stroke-width="4"/><path d="M60 17 Q47 2 60 0 Q73 3 60 17" fill="#ffe38b"/>';
+    if(id==='unicorn') extra='<path d="M60 35 L67 5 L76 38" fill="#ffe28a" stroke="#bd8c4e" stroke-width="2"/><path d="M33 54 L22 31 L47 43 M87 54 L98 31 L73 43" fill="#f0c5ff"/>';
+    if(id==='sprout') extra='<path d="M60 30 Q32 5 27 30 Q42 48 60 38 Q78 8 94 24 Q88 48 60 42" fill="#62bd83" stroke="#38885d" stroke-width="3"/>';
+    if(ear) extra+='<path d="M34 48 Q19 7 45 25 L53 46 M67 46 Q80 8 99 26 L84 53" fill="'+c[0]+'" stroke="'+c[1]+'" stroke-width="4"/><path d="M35 42 Q31 23 43 33 M76 43 Q83 23 91 33" stroke="'+c[2]+'" stroke-width="5" fill="none"/>';
+    if(id==='fox'||id==='raccoon') extra+='<path d="M86 91 Q116 92 108 64 Q103 52 91 65 Q105 82 84 82" fill="'+c[1]+'" stroke="'+c[1]+'" stroke-width="5"/>';
+    const mask=id==='raccoon'?'<path d="M28 59 Q43 43 57 59 Q72 43 92 59 L85 74 Q72 68 60 77 Q47 68 35 74Z" fill="#465267"/>':(id==='fox'?'<path d="M30 66 Q60 86 90 66 L77 89 L60 97 L43 89Z" fill="#fff1df"/>':'');
+    const beak=id==='penguin'||id==='owl'||id==='phoenix';
+    return '<svg class="pet-art" viewBox="0 0 120 120" role="img" aria-label="'+(PETS.find(x=>x.id===id)?.name||'Питомец')+'" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g-'+id+'" x1="0" y1="0" x2="1" y2="1"><stop stop-color="'+c[2]+'"/><stop offset="1" stop-color="'+c[0]+'"/></linearGradient></defs><ellipse cx="60" cy="107" rx="32" ry="6" fill="#34235b" opacity=".18"/>'+extra+'<ellipse cx="60" cy="83" rx="31" ry="25" fill="url(#g-'+id+')" stroke="'+c[1]+'" stroke-width="3"/><circle cx="60" cy="57" r="34" fill="url(#g-'+id+')" stroke="'+c[1]+'" stroke-width="3"/>'+mask+'<ellipse cx="47" cy="59" rx="5" ry="8" fill="#302044"/><ellipse cx="73" cy="59" rx="5" ry="8" fill="#302044"/><circle cx="48.5" cy="56" r="2" fill="white"/><circle cx="74.5" cy="56" r="2" fill="white"/>'+(beak?'<path d="M54 68 L66 68 L60 76Z" fill="#f4b84f"/>':'<ellipse cx="60" cy="70" rx="4" ry="3" fill="#df8cae"/><path d="M60 73 Q55 80 50 75 M60 73 Q65 80 70 75" fill="none" stroke="#80546e" stroke-width="2" stroke-linecap="round"/>')+'<ellipse cx="37" cy="70" rx="6" ry="3" fill="#ff9eb9" opacity=".6"/><ellipse cx="83" cy="70" rx="6" ry="3" fill="#ff9eb9" opacity=".6"/><path d="M38 96 Q60 106 82 96" fill="none" stroke="'+c[1]+'" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="20" r="3" fill="#fff" opacity=".8"/></svg>';
+  }
+
   function renderPets(){
     petUpdateNeeds(); const p=PETS.find(x=>x.id===data.pets.active)||PETS[0]; const mood=data.pets.mood||'awake';
     const stageClass=petAnim || (mood==='sleeping'?'sleeping':'awake'); const stage=$('petCareMain');
     const home=$('homePet');
-    if(home) home.innerHTML='<div class="pet-preview"><div class="pet-emoji">'+p.icon+'</div><div class="pet-info"><b>'+p.name+'</b><small>'+(mood==='sleeping'?'Спит':data.pets.hunger<25?'Проголодался':'Бодрствует')+'</small></div><span class="tag">Активен</span></div>';
-    if(stage) stage.innerHTML='<div class="pet-stage '+stageClass+'" id="petStage"><div class="pet-avatar '+p.id+'" id="petAvatar">'+p.icon+'</div></div>'+petMeters()+'<div class="pet-controls"><button class="btn" type="button" data-petcare="feed">🍽 Покормить</button><button class="btn secondary" type="button" data-petcare="play">🎾 Играть</button><button class="btn secondary" type="button" data-petcare="sleep">🌙 Спать</button><button class="btn secondary" type="button" data-petcare="wake">☀️ Разбудить</button></div><p class="notice" id="petCareHint">'+(mood==='sleeping'?'Питомец отдыхает и восстанавливает энергию.':'Заботься о питомце: корми его и давай отдыхать.')+'</p>';
-    const collection=$('petCollection'); if(collection){const owned=PETS.filter(p=>!p.role && petOwned(p));$('petCount').textContent=owned.length+' питомц.';collection.innerHTML=owned.map(p=>'<div class="pet-preview"><div class="pet-emoji">'+p.icon+'</div><div class="pet-info"><b>'+p.name+'</b><small>'+p.desc+'</small></div><div class="pet-action">'+(data.pets.active===p.id?'<button class="btn secondary small" disabled>✓ Активен</button>':'<button class="btn secondary small" data-pet="equip" data-id="'+p.id+'">Активировать</button>')+'</div></div>').join('')+PETS.filter(p=>!p.role && !petOwned(p)).map(p=>'<div class="pet-preview"><div class="pet-emoji">'+p.icon+'</div><div class="pet-info"><b>'+p.name+'</b><small>'+p.desc+'</small></div><div class="pet-action"><button class="btn small" data-pet="buy" data-id="'+p.id+'">'+p.price+' ✧</button></div></div>').join('');}
+    if(home) home.innerHTML='<div class="pet-preview"><div class="pet-emoji">'+petCharacter(p.id)+'</div><div class="pet-info"><b>'+p.name+'</b><small>'+(mood==='sleeping'?'Спит':data.pets.hunger<25?'Проголодался':'Бодрствует')+'</small></div><span class="tag">Активен</span></div>';
+    if(stage) stage.innerHTML='<div class="pet-stage '+stageClass+'" id="petStage"><div class="pet-avatar '+p.id+'" id="petAvatar">'+petCharacter(p.id)+'</div></div>'+petMeters()+'<div class="pet-controls"><button class="btn" type="button" data-petcare="feed">🍽 Покормить</button><button class="btn secondary" type="button" data-petcare="play">🎾 Играть</button><button class="btn secondary" type="button" data-petcare="sleep">🌙 Спать</button><button class="btn secondary" type="button" data-petcare="wake">☀️ Разбудить</button></div><p class="notice" id="petCareHint">'+(mood==='sleeping'?'Питомец отдыхает и восстанавливает энергию.':'Заботься о питомце: корми его и давай отдыхать.')+'</p>';
+    const collection=$('petCollection'); if(collection){const owned=PETS.filter(p=>!p.role && petOwned(p));$('petCount').textContent=owned.length+' питомц.';collection.innerHTML=owned.map(p=>'<div class="pet-preview"><div class="pet-emoji">'+petCharacter(p.id)+'</div><div class="pet-info"><b>'+p.name+'</b><small>'+p.desc+'</small></div><div class="pet-action">'+(data.pets.active===p.id?'<button class="btn secondary small" disabled>✓ Активен</button>':'<button class="btn secondary small" data-pet="equip" data-id="'+p.id+'">Активировать</button>')+'</div></div>').join('')+PETS.filter(p=>!p.role && !petOwned(p)).map(p=>'<div class="pet-preview"><div class="pet-emoji">'+petCharacter(p.id)+'</div><div class="pet-info"><b>'+p.name+'</b><small>'+p.desc+'</small></div><div class="pet-action"><button class="btn small" data-pet="buy" data-id="'+p.id+'">'+p.price+' ✧</button></div></div>').join('');}
     const food=$('petFoodShop');if(food)food.innerHTML='<div class="pet-food-grid">'+PET_FOODS.map(f=>'<div class="pet-food-card"><span class="food-icon">'+f.icon+'</span><div class="food-copy"><b>'+f.name+'</b><small>'+f.desc+' · есть: '+(data.pets.food[f.id]||0)+'</small><small>'+f.price+' ✧</small><button class="btn small" style="margin-top:7px" data-petfood="buy" data-id="'+f.id+'">Купить</button></div></div>').join('')+'</div>';
     save();
   }
@@ -3402,6 +3475,22 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     body.innerHTML = shopTabHTML();
     updateWallet();
   }
+  function openNova(){goTab('nova');} window.openNova=openNova;
+  function novaSay(text,who='bot'){const chat=$('novaChat');if(!chat)return;const el=document.createElement('div');el.className='nova-msg '+who;el.textContent=text;chat.appendChild(el);chat.scrollTop=chat.scrollHeight;}
+  function novaPending(){return (data.reminders||[]).filter(r=>!r.done).sort((a,b)=>a.when-b.when);}
+  function novaReply(kind,query=''){
+    const now=new Date(), todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime(), tomorrow=todayStart+86400000;
+    const pending=novaPending(), today=pending.filter(r=>r.when>=todayStart&&r.when<tomorrow);
+    if(kind==='tasks'||/задач|напоминан|дела/.test(query)) return pending.length?'У тебя '+pending.length+' активных напоминаний:\n'+pending.slice(0,8).map(r=>'• '+new Date(r.when).toLocaleString('ru-RU',{weekday:'short',hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'})+' — '+r.text).join('\n'):'Активных напоминаний пока нет. Можешь добавить новое — я помогу открыть форму.';
+    if(kind==='plan'||/план|расписан|сегодня/.test(query)) return today.length?'План на сегодня:\n'+today.map(r=>'• '+new Date(r.when).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+' — '+r.text).join('\n')+'\n\nОставь между делами немного свободного времени.':'На сегодня у тебя пока нет запланированных напоминаний. Можно добавить пару важных дел.';
+    if(kind==='free'||/свободн|окно/.test(query)) {const next=pending.find(r=>r.when>Date.now());if(!next)return 'Впереди нет активных напоминаний. По данным Luma, расписание свободно.';const mins=Math.max(0,Math.round((next.when-Date.now())/60000));return 'Следующее напоминание: «'+next.text+'» в '+new Date(next.when).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'. До него примерно '+(mins>=60?Math.floor(mins/60)+' ч '+mins%60+' мин':mins+' мин')+'.';}
+    if(kind==='tip'||/совет/.test(query)) return pending.length?'Совет: выбери одну самую важную задачу и начни с неё. Остальные дела можно распределить по свободным промежуткам.':'Совет: записывай важные дела сразу, чтобы не держать их в памяти. В Luma можно поставить напоминание.';
+    if(kind==='remind'||/создай напомин|добавь напомин/.test(query)){goTab('reminders');return 'Открыла раздел напоминаний. Введи текст, дату и время — затем сохрани. Я не создаю напоминание без выбранного времени.';}
+    return 'Пока я умею работать с планом на сегодня, списком задач, свободным временем, советами и переходом к созданию напоминаний. Попробуй одну из кнопок выше.';
+  }
+  function novaAction(kind){const labels={plan:'План на сегодня',tasks:'Мои задачи',free:'Свободное время',tip:'Совет',remind:'Создать напоминание'};novaSay(labels[kind]||kind,'user');novaSay(novaReply(kind));}
+  const novaPage=$('page-nova'); if(novaPage){novaPage.addEventListener('click',e=>{const b=e.target.closest('[data-nova]');if(b)novaAction(b.dataset.nova);});const f=$('novaForm');if(f)f.addEventListener('submit',e=>{e.preventDefault();const input=$('novaInput'),q=(input.value||'').trim();if(!q)return;novaSay(q,'user');novaSay(novaReply('',q.toLowerCase()));input.value='';});}
+
   const petPage=$('page-pets'); if(petPage){petPage.addEventListener('click',e=>{const c=e.target.closest('[data-petcare]');if(c){petCare(c.dataset.petcare);return;}const b=e.target.closest('[data-pet]');if(b){const pet=PETS.find(x=>x.id===b.dataset.id);if(!pet)return;if(b.dataset.pet==='buy'){if(pet.role){toast('Этот питомец доступен только в панели соответствующей роли.');return;}if(data.coins.bal<pet.price){toast('Не хватает '+(pet.price-data.coins.bal)+' ✧');return;}spendCoins(pet.price);data.pets.owned.push(pet.id);data.pets.active=pet.id;save();renderPets();updateWallet();toast('Питомец открыт: '+pet.name);}else if(b.dataset.pet==='equip'&&petOwned(pet)){data.pets.active=pet.id;data.pets.mood='awake';save();renderPets();toast('Активирован: '+pet.name);}return;}const f=e.target.closest('[data-petfood]');if(f){const food=PET_FOODS.find(x=>x.id===f.dataset.id);if(!food)return;if(data.coins.bal<food.price){toast('Не хватает '+food.price+' ✧');return;}spendCoins(food.price);data.pets.food[food.id]=(data.pets.food[food.id]||0)+1;save();renderPets();toast('Куплено: '+food.name);}});}
 
   function spinLottery() {
