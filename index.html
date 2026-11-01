@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="24"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="25"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1057,7 +1057,26 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
 @keyframes pet-zzz{0%{transform:translate(0,8px) scale(.8);opacity:0}35%{opacity:.9}100%{transform:translate(-15px,-16px) scale(1.1);opacity:0}}
 @keyframes pet-play-bits{from{transform:translateY(4px) rotate(-8deg)}to{transform:translateY(-7px) rotate(8deg)}}
 @keyframes pet-wake-bits{0%{transform:scale(.5) rotate(-15deg);opacity:0}60%{transform:scale(1.2) rotate(10deg);opacity:1}100%{transform:scale(1);opacity:0}}
-@media(prefers-reduced-motion:reduce){.pet-avatar,.pet-stage:before{animation:none!important}}
+/* --- livelier pets v25 --- */
+.pet-art .eye{transform-box:fill-box;transform-origin:center;animation:pet-blink 4.8s ease-in-out infinite}
+.pet-art .eye.r{animation-delay:2.1s}
+.pet-art .pupil{animation:pet-look 6s ease-in-out infinite}
+.pet-art .cheek{animation:pet-breathe-soft 3.2s ease-in-out infinite}
+.pet-art .body-bob{transform-box:fill-box;transform-origin:center bottom}
+.pet-stage.awake .pet-art{animation:pet-breathe 3.4s ease-in-out infinite}
+.pet-stage.sleeping .pet-art .eye{animation:none;transform:scaleY(.12)}
+.pet-stage.sleeping .pet-art .pupil{animation:none;opacity:0}
+.pet-stage.sleeping .pet-art .mouth-open{opacity:0}
+.pet-stage.sleeping .pet-art .mouth-sleep{opacity:1}
+.pet-stage.eating .pet-art .mouth-open{opacity:1}
+.pet-stage.eating .pet-art .mouth-sleep{opacity:0}
+.pet-art .mouth-sleep{opacity:0}
+.pet-stage.playing .pet-art{animation:pet-play-v22 .52s cubic-bezier(.3,.7,.3,1) infinite alternate}
+@keyframes pet-blink{0%,42%,46%,100%{transform:scaleY(1)}44%{transform:scaleY(.08)}}
+@keyframes pet-look{0%,100%{transform:translate(0,0)}30%{transform:translate(1.2px,-.5px)}60%{transform:translate(-1px,.4px)}}
+@keyframes pet-breathe{0%,100%{transform:translateY(0) scale(1,1)}50%{transform:translateY(2px) scale(1.02,.98)}}
+@keyframes pet-breathe-soft{0%,100%{opacity:.55}50%{opacity:.85}}
+@media(prefers-reduced-motion:reduce){.pet-avatar,.pet-stage:before,.pet-art,.pet-art .eye,.pet-art .pupil,.pet-art .cheek{animation:none!important}}
 .weight-history{display:grid;gap:10px}.weight-entry{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--bd);border-radius:13px;background:var(--surface)}.weight-entry small{color:var(--muted)}.weight-bars{height:90px;display:flex;align-items:end;gap:6px;padding:8px 4px;border-bottom:1px solid var(--bd)}.weight-bar{flex:1;min-width:8px;border-radius:7px 7px 2px 2px;background:linear-gradient(180deg,#b69cff,#7552c7);position:relative}.weight-bar span{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--muted);white-space:nowrap}
 
 
@@ -1086,7 +1105,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v24 · планировщик Новы</span>
+      <span class="pill" id="topPill">v25 · планировщик Новы</span>
     </header>
 
     <!-- HOME -->
@@ -1443,6 +1462,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
           <div class="section-head"><h2>Твой профиль для планирования</h2><span class="tag" id="novaProfileStatus">Нужно заполнить</span></div>
           <p class="notice" style="margin-top:0">Укажи занятия и распорядок. Возраст, рост и масса берутся из уже заполненного профиля, но не используются для оценки тела или назначения веса.</p>
           <div class="nova-profile-grid">
+            <div class="field"><label for="novaMode">Режим дня</label><select id="novaMode"><option value="study">Учёба</option><option value="work">Работа</option><option value="free">Свободный</option></select></div>
             <div class="field"><label for="novaActivity">Обычная активность</label><select id="novaActivity"><option value="low">Спокойная</option><option value="moderate">Умеренная</option><option value="active">Активная</option><option value="varied">Меняется по дням</option></select></div>
             <div class="field"><label for="novaSports">Спорт / занятия</label><input id="novaSports" maxlength="100" placeholder="Например, тяжёлая атлетика"></div>
             <div class="field"><label for="novaDays">Дни тренировок</label><input id="novaDays" maxlength="80" placeholder="Вт, Чт, Сб"></div>
@@ -1459,9 +1479,15 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         <div class="glass section" style="margin:14px 0;padding:15px;background:rgba(255,255,255,.035)">
           <div class="section-head"><h2>План на сегодня</h2><span class="tag">Нова</span></div>
           <div id="novaDayPlan" class="nova-plan-list"><div class="empty">Заполни профиль — Нова составит план из твоих расписания и напоминаний.</div></div>
+          <div class="form-actions" style="margin-top:10px;gap:8px;flex-wrap:wrap">
+            <button class="btn secondary" type="button" id="novaBuildWeek">План на неделю</button>
+          </div>
+          <div id="novaWeekPlan" class="nova-plan-list" style="margin-top:10px"></div>
         </div>
         <div class="nova-quick">
           <button class="btn secondary small" type="button" data-nova="plan">📅 План на сегодня</button>
+          <button class="btn secondary small" type="button" data-nova="week">🗓 План на неделю</button>
+          <button class="btn secondary small" type="button" data-nova="status">📊 Сводка дня</button>
           <button class="btn secondary small" type="button" data-nova="tasks">☑ Мои задачи</button>
           <button class="btn secondary small" type="button" data-nova="free">⌛ Свободное время</button>
           <button class="btn secondary small" type="button" data-nova="tip">💡 Совет</button>
@@ -1566,7 +1592,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v24 · планировщик Новы</p>
+      <p class="footer" id="appFooter">Luma · v25 · планировщик Новы</p>
     </section>
   </main>
 
@@ -1721,7 +1747,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '24';
+  const BUILD = '25';
   /* ----- Роли и пароли: хранятся только хеши (SHA-256, соль, 4000 итераций) ----- */
   function sha256(str) {
     const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
@@ -1803,6 +1829,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     const np = d.profile.nova;
     np.setup = !!np.setup;
     np.activity = ['low','moderate','active','varied'].includes(np.activity) ? np.activity : 'moderate';
+    if (!['study','work','free'].includes(np.mode)) np.mode = 'study';
     ['sports','days','trainingTime','schoolStart','schoolEnd','wake','sleep','focus'].forEach(k => { np[k] = String(np[k] || '').slice(0,160); });
     if (typeof d.profile.name !== 'string') d.profile.name = '';
     d.profile.name = d.profile.name.slice(0, 24);
@@ -1819,7 +1846,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     meals: [],
     water: { current: 0, goal: 2000, date: todayStr() },
     reminders: [],
-    profile: { name: '', done: false, weightLog: [], nova: { setup: false, activity: 'moderate', sports: '', days: '', trainingTime: '', schoolStart: '', schoolEnd: '', wake: '07:00', sleep: '22:00', focus: '' } },
+    profile: { name: '', done: false, weightLog: [], nova: { setup: false, mode: 'study', activity: 'moderate', sports: '', days: '', trainingTime: '', schoolStart: '', schoolEnd: '', wake: '07:00', sleep: '22:00', focus: '' } },
     theme: 'violet',
     ntfy: { enabled: false, topic: '' },
     stats: defaultStats(),
@@ -3461,7 +3488,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     if(id==='fox'||id==='raccoon') extra+='<path d="M86 91 Q116 92 108 64 Q103 52 91 65 Q105 82 84 82" fill="'+c[1]+'" stroke="'+c[1]+'" stroke-width="5"/>';
     const mask=id==='raccoon'?'<path d="M28 59 Q43 43 57 59 Q72 43 92 59 L85 74 Q72 68 60 77 Q47 68 35 74Z" fill="#465267"/>':(id==='fox'?'<path d="M30 66 Q60 86 90 66 L77 89 L60 97 L43 89Z" fill="#fff1df"/>':'');
     const beak=id==='penguin'||id==='owl'||id==='phoenix';
-    return '<svg class="pet-art" viewBox="0 0 120 120" role="img" aria-label="'+(PETS.find(x=>x.id===id)?.name||'Питомец')+'" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g-'+id+'" x1="0" y1="0" x2="1" y2="1"><stop stop-color="'+c[2]+'"/><stop offset="1" stop-color="'+c[0]+'"/></linearGradient></defs><ellipse cx="60" cy="107" rx="32" ry="6" fill="#34235b" opacity=".18"/>'+extra+'<ellipse cx="60" cy="83" rx="31" ry="25" fill="url(#g-'+id+')" stroke="'+c[1]+'" stroke-width="3"/><circle cx="60" cy="57" r="34" fill="url(#g-'+id+')" stroke="'+c[1]+'" stroke-width="3"/>'+mask+'<ellipse cx="47" cy="59" rx="5" ry="8" fill="#302044"/><ellipse cx="73" cy="59" rx="5" ry="8" fill="#302044"/><circle cx="48.5" cy="56" r="2" fill="white"/><circle cx="74.5" cy="56" r="2" fill="white"/>'+(beak?'<path d="M54 68 L66 68 L60 76Z" fill="#f4b84f"/>':'<ellipse cx="60" cy="70" rx="4" ry="3" fill="#df8cae"/><path d="M60 73 Q55 80 50 75 M60 73 Q65 80 70 75" fill="none" stroke="#80546e" stroke-width="2" stroke-linecap="round"/>')+'<ellipse cx="37" cy="70" rx="6" ry="3" fill="#ff9eb9" opacity=".6"/><ellipse cx="83" cy="70" rx="6" ry="3" fill="#ff9eb9" opacity=".6"/><path d="M38 96 Q60 106 82 96" fill="none" stroke="'+c[1]+'" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="20" r="3" fill="#fff" opacity=".8"/></svg>';
+    return '<svg class="pet-art" viewBox="0 0 120 120" role="img" aria-label="'+(PETS.find(x=>x.id===id)?.name||'Питомец')+'" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g-'+id+'" x1="0" y1="0" x2="1" y2="1"><stop stop-color="'+c[2]+'"/><stop offset="1" stop-color="'+c[0]+'"/></linearGradient></defs><ellipse cx="60" cy="107" rx="32" ry="6" fill="#34235b" opacity=".18"/>'+extra+'<ellipse class="body-bob" cx="60" cy="83" rx="31" ry="25" fill="url(#g-'+id+')" stroke="'+c[1]+'" stroke-width="3"/><circle class="body-bob" cx="60" cy="57" r="34" fill="url(#g-'+id+')" stroke="'+c[1]+'" stroke-width="3"/>'+mask+'<g class="eye"><ellipse cx="47" cy="59" rx="5" ry="8" fill="#302044"/><circle class="pupil" cx="48.5" cy="56" r="2" fill="white"/></g><g class="eye r"><ellipse cx="73" cy="59" rx="5" ry="8" fill="#302044"/><circle class="pupil" cx="74.5" cy="56" r="2" fill="white"/></g>'+(beak?'<path class="mouth-open" d="M54 68 L66 68 L60 76Z" fill="#f4b84f"/><ellipse class="mouth-sleep" cx="60" cy="72" rx="7" ry="2.5" fill="#302044" opacity=".55"/>':'<ellipse class="mouth-open" cx="60" cy="70" rx="4" ry="3" fill="#df8cae"/><path class="mouth-open" d="M60 73 Q55 80 50 75 M60 73 Q65 80 70 75" fill="none" stroke="#80546e" stroke-width="2" stroke-linecap="round"/><path class="mouth-sleep" d="M52 72 Q60 76 68 72" fill="none" stroke="#80546e" stroke-width="2.5" stroke-linecap="round"/>')+'<ellipse class="cheek" cx="37" cy="70" rx="6" ry="3" fill="#ff9eb9" opacity=".6"/><ellipse class="cheek" cx="83" cy="70" rx="6" ry="3" fill="#ff9eb9" opacity=".6"/><path d="M38 96 Q60 106 82 96" fill="none" stroke="'+c[1]+'" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="20" r="3" fill="#fff" opacity=".8"/></svg>';
   }
 
   function renderPets(){
@@ -3520,10 +3547,10 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   function novaSay(text,who='bot'){const chat=$('novaChat');if(!chat)return;const el=document.createElement('div');el.className='nova-msg '+who;el.textContent=text;chat.appendChild(el);chat.scrollTop=chat.scrollHeight;}
   function novaPending(){return (data.reminders||[]).filter(r=>!r.done).sort((a,b)=>a.when-b.when);}
   const novaDayNames=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-  function novaProfileData(){return prof().nova || (prof().nova={setup:false,activity:'moderate',sports:'',days:'',trainingTime:'',schoolStart:'',schoolEnd:'',wake:'07:00',sleep:'22:00',focus:''});}
+  function novaProfileData(){return prof().nova || (prof().nova={setup:false,mode:'study',activity:'moderate',sports:'',days:'',trainingTime:'',schoolStart:'',schoolEnd:'',wake:'07:00',sleep:'22:00',focus:''});}
   function renderNovaProfile(){
     const n=novaProfileData();
-    const fields={novaActivity:n.activity,novaSports:n.sports,novaDays:n.days,novaTrainingTime:n.trainingTime,novaSchoolStart:n.schoolStart,novaSchoolEnd:n.schoolEnd,novaWake:n.wake,novaSleep:n.sleep,novaFocus:n.focus};
+    const fields={novaMode:n.mode||'study',novaActivity:n.activity,novaSports:n.sports,novaDays:n.days,novaTrainingTime:n.trainingTime,novaSchoolStart:n.schoolStart,novaSchoolEnd:n.schoolEnd,novaWake:n.wake,novaSleep:n.sleep,novaFocus:n.focus};
     Object.keys(fields).forEach(id=>{const el=$(id);if(el && document.activeElement!==el)el.value=fields[id]||'';});
     const status=$('novaProfileStatus');
     if(status)status.textContent=n.setup?'Заполнен':'Нужно заполнить';
@@ -3532,6 +3559,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   }
   function saveNovaProfile(){
     const n=novaProfileData();
+    n.mode=$('novaMode')?$('novaMode').value:'study';
     n.activity=$('novaActivity').value;
     n.sports=$('novaSports').value.trim().slice(0,100);
     n.days=$('novaDays').value.trim().slice(0,80);
@@ -3558,14 +3586,20 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
       body.append(title,note);el.append(tm,body);box.appendChild(el);
     });
   }
-  function buildNovaPlan(){
-    const n=novaProfileData(), now=new Date(), dayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
+  function buildNovaPlan(forDate){
+    const n=novaProfileData(), now=forDate?new Date(forDate):new Date();
+    const dayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
     const rows=[], dayKey=novaDayNames[now.getDay()];
+    const mode=n.mode||'study';
     const add=(time,title,note,sort)=>rows.push({time,title,note,sort:sort==null?9999:sort});
     const wake=novaTimeMinutes(n.wake), sleep=novaTimeMinutes(n.sleep);
-    if(wake!=null)add(n.wake,'Подъём и начало дня','Спокойно подготовься к делам',wake);
+    if(wake!=null)add(n.wake, mode==='free'?'Спокойный подъём':'Подъём и начало дня', mode==='work'?'Соберись перед рабочим днём':'Спокойно подготовься к делам', wake);
     const schoolA=novaTimeMinutes(n.schoolStart),schoolB=novaTimeMinutes(n.schoolEnd);
-    if(schoolA!=null&&schoolB!=null&&schoolB>schoolA)add(n.schoolStart+'–'+n.schoolEnd,'Учёба','Указанное тобой учебное время',schoolA);
+    if(schoolA!=null&&schoolB!=null&&schoolB>schoolA){
+      const title = mode==='work' ? 'Работа' : mode==='free' ? 'Основной блок дня' : 'Учёба';
+      const note = mode==='work' ? 'Рабочие часы из профиля' : mode==='free' ? 'Занятость, которую ты указал' : 'Указанное тобой учебное время';
+      add(n.schoolStart+'–'+n.schoolEnd, title, note, schoolA);
+    }
     const dayTokens=(n.days||'').toLowerCase().replace(/ё/g,'е').split(/[,\s;/]+/).filter(Boolean);
     const dayMatch=dayTokens.some(x=>x===dayKey.toLowerCase()||x===({ 'вс':'воскресенье','пн':'понедельник','вт':'вторник','ср':'среда','чт':'четверг','пт':'пятница','сб':'суббота'}[dayKey.toLowerCase()]));
     if(dayMatch&&n.sports){
@@ -3574,15 +3608,87 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     }
     const reminders=novaPending().filter(r=>r.when>=dayStart&&r.when<dayStart+86400000);
     reminders.forEach(r=>{const d=new Date(r.when),m=d.getHours()*60+d.getMinutes();add(d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}),r.text,'Напоминание Luma',m);});
-    if(n.focus)add('Гибко','Личные цели','Можно выделить время на: '+n.focus,1100);
+    if(n.focus)add('Гибко', mode==='work'?'Задачи и цели':'Личные цели','Можно выделить время на: '+n.focus,1100);
+    if(mode==='free' && !n.focus) add('Днём','Свободное время','Прогулка, отдых или хобби — без жёсткого графика',900);
     if(sleep!=null)add(n.sleep,'Подготовка ко сну','Заверши дела и оставь время на отдых',sleep);
+    rows.sort((a,b)=>a.sort-b.sort);
     if(!rows.length){
       const next=novaPending().find(r=>r.when>Date.now());
       if(next){const d=new Date(next.when),m=d.getHours()*60+d.getMinutes();add(d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}),next.text,'Ближайшее напоминание Luma',m);}
     }
     return rows;
   }
+  function buildNovaWeekPlan(){
+    const days=[];
+    const base=new Date(); base.setHours(0,0,0,0);
+    for(let i=0;i<7;i++){
+      const d=new Date(base.getTime()+i*86400000);
+      const rows=buildNovaPlan(d).filter(r=>r.title);
+      days.push({date:d, label:novaDayNames[d.getDay()]+', '+d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'}), rows});
+    }
+    return days;
+  }
+  function renderNovaWeekPlan(){
+    const box=$('novaWeekPlan'); if(!box) return;
+    const n=novaProfileData();
+    if(!n.setup){ box.innerHTML='<div class="nova-profile-prompt">Сначала заполни и сохрани профиль Новы.</div>'; return; }
+    const days=buildNovaWeekPlan();
+    box.innerHTML = days.map(day => {
+      const body = day.rows.length ? day.rows.slice(0,6).map(r=>'<div class="nova-plan-row"><div class="nova-plan-time">'+(r.time||'—')+'</div><div><b>'+esc(r.title)+'</b><div class="nova-plan-note">'+(r.note?esc(r.note):'')+'</div></div></div>').join('') : '<div class="empty" style="padding:8px 0">Пока пусто — добавь расписание или напоминания</div>';
+      return '<div class="glass" style="padding:12px;margin-bottom:8px;border-radius:14px"><b>'+day.label+'</b>'+body+'</div>';
+    }).join('');
+  }
   function renderNovaPlan(){const n=novaProfileData();if(!n.setup){const box=$('novaDayPlan');if(box)box.innerHTML='<div class="nova-profile-prompt">Сначала заполни профиль Новы. После этого здесь появится план на сегодня.</div>';return;}novaRenderRows(buildNovaPlan());}
+  /* Локальная база частых продуктов (на 100 г), для ответов Новы без сети */
+  const NOVA_FOODS = [
+    {k:['гречк','гречне'],n:'Гречка варёная',c:110,p:4,f:1,u:22},
+    {k:['рис','рисов'],n:'Рис варёный',c:130,p:2.7,f:0.3,u:28},
+    {k:['овсян','овсянк'],n:'Овсянка на воде',c:88,p:3,f:1.5,u:15},
+    {k:['куриц','куриная грудк'],n:'Куриная грудка',c:165,p:31,f:3.6,u:0},
+    {k:['яйц'],n:'Яйцо куриное',c:155,p:13,f:11,u:1.1},
+    {k:['творог'],n:'Творог 5%',c:121,p:17,f:5,u:1.8},
+    {k:['яблок'],n:'Яблоко',c:52,p:0.3,f:0.2,u:14},
+    {k:['банан'],n:'Банан',c:89,p:1.1,f:0.3,u:23},
+    {k:['хлеб бел','белый хлеб'],n:'Хлеб белый',c:265,p:9,f:3,u:49},
+    {k:['хлеб чёрн','хлеб ржан'],n:'Хлеб ржаной',c:201,p:6.6,f:1.2,u:41},
+    {k:['молок'],n:'Молоко 2.5%',c:52,p:2.8,f:2.5,u:4.7},
+    {k:['сыр '],n:'Сыр твёрдый',c:350,p:25,f:27,u:0},
+    {k:['картоф'],n:'Картофель варёный',c:82,p:2,f:0.1,u:17},
+    {k:['макарон','паст'],n:'Макароны варёные',c:131,p:5,f:1.1,u:25},
+    {k:['лосос','сёмг'],n:'Лосось',c:208,p:20,f:13,u:0},
+    {k:['авокад'],n:'Авокадо',c:160,p:2,f:15,u:9},
+    {k:['огур'],n:'Огурец',c:15,p:0.8,f:0.1,u:3.6},
+    {k:['помидор','томат'],n:'Помидор',c:18,p:0.9,f:0.2,u:3.9},
+    {k:['морков'],n:'Морковь',c:41,p:0.9,f:0.2,u:10},
+    {k:['шоколад'],n:'Шоколад тёмный',c:546,p:5,f:31,u:61},
+    {k:['кофе'],n:'Кофе чёрный',c:2,p:0.1,f:0,u:0},
+    {k:['чай '],n:'Чай без сахара',c:1,p:0,f:0,u:0}
+  ];
+  function novaFindFood(q){
+    q=(q||'').toLowerCase().replace(/ё/g,'е');
+    for(const f of NOVA_FOODS){ if(f.k.some(k=>q.includes(k))) return f; }
+    // custom foods
+    const customs=data.customFoods||[];
+    for(const c of customs){ if((c.n||'').toLowerCase().replace(/ё/g,'е').includes(q.slice(0,12)) || q.includes((c.n||'').toLowerCase().slice(0,4))) return {n:c.n,c:c.c,p:c.p,f:c.f,u:c.u,local:true}; }
+    return null;
+  }
+  function novaCalorieAnswer(query){
+    const m=query.match(/(\d+[.,]?\d*)\s*(г|гр|грамм|кг)?/);
+    let grams=100;
+    if(m){ grams=parseFloat(m[1].replace(',','.')); if((m[2]||'').startsWith('кг')) grams*=1000; if(grams<=0||grams>5000) grams=100; }
+    const food=novaFindFood(query);
+    if(!food) return null;
+    const k=grams/100;
+    const line=food.n+' · '+Math.round(food.c*k)+' ккал на '+Math.round(grams)+' г\nБ '+Math.round(food.p*k*10)/10+' · Ж '+Math.round(food.f*k*10)/10+' · У '+Math.round(food.u*k*10)/10;
+    return line+(food.local?'\n(из твоих сохранённых блюд)':'\n(локальная база Luma, ориентир на 100 г)');
+  }
+  function novaStatusText(){
+    const cal=(data.meals||[]).filter(m=>m.date===(typeof todayStr==='function'?todayStr():new Date().toISOString().slice(0,10))).reduce((a,m)=>a+(+m.cal||0),0);
+    const water=(data.water&&data.water.date===(typeof todayStr==='function'?todayStr():''))?data.water.current:0;
+    const goalW=(data.water&&data.water.goal)||2000;
+    const pending=novaPending().filter(r=>!r.done).length;
+    return 'Сегодня:\n• Калории: '+cal+' ккал\n• Вода: '+water+' / '+goalW+' мл\n• Активных напоминаний: '+pending+'\n• Баланс: '+(data.coins?data.coins.bal:0)+' ✧';
+  }
   function novaPlanText(){
     const n=novaProfileData();
     if(!n.setup)return 'Сначала заполни профиль Новы в этом разделе. Я смогу учитывать расписание, занятия и твои напоминания.';
@@ -3590,21 +3696,38 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     return rows.length?'План на сегодня:\n'+rows.map(r=>(r.time?r.time+' — ':'')+r.title+(r.note?' ('+r.note+')':'')).join('\n'):'На сегодня пока нет записанных дел. Добавь напоминания или укажи расписание.';
   }
   function novaReply(kind,query=''){
-    const now=new Date(), todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime(), tomorrow=todayStart+86400000;
-    const pending=novaPending(), today=pending.filter(r=>r.when>=todayStart&&r.when<tomorrow);
+    const pending=novaPending();
+    const todayStart=new Date(); todayStart.setHours(0,0,0,0); const tomorrow=todayStart.getTime()+86400000;
+    query=(query||'').toLowerCase();
+    // calories
+    if(/ккал|калор|сколько .* в |бжу|белк|углевод/.test(query) || kind==='food'){
+      const ans=novaCalorieAnswer(query);
+      if(ans) return ans;
+      return 'Не нашла продукт в локальной базе. Открой «Рацион» и найди его через Open Food Facts или добавь в «Мои блюда» — тогда я смогу отвечать и офлайн.';
+    }
+    if(kind==='status'||/статус|как дела|сегодня у меня|сводка|прогресс/.test(query)) return novaStatusText();
+    if(kind==='week'||/недел|на неделю|недельный/.test(query)){
+      const days=buildNovaWeekPlan();
+      renderNovaWeekPlan();
+      return 'План на 7 дней:\n'+days.map(d=>d.label+': '+(d.rows.length?d.rows.slice(0,3).map(r=>(r.time?r.time+' ':'')+r.title).join(', '):'пусто')).join('\n');
+    }
     if(kind==='plan'||/план|расписан|сегодня/.test(query))return novaPlanText();
     if(kind==='tasks'||/задач|напоминан|дела/.test(query)) return pending.length?'У тебя '+pending.length+' активных напоминаний:\n'+pending.slice(0,8).map(r=>'• '+new Date(r.when).toLocaleString('ru-RU',{weekday:'short',hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'})+' — '+r.text).join('\n'):'Активных напоминаний пока нет. Можешь добавить новое — я помогу открыть форму.';
     if(kind==='free'||/свободн|окно/.test(query)) {const next=pending.find(r=>r.when>Date.now());if(!next)return 'Впереди нет активных напоминаний. По данным Luma, расписание свободно.';const mins=Math.max(0,Math.round((next.when-Date.now())/60000));return 'Следующее напоминание: «'+next.text+'» в '+new Date(next.when).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'. До него примерно '+(mins>=60?Math.floor(mins/60)+' ч '+mins%60+' мин':mins+' мин')+'.';}
-    if(kind==='tip'||/совет/.test(query)) return pending.length?'Совет: выбери одну самую важную задачу и начни с неё. Оставляй промежутки между делами.':'Совет: записывай важные дела сразу, чтобы не держать их в памяти. В Luma можно поставить напоминание.';
+    if(kind==='tip'||/совет/.test(query)) {
+      const tips=['Выбери одну главную задачу на день — остальное приложится.','Пей воду равномерно, а не залпом вечером.','Короткая прогулка 10–15 минут освежает лучше, чем ещё один ролик.','Записывай дела сразу: память для идей, календарь — для сроков.','Если устал — лучше короткий отдых, чем «ещё чуть-чуть» до выгорания.'];
+      return tips[Math.floor(Math.random()*tips.length)];
+    }
     if(kind==='remind'||/создай напомин|добавь напомин/.test(query)){goTab('reminders');return 'Открыла раздел напоминаний. Введи текст, дату и время — затем сохрани.';}
-    return 'Я могу составить план на сегодня, показать задачи, найти ближайшее свободное время или открыть создание напоминания. Для персонального плана заполни профиль Новы.';
+    return 'Я могу: план на сегодня/неделю, задачи, свободное время, калории в еде (гречка, курица, яйца…), сводку дня или создать напоминание. Для точного плана заполни профиль Новы.';
   }
-  function novaAction(kind){const labels={plan:'План на сегодня',tasks:'Мои задачи',free:'Свободное время',tip:'Совет',remind:'Создать напоминание'};novaSay(labels[kind]||kind,'user');novaSay(novaReply(kind));if(kind==='plan')renderNovaPlan();}
+  function novaAction(kind){const labels={plan:'План на сегодня',week:'План на неделю',tasks:'Мои задачи',free:'Свободное время',tip:'Совет',remind:'Создать напоминание',status:'Сводка дня'};novaSay(labels[kind]||kind,'user');novaSay(novaReply(kind));if(kind==='plan')renderNovaPlan();if(kind==='week')renderNovaWeekPlan();}
   const novaPage=$('page-nova'); if(novaPage){
     novaPage.addEventListener('click',e=>{const b=e.target.closest('[data-nova]');if(b)novaAction(b.dataset.nova);});
     const f=$('novaForm');if(f)f.addEventListener('submit',e=>{e.preventDefault();const input=$('novaInput'),q=(input.value||'').trim();if(!q)return;novaSay(q,'user');novaSay(novaReply('',q.toLowerCase()));input.value='';});
     const saveBtn=$('novaProfileSave');if(saveBtn)saveBtn.addEventListener('click',saveNovaProfile);
     const planBtn=$('novaBuildPlan');if(planBtn)planBtn.addEventListener('click',()=>{renderNovaPlan();novaSay(novaPlanText());});
+    const weekBtn=$('novaBuildWeek');if(weekBtn)weekBtn.addEventListener('click',()=>{renderNovaWeekPlan();novaSay(novaReply('week'));});
   }
   renderNovaProfile();renderNovaPlan();
 
