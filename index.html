@@ -4458,6 +4458,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
   const novaPage=$('page-nova'); if(novaPage){
     novaPage.addEventListener('click',e=>{const b=e.target.closest('[data-nova]');if(b)novaAction(b.dataset.nova);});
     const f=$('novaForm');if(f)f.addEventListener('submit',async e=>{e.preventDefault();const input=$('novaInput'),q=(input.value||'').trim();if(!q)return;novaSay(q,'user');input.value='';const low=q.toLowerCase();
+      if(LOOKUP_MORE.test(low)){ novaSay(lookupMore()); return; }
       let mode=null,miss=NOVA_FALLBACK;
       if(NOVA_KNOW.test(low)) mode='wiki';
       else { const r=novaReply('',low); if(r===NOVA_FOOD_MISS){mode='food';miss=NOVA_FOOD_MISS;} else if(r===NOVA_FALLBACK){mode='wiki';} else { novaSay(r); return; } }
@@ -4550,14 +4551,14 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
   /* ===== Ответы из интернета прямо в чате (без своего сервера): Википедия + Open Food Facts =====
      Запросы идут из браузера к открытым API (CORS), ключи и сервер не нужны.
      Удачные ответы запоминаются в localStorage — повторный вопрос работает офлайн. */
-  const LOOKUP_KEY = 'luma-lookup-cache';
+  const LOOKUP_KEY = 'luma-lookup-cache2';
   const LOOKUP_NONET = 'Сейчас нет интернета, а этого ответа нет среди сохранённых. Попробуй, когда появится сеть: найденные ответы я запоминаю и потом показываю офлайн.';
   const LOOKUP_NONE = 'Не нашла ответа. Попробуй короче и точнее, например: «что такое креатин» или «кардио».';
   const LOOKUP_STOP = new Set(['сколько','калорий','калории','калория','ккал','бжу','белков','белки','жиров','жиры','углеводов','углеводы','содержится','есть','в','во','на','у','и']);
   function lookupCache() { try { const o = JSON.parse(localStorage.getItem(LOOKUP_KEY) || '{}'); return o && typeof o === 'object' ? o : {}; } catch { return {}; } }
-  function lookupCacheSet(k, text) {
+  function lookupCacheSet(k, v) {
     try {
-      const o = lookupCache(); o[k] = { t: Date.now(), text };
+      const o = lookupCache(); o[k] = Object.assign({ t: Date.now() }, v);
       Object.keys(o).sort((a, b) => o[b].t - o[a].t).slice(40).forEach(x => delete o[x]);
       localStorage.setItem(LOOKUP_KEY, JSON.stringify(o));
     } catch {}
@@ -4568,19 +4569,75 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     for (let i = 0; i < 2; i++) t = t.replace(pre, '');
     return t.replace(/[?!.…]+$/, '').trim().slice(0, 80);
   }
-  async function lookupWiki(q) {
-    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 8000);
+  const LOOKUP_QSTOP = new Set(['как','какой','какая','какие','какое','каким','чем','чего','зачем','почему','когда','где','можно','нужно','надо','ли','правильно','лучше','для','при','про','это','или','что','кто','мне','меня','есть','быть','перед','после','чтобы','если','сколько']);
+  const LOOKUP_MORE = /^(подробнее|подробней|ещё|еще|дальше|продолжай|продолжи|расскажи больше|и что дальше)\s*[.!?]*$/i;
+  const LOOKUP_BAD_TITLE = /^(список|категория|шаблон|портал|обсуждение|википедия)[\s:]/i;
+  let lookupLast = null;
+  const lookupNorm = t => String(t || '').toLowerCase().replace(/ё/g, 'е');
+  const lookupStem = w => w.slice(0, Math.max(4, w.length - 2));
+  function lookupWords(q) {
+    const w = lookupNorm(q).split(/[^a-zа-я0-9]+/).filter(x => x.length >= 3 && !LOOKUP_QSTOP.has(x));
+    return w.length ? w : lookupNorm(q).split(/\s+/).filter(Boolean);
+  }
+  /* убирает из текста Википедии транскрипции, ударения, сноски — то, что делает ответ «энциклопедичным» */
+  function lookupTidy(t) {
+    return String(t || '').replace(/[́­]/g, '').replace(/\[\d+\]/g, '')
+      .replace(/\s*\((?=[^)]*(?:[A-Za-z]|лат\.|англ\.|нем\.|фр\.|греч\.|исп\.|ит\.|яп\.|кит\.|МФА|произн))[^)]*\)/g, '')
+      .replace(/[ \t]+/g, ' ').replace(/ ([,.;:])/g, '$1').replace(/[ \t]*\n[ \t]*/g, '\n').trim();
+  }
+  /* режет текст на короткие порции по предложениям (без lookbehind — старые iPhone его не поддерживают) */
+  function lookupChunks(text) {
+    const sents = text.replace(/\n+/g, ' ').match(/[^.!?]+(?:[.!?]+|$)\s*/g) || [text];
+    const merged = [];
+    sents.forEach(x => { const last = merged[merged.length - 1]; if (last && /(?:^|\s)[а-яёА-ЯЁ]{1,3}\.\s*$/.test(last)) merged[merged.length - 1] = last + x; else merged.push(x); });
+    const out = []; let cur = '';
+    merged.forEach(x => { if (cur && (cur + x).length > 420) { out.push(cur.trim()); cur = x; } else cur += x; });
+    if (cur.trim()) out.push(cur.trim());
+    return out.slice(0, 6).map(c => c.length > 700 ? c.slice(0, 700).replace(/\s+\S*$/, '') + '…' : c);
+  }
+  async function lookupWikiFetch(search, ctl) {
+    const url = 'https://ru.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&generator=search&gsrnamespace=0&gsrlimit=6&gsrsearch=' + encodeURIComponent(search) + '&prop=extracts|info|pageprops&inprop=url&ppprop=disambiguation&exintro=1&explaintext=1&exlimit=max&exchars=2200';
+    const r = await fetch(url, { signal: ctl.signal });
+    if (!r.ok) return [];
+    const j = await r.json();
+    return j && j.query && j.query.pages ? Object.values(j.query.pages) : [];
+  }
+  /* берёт несколько результатов и выбирает тот, что лучше совпадает с вопросом (и с темой чата) */
+  async function lookupWiki(q, ctxRe) {
+    const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 9000);
     try {
-      const url = 'https://ru.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&generator=search&gsrlimit=1&gsrsearch=' + encodeURIComponent(q) + '&prop=extracts|info&inprop=url&exintro=1&explaintext=1&exchars=900';
-      const r = await fetch(url, { signal: ctl.signal });
-      if (!r.ok) return null;
-      const j = await r.json();
-      const pg = j && j.query && j.query.pages ? Object.values(j.query.pages)[0] : null;
-      if (!pg || !pg.extract || pg.extract.length < 40) return null;
-      let ex = pg.extract.replace(/[ \t]*\n[ \t]*/g, '\n').trim();
-      if (ex.length > 600) { const cut = ex.slice(0, 600), i = cut.lastIndexOf('. '); ex = i > 250 ? cut.slice(0, i + 1) : cut + '…'; }
-      return pg.title + '\n' + ex + '\n\nИсточник: Википедия — ' + (pg.fullurl || 'https://ru.wikipedia.org/wiki/' + encodeURIComponent(pg.title));
+      const words = lookupWords(q);
+      let pages = await lookupWikiFetch(words.join(' '), ctl);
+      if (!pages.length && words.length > 1) pages = await lookupWikiFetch(words.slice().sort((x, y) => y.length - x.length)[0], ctl);
+      const stems = words.map(lookupStem), whole = lookupNorm(words.join(' '));
+      const cands = pages.filter(pg => pg && pg.extract && pg.extract.length > 60 && !(pg.pageprops && 'disambiguation' in pg.pageprops) && !LOOKUP_BAD_TITLE.test(pg.title) && !/может означать|многозначн/i.test(pg.extract.slice(0, 200)))
+        .map(pg => {
+          const tl = lookupNorm(pg.title), ex = lookupNorm(pg.extract);
+          const tHits = stems.filter(x => tl.includes(x)).length;
+          let sc = (6 - (pg.index || 6)) * 0.8 + tHits * 3 + Math.min(2, stems.filter(x => ex.includes(x)).length);
+          if (tl === whole) sc += 6;
+          if (ctxRe && ctxRe.test(ex)) sc += 2;
+          return { pg, sc, tHits };
+        }).sort((x, y) => y.sc - x.sc);
+      if (!cands.length) return null;
+      const top = cands[0].pg, chunks = lookupChunks(lookupTidy(top.extract));
+      if (!chunks.length) return null;
+      return { title: top.title, url: top.fullurl || ('https://ru.wikipedia.org/wiki/' + encodeURIComponent(top.title.replace(/ /g, '_'))), chunks, sure: cands[0].tHits > 0, alts: cands.slice(1, 3).map(c => c.pg.title) };
     } catch { return null; } finally { clearTimeout(to); }
+  }
+  const LOOKUP_OPEN = t => ['Вот что нашла про «' + t + '»:', 'Нашла в Википедии — «' + t + '»:', 'Коротко про «' + t + '»:'][t.length % 3];
+  function lookupRender(d, i) {
+    const more = i < d.chunks.length - 1;
+    let t = (i === 0 ? LOOKUP_OPEN(d.title) + '\n\n' : '') + d.chunks[i];
+    if (i === 0 && !d.sure) t += '\n\nНе уверена, что это именно то, что ты имел в виду.' + (d.alts.length ? ' Может, ' + d.alts.map(a => '«' + a + '»').join(' или ') + '? Напиши «найди …».' : ' Если не то — уточни вопрос.');
+    if (more) t += '\n\nНапиши «подробнее» — расскажу дальше.';
+    if (i === 0 || !more) t += '\n\nИсточник: Википедия — ' + d.url;
+    return t;
+  }
+  function lookupMore() {
+    if (!lookupLast) return 'Пока не о чем продолжать. Спроси что-нибудь, например: «что такое креатин».';
+    if (lookupLast.i >= lookupLast.d.chunks.length - 1) return 'В кратком описании больше ничего нет. Полный текст — по ссылке: ' + lookupLast.d.url;
+    lookupLast.i++; return lookupRender(lookupLast.d, lookupLast.i);
   }
   async function lookupFood(raw) {
     const m = String(raw).match(/(\d+[.,]?\d*)\s*(кг|гр|г|грамм\w*)?/);
@@ -4592,7 +4649,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     const items = (j && Array.isArray(j.products) ? j.products : []).map(offItem).filter(Boolean).slice(0, 3);
     if (!items.length) return null;
     const k = grams / 100, r1 = v => Math.round(v * 10) / 10;
-    return 'По Open Food Facts на ' + Math.round(grams) + ' г:\n' + items.map(it => '• ' + it.n + ' — ' + Math.round(it.c * k) + ' ккал · Б ' + r1(it.p * k) + ' · Ж ' + r1(it.f * k) + ' · У ' + r1(it.u * k)).join('\n') + '\n\nДанные вносят пользователи — сверяй с упаковкой.';
+    return 'Вот что нашла в Open Food Facts (на ' + Math.round(grams) + ' г):\n' + items.map(it => '• ' + it.n + ' — ' + Math.round(it.c * k) + ' ккал · Б ' + r1(it.p * k) + ' · Ж ' + r1(it.f * k) + ' · У ' + r1(it.u * k)).join('\n') + '\n\nДанные вносят пользователи — сверяй с упаковкой.';
   }
   function lookupPending(chatId) {
     const chat = $(chatId); if (!chat) return null;
@@ -4603,19 +4660,23 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
   async function lookupAnswer(raw, chatId, mode) {
     const q = lookupClean(raw);
     if (q.length < 2) return LOOKUP_NONE;
-    const key = (mode === 'food' ? 'f:' : 'w:') + q;
+    const ctxRe = chatId === 'sportChat' ? /спорт|тренир|упражнен|мышц|физическ|здоровь|нагрузк|бег|атлет|фитнес/ : null;
+    const key = (mode === 'food' ? 'f:' : 'w:') + q + (ctxRe ? ':s' : '');
     const hit = lookupCache()[key];
+    if (hit && hit.d) { lookupLast = { d: hit.d, i: 0 }; return lookupRender(hit.d, 0); }
     if (hit && hit.text) return hit.text;
     if (navigator.onLine === false) return LOOKUP_NONET;
     const ph = lookupPending(chatId);
-    let text = null;
-    try { text = mode === 'food' ? await lookupFood(raw) : await lookupWiki(q); } catch { text = null; }
+    let res = null;
+    try { res = mode === 'food' ? await lookupFood(raw) : await lookupWiki(q, ctxRe); } catch { res = null; }
     if (ph) ph.remove();
-    if (text) { lookupCacheSet(key, text); return text; }
-    return LOOKUP_NONE;
+    if (!res) return LOOKUP_NONE;
+    if (typeof res === 'string') { lookupCacheSet(key, { text: res }); return res; }
+    lookupCacheSet(key, { d: res }); lookupLast = { d: res, i: 0 };
+    return lookupRender(res, 0);
   }
 
-  /* ===== Спорт-чат (не планирование) ===== */
+    /* ===== Спорт-чат (не планирование) ===== */
   const SPORT_KEY = 'luma-sport-chat';
   function sportSay(text, who='bot'){
     const chat=$('sportChat'); if(!chat) return;
@@ -4644,6 +4705,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
   }
   async function sportReply(q){
     q=(q||'').trim(); if(!q) return 'Напиши вопрос про спорт или выбери кнопку выше.';
+    if(LOOKUP_MORE.test(q)) return lookupMore();
     const local=sportLocal(q);
     if(local) return local;
     const a=await lookupAnswer(q,'sportChat','wiki');
