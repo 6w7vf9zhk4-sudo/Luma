@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Luma",
   "short_name": "Luma",
-  "description": "Рацион, напоминания и мини-игры",
+  "description": "Персональный планировщик Новы, напоминания, питомцы и мини-игры",
   "lang": "ru",
   "start_url": "./index.html",
   "scope": "./",

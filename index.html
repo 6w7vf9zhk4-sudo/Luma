@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="20"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="24"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -981,6 +981,16 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
 @keyframes pet-art-play{from{transform:translateY(0) rotate(-8deg)}to{transform:translateY(-15px) rotate(8deg)}}
 @keyframes pet-art-wake{0%{transform:scale(.7)}60%{transform:scale(1.13)}100%{transform:scale(1)}}
 .nova-card{overflow:hidden}.nova-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}.nova-head>div:nth-child(2){flex:1;min-width:0}.nova-head b{display:block;font-size:18px}.nova-head small{display:block;color:var(--muted);font-size:12px;margin-top:3px}.nova-orb{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#fff,#c4b5fd 25%,#7c3aed 65%,#312e81);box-shadow:0 0 24px #8b5cf688;color:white;font-size:28px;animation:nova-float 3s ease-in-out infinite}@keyframes nova-float{50%{transform:translateY(-5px) rotate(5deg)}}
+
+.nova-profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.nova-profile-grid .field{min-width:0}
+.nova-profile-grid .field.full{grid-column:1/-1}
+.nova-plan-list{display:grid;gap:8px;margin-top:12px}
+.nova-plan-row{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border:1px solid var(--bd);border-radius:14px;background:var(--surface)}
+.nova-plan-time{font-weight:750;color:var(--accent);min-width:82px;font-variant-numeric:tabular-nums}
+.nova-plan-note{font-size:12px;color:var(--muted);line-height:1.45}
+.nova-profile-prompt{padding:12px;border:1px solid #c4a7ff40;border-radius:15px;background:#8b5cf618;margin-top:12px}
+@media(max-width:420px){.nova-profile-grid{grid-template-columns:1fr}.nova-profile-grid .field.full{grid-column:auto}}
 .nova-welcome{padding:14px;border-radius:16px;background:linear-gradient(135deg,#8b5cf622,#a78bfa12);border:1px solid var(--bd);line-height:1.55}.nova-quick{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.nova-chat{display:flex;flex-direction:column;gap:9px;max-height:320px;overflow:auto;padding:4px 0 12px}.nova-msg{max-width:92%;padding:11px 13px;border-radius:15px;line-height:1.45;font-size:14px;white-space:pre-wrap}.nova-msg.bot{align-self:flex-start;background:var(--surface);border:1px solid var(--bd)}.nova-msg.user{align-self:flex-end;background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:white}.nova-input-row{display:flex;gap:8px}.nova-input-row input{min-width:0;flex:1}.nova-input-row .btn{white-space:nowrap}
 @media(prefers-reduced-motion:reduce){.nova-orb{animation:none}.pet-stage .pet-avatar .pet-art{animation:none!important}}
 
@@ -1076,7 +1086,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v23 · питомцы и Нова</span>
+      <span class="pill" id="topPill">v24 · планировщик Новы</span>
     </header>
 
     <!-- HOME -->
@@ -1429,6 +1439,27 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
       <div class="glass section nova-card">
         <div class="nova-head"><div class="nova-orb" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M14 27 Q8 9 22 17 L28 22 Q36 12 46 17 Q57 20 51 31 L49 43 Q44 55 31 54 Q17 54 14 42Z" fill="#e9ddff" stroke="#7550d8" stroke-width="3"/><path d="M16 25 L7 15 Q5 30 17 34 M48 24 L58 14 Q60 29 48 34" fill="#c4b5fd" stroke="#7550d8" stroke-width="3"/><rect x="17" y="26" width="30" height="19" rx="9" fill="#21154f"/><path d="M23 34 Q27 28 31 34 M34 34 Q38 28 42 34" fill="none" stroke="#65e8ff" stroke-width="3" stroke-linecap="round"/><path d="M28 48 Q32 52 36 48" fill="none" stroke="#9b78ff" stroke-width="2" stroke-linecap="round"/><path d="M32 2 L35 10 L43 13 L35 16 L32 24 L29 16 L21 13 L29 10Z" fill="#ffe69a" stroke="#fff4c4" stroke-width="1"/></svg></div><div><b>Нова</b><small>Локальный помощник · без аккаунта и сервера</small></div><span class="tag">Готова</span></div>
         <div class="nova-welcome"><b>Привет! Я Нова.</b><br>Я могу посмотреть твои планы, помочь составить расписание и подготовить напоминание.</div>
+        <div class="glass section" style="margin:14px 0;padding:15px;background:rgba(255,255,255,.035)">
+          <div class="section-head"><h2>Твой профиль для планирования</h2><span class="tag" id="novaProfileStatus">Нужно заполнить</span></div>
+          <p class="notice" style="margin-top:0">Укажи занятия и распорядок. Возраст, рост и масса берутся из уже заполненного профиля, но не используются для оценки тела или назначения веса.</p>
+          <div class="nova-profile-grid">
+            <div class="field"><label for="novaActivity">Обычная активность</label><select id="novaActivity"><option value="low">Спокойная</option><option value="moderate">Умеренная</option><option value="active">Активная</option><option value="varied">Меняется по дням</option></select></div>
+            <div class="field"><label for="novaSports">Спорт / занятия</label><input id="novaSports" maxlength="100" placeholder="Например, тяжёлая атлетика"></div>
+            <div class="field"><label for="novaDays">Дни тренировок</label><input id="novaDays" maxlength="80" placeholder="Вт, Чт, Сб"></div>
+            <div class="field"><label for="novaTrainingTime">Время занятий</label><input id="novaTrainingTime" maxlength="40" placeholder="Например, 16:00"></div>
+            <div class="field"><label for="novaSchoolStart">Начало учёбы</label><input id="novaSchoolStart" type="time"></div>
+            <div class="field"><label for="novaSchoolEnd">Окончание учёбы</label><input id="novaSchoolEnd" type="time"></div>
+            <div class="field"><label for="novaWake">Обычно просыпаюсь</label><input id="novaWake" type="time" value="07:00"></div>
+            <div class="field"><label for="novaSleep">Обычно ложусь</label><input id="novaSleep" type="time" value="22:00"></div>
+            <div class="field full"><label for="novaFocus">Личные цели и важные дела</label><input id="novaFocus" maxlength="160" placeholder="Например, домашняя работа, чтение, английский"></div>
+          </div>
+          <div class="form-actions"><button class="btn" type="button" id="novaProfileSave">Сохранить профиль</button><button class="btn secondary" type="button" id="novaBuildPlan">Составить план на сегодня</button></div>
+          <p class="notice" id="novaProfileHint">Профиль хранится только в браузере на этом устройстве.</p>
+        </div>
+        <div class="glass section" style="margin:14px 0;padding:15px;background:rgba(255,255,255,.035)">
+          <div class="section-head"><h2>План на сегодня</h2><span class="tag">Нова</span></div>
+          <div id="novaDayPlan" class="nova-plan-list"><div class="empty">Заполни профиль — Нова составит план из твоих расписания и напоминаний.</div></div>
+        </div>
         <div class="nova-quick">
           <button class="btn secondary small" type="button" data-nova="plan">📅 План на сегодня</button>
           <button class="btn secondary small" type="button" data-nova="tasks">☑ Мои задачи</button>
@@ -1535,7 +1566,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v23 · питомцы и Нова</p>
+      <p class="footer" id="appFooter">Luma · v24 · планировщик Новы</p>
     </section>
   </main>
 
@@ -1556,13 +1587,13 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     <div class="onboard-card">
       <div class="eyebrow">ЗНАКОМСТВО</div>
       <h2 id="obTitle">Давай знакомиться</h2>
-      <p class="muted" style="margin-bottom:16px">Luma рассчитает твою норму калорий и сколько нужно гулять. Всё хранится только на этом устройстве.</p>
+      <p class="muted" style="margin-bottom:16px">Заполни профиль, чтобы Нова могла составлять удобное расписание. Личные данные хранятся только на этом устройстве.</p>
       <div class="fields">
         <div class="field full"><label>Как тебя зовут</label><input id="obName" maxlength="24" placeholder="Имя"></div>
         <div class="field"><label>Пол</label><select id="obSex"><option value="m">Мужской</option><option value="f">Женский</option></select></div>
         <div class="field"><label>Возраст, лет</label><input type="number" id="obAge" min="10" max="100" inputmode="numeric" placeholder="25"></div>
-        <div class="field"><label>Рост, см</label><input type="number" id="obHeight" min="100" max="230" inputmode="decimal" step="any" placeholder="175"></div>
-        <div class="field"><label>Вес, кг</label><input type="number" id="obWeight" min="25" max="300" inputmode="decimal" step="any" placeholder="70"></div>
+        <div class="field"><label>Рост, см (необязательно)</label><input type="number" id="obHeight" min="100" max="230" inputmode="decimal" step="any" placeholder="175"></div>
+        <div class="field"><label>Масса, кг (необязательно)</label><input type="number" id="obWeight" min="25" max="300" inputmode="decimal" step="any" placeholder="70"></div>
         <div class="field full"><label>Обычная активность</label>
           <select id="obAct">
             <option value="0">Сидячий образ жизни</option>
@@ -1572,17 +1603,20 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
             <option value="4">Очень высокая (тяжёлый физический труд)</option>
           </select>
         </div>
+        <div class="field full"><label for="obNovaActivity">Активность для расписания Новы</label><select id="obNovaActivity"><option value="low">Спокойная</option><option value="moderate" selected>Умеренная</option><option value="active">Активная</option><option value="varied">Меняется по дням</option></select></div>
+        <div class="field full"><label for="obNovaSports">Спорт и занятия (необязательно)</label><input id="obNovaSports" maxlength="100" placeholder="Например, плавание, футбол, тяжёлая атлетика"></div>
+        <div class="field"><label for="obNovaDays">Дни занятий</label><input id="obNovaDays" maxlength="80" placeholder="Вт, Чт, Сб"></div>
+        <div class="field"><label for="obNovaTime">Время занятий</label><input id="obNovaTime" maxlength="40" placeholder="Например, 16:00"></div>
+        <div class="field"><label for="obNovaSchoolStart">Начало учёбы</label><input id="obNovaSchoolStart" type="time"></div>
+        <div class="field"><label for="obNovaSchoolEnd">Окончание учёбы</label><input id="obNovaSchoolEnd" type="time"></div>
+        <div class="field"><label for="obNovaWake">Подъём</label><input id="obNovaWake" type="time" value="07:00"></div>
+        <div class="field"><label for="obNovaSleep">Отбой</label><input id="obNovaSleep" type="time" value="22:00"></div>
+        <div class="field full"><label for="obNovaFocus">Личные цели и важные дела</label><input id="obNovaFocus" maxlength="160" placeholder="Например, уроки, чтение, изучение языка"></div>
       </div>
-      <p class="notice" style="margin:16px 0 8px">Твоя цель</p>
-      <div class="choice-row" id="goalChoice">
-        <button type="button" class="choice" data-goal="lose"><span>⬇️</span>Похудеть</button>
-        <button type="button" class="choice on" data-goal="keep"><span>⚖️</span>Остаться в весе</button>
-        <button type="button" class="choice" data-goal="gain"><span>⬆️</span>Набрать массу</button>
-      </div>
-      <div class="ob-preview" id="obPreview">Заполни возраст, рост и вес — здесь появится расчёт.</div>
+      <div class="ob-preview" id="obPreview">Нова использует расписание, занятия и твои задачи, чтобы предложить удобный план дня. Она не назначает целевой вес и не оценивает тело.</div>
       <label class="check"><input type="checkbox" id="obGeo" checked><span>Разрешить доступ к геолокации, чтобы считать пройденный путь на прогулках</span></label>
       <div class="form-actions">
-        <button class="btn" type="button" id="obSave">Сохранить и рассчитать</button>
+        <button class="btn" type="button" id="obSave">Сохранить профиль</button>
         <button class="btn secondary" type="button" id="obSkip">Позже</button>
       </div>
     </div>
@@ -1663,7 +1697,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
         if (name === 'reminders') { if (typeof renderReminders === 'function') renderReminders(); if (typeof initRemDefaults === 'function') initRemDefaults(); }
         if (name === 'games' && typeof exitGame === 'function') exitGame();
         if (name === 'settings' && typeof updateNotifUI === 'function') updateNotifUI();
-        if (name === 'nova') { /* Nova uses current local data */ }
+        if (name === 'nova') { renderNovaProfile(); renderNovaPlan(); }
       } catch (e) { console.error(e); }
     } catch (e) { console.error('goTab', e); }
   };
@@ -1687,7 +1721,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '20';
+  const BUILD = '24';
   /* ----- Роли и пароли: хранятся только хеши (SHA-256, соль, 4000 итераций) ----- */
   function sha256(str) {
     const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
@@ -1763,6 +1797,12 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     }), 500);
     d.rewards = list(d.rewards, r => ({ id: sid(r.id), name: str(r.name, 40), price: num(r.price, 1, 1e7), count: num(r.count, 0, 1e6) }), 200);
     const wt = d.water; wt.current = num(wt.current, 0, 100000); wt.goal = num(wt.goal, 500, 10000) || 2000; wt.date = dt(wt.date);
+    d.profile = { ...base.profile, ...(d.profile && typeof d.profile === 'object' ? d.profile : {}) };
+    d.profile.nova = { ...base.profile.nova, ...(d.profile.nova && typeof d.profile.nova === 'object' ? d.profile.nova : {}) };
+    const np = d.profile.nova;
+    np.setup = !!np.setup;
+    np.activity = ['low','moderate','active','varied'].includes(np.activity) ? np.activity : 'moderate';
+    ['sports','days','trainingTime','schoolStart','schoolEnd','wake','sleep','focus'].forEach(k => { np[k] = String(np[k] || '').slice(0,160); });
     if (typeof d.profile.name !== 'string') d.profile.name = '';
     d.profile.name = d.profile.name.slice(0, 24);
     const h = {}; if (d.hist && typeof d.hist === 'object') Object.keys(d.hist).sort().slice(-120).forEach(k => { if (/^\d{4}-\d{2}-\d{2}$/.test(k)) h[k] = num(d.hist[k], 0, 100000); }); d.hist = h;
@@ -1778,7 +1818,7 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     meals: [],
     water: { current: 0, goal: 2000, date: todayStr() },
     reminders: [],
-    profile: { name: '', done: false, weightLog: [] },
+    profile: { name: '', done: false, weightLog: [], nova: { setup: false, activity: 'moderate', sports: '', days: '', trainingTime: '', schoolStart: '', schoolEnd: '', wake: '07:00', sleep: '22:00', focus: '' } },
     theme: 'violet',
     ntfy: { enabled: false, topic: '' },
     stats: defaultStats(),
@@ -3478,18 +3518,94 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
   function openNova(){goTab('nova');} window.openNova=openNova;
   function novaSay(text,who='bot'){const chat=$('novaChat');if(!chat)return;const el=document.createElement('div');el.className='nova-msg '+who;el.textContent=text;chat.appendChild(el);chat.scrollTop=chat.scrollHeight;}
   function novaPending(){return (data.reminders||[]).filter(r=>!r.done).sort((a,b)=>a.when-b.when);}
+  const novaDayNames=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  function novaProfileData(){return prof().nova || (prof().nova={setup:false,activity:'moderate',sports:'',days:'',trainingTime:'',schoolStart:'',schoolEnd:'',wake:'07:00',sleep:'22:00',focus:''});}
+  function renderNovaProfile(){
+    const n=novaProfileData();
+    const fields={novaActivity:n.activity,novaSports:n.sports,novaDays:n.days,novaTrainingTime:n.trainingTime,novaSchoolStart:n.schoolStart,novaSchoolEnd:n.schoolEnd,novaWake:n.wake,novaSleep:n.sleep,novaFocus:n.focus};
+    Object.keys(fields).forEach(id=>{const el=$(id);if(el && document.activeElement!==el)el.value=fields[id]||'';});
+    const status=$('novaProfileStatus');
+    if(status)status.textContent=n.setup?'Заполнен':'Нужно заполнить';
+    const hint=$('novaProfileHint');
+    if(hint)hint.textContent=n.setup?'Профиль сохранён на этом устройстве. Его можно изменить в любое время.':'Заполни хотя бы активность и распорядок, чтобы план был точнее.';
+  }
+  function saveNovaProfile(){
+    const n=novaProfileData();
+    n.activity=$('novaActivity').value;
+    n.sports=$('novaSports').value.trim().slice(0,100);
+    n.days=$('novaDays').value.trim().slice(0,80);
+    n.trainingTime=$('novaTrainingTime').value.trim().slice(0,40);
+    n.schoolStart=$('novaSchoolStart').value;
+    n.schoolEnd=$('novaSchoolEnd').value;
+    n.wake=$('novaWake').value||'07:00';
+    n.sleep=$('novaSleep').value||'22:00';
+    n.focus=$('novaFocus').value.trim().slice(0,160);
+    n.setup=true;
+    save();renderNovaProfile();renderNovaPlan();toast('Профиль Новы сохранён');
+  }
+  function novaTimeMinutes(t){if(!/^\d{2}:\d{2}$/.test(t||''))return null;const [h,m]=t.split(':').map(Number);return h*60+m;}
+  function novaRenderRows(rows){
+    const box=$('novaDayPlan');if(!box)return;
+    if(!rows.length){box.innerHTML='<div class="empty">На сегодня пока нет записанных дел. Добавь напоминания или заполни расписание.</div>';return;}
+    box.innerHTML='';
+    rows.sort((a,b)=>a.sort-b.sort).forEach(r=>{
+      const el=document.createElement('div');el.className='nova-plan-row';
+      const tm=document.createElement('div');tm.className='nova-plan-time';tm.textContent=r.time||'';
+      const body=document.createElement('div');body.style.minWidth='0';
+      const title=document.createElement('b');title.textContent=r.title;
+      const note=document.createElement('div');note.className='nova-plan-note';note.textContent=r.note||'';
+      body.append(title,note);el.append(tm,body);box.appendChild(el);
+    });
+  }
+  function buildNovaPlan(){
+    const n=novaProfileData(), now=new Date(), dayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
+    const rows=[], dayKey=novaDayNames[now.getDay()];
+    const add=(time,title,note,sort)=>rows.push({time,title,note,sort:sort==null?9999:sort});
+    const wake=novaTimeMinutes(n.wake), sleep=novaTimeMinutes(n.sleep);
+    if(wake!=null)add(n.wake,'Подъём и начало дня','Спокойно подготовься к делам',wake);
+    const schoolA=novaTimeMinutes(n.schoolStart),schoolB=novaTimeMinutes(n.schoolEnd);
+    if(schoolA!=null&&schoolB!=null&&schoolB>schoolA)add(n.schoolStart+'–'+n.schoolEnd,'Учёба','Указанное тобой учебное время',schoolA);
+    const dayTokens=(n.days||'').toLowerCase().replace(/ё/g,'е').split(/[,\s;/]+/).filter(Boolean);
+    const dayMatch=dayTokens.some(x=>x===dayKey.toLowerCase()||x===({ 'вс':'воскресенье','пн':'понедельник','вт':'вторник','ср':'среда','чт':'четверг','пт':'пятница','сб':'суббота'}[dayKey.toLowerCase()]));
+    if(dayMatch&&n.sports){
+      const tm=n.trainingTime||'Время не указано', mins=novaTimeMinutes(n.trainingTime);
+      add(tm,n.sports,'Запланированное занятие. Оставь время на дорогу и восстановление.',mins==null?850:mins);
+    }
+    const reminders=novaPending().filter(r=>r.when>=dayStart&&r.when<dayStart+86400000);
+    reminders.forEach(r=>{const d=new Date(r.when),m=d.getHours()*60+d.getMinutes();add(d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}),r.text,'Напоминание Luma',m);});
+    if(n.focus)add('Гибко','Личные цели','Можно выделить время на: '+n.focus,1100);
+    if(sleep!=null)add(n.sleep,'Подготовка ко сну','Заверши дела и оставь время на отдых',sleep);
+    if(!rows.length){
+      const next=novaPending().find(r=>r.when>Date.now());
+      if(next){const d=new Date(next.when),m=d.getHours()*60+d.getMinutes();add(d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}),next.text,'Ближайшее напоминание Luma',m);}
+    }
+    return rows;
+  }
+  function renderNovaPlan(){const n=novaProfileData();if(!n.setup){const box=$('novaDayPlan');if(box)box.innerHTML='<div class="nova-profile-prompt">Сначала заполни профиль Новы. После этого здесь появится план на сегодня.</div>';return;}novaRenderRows(buildNovaPlan());}
+  function novaPlanText(){
+    const n=novaProfileData();
+    if(!n.setup)return 'Сначала заполни профиль Новы в этом разделе. Я смогу учитывать расписание, занятия и твои напоминания.';
+    const rows=buildNovaPlan();
+    return rows.length?'План на сегодня:\n'+rows.map(r=>(r.time?r.time+' — ':'')+r.title+(r.note?' ('+r.note+')':'')).join('\n'):'На сегодня пока нет записанных дел. Добавь напоминания или укажи расписание.';
+  }
   function novaReply(kind,query=''){
     const now=new Date(), todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime(), tomorrow=todayStart+86400000;
     const pending=novaPending(), today=pending.filter(r=>r.when>=todayStart&&r.when<tomorrow);
+    if(kind==='plan'||/план|расписан|сегодня/.test(query))return novaPlanText();
     if(kind==='tasks'||/задач|напоминан|дела/.test(query)) return pending.length?'У тебя '+pending.length+' активных напоминаний:\n'+pending.slice(0,8).map(r=>'• '+new Date(r.when).toLocaleString('ru-RU',{weekday:'short',hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'})+' — '+r.text).join('\n'):'Активных напоминаний пока нет. Можешь добавить новое — я помогу открыть форму.';
-    if(kind==='plan'||/план|расписан|сегодня/.test(query)) return today.length?'План на сегодня:\n'+today.map(r=>'• '+new Date(r.when).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+' — '+r.text).join('\n')+'\n\nОставь между делами немного свободного времени.':'На сегодня у тебя пока нет запланированных напоминаний. Можно добавить пару важных дел.';
     if(kind==='free'||/свободн|окно/.test(query)) {const next=pending.find(r=>r.when>Date.now());if(!next)return 'Впереди нет активных напоминаний. По данным Luma, расписание свободно.';const mins=Math.max(0,Math.round((next.when-Date.now())/60000));return 'Следующее напоминание: «'+next.text+'» в '+new Date(next.when).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'. До него примерно '+(mins>=60?Math.floor(mins/60)+' ч '+mins%60+' мин':mins+' мин')+'.';}
-    if(kind==='tip'||/совет/.test(query)) return pending.length?'Совет: выбери одну самую важную задачу и начни с неё. Остальные дела можно распределить по свободным промежуткам.':'Совет: записывай важные дела сразу, чтобы не держать их в памяти. В Luma можно поставить напоминание.';
-    if(kind==='remind'||/создай напомин|добавь напомин/.test(query)){goTab('reminders');return 'Открыла раздел напоминаний. Введи текст, дату и время — затем сохрани. Я не создаю напоминание без выбранного времени.';}
-    return 'Пока я умею работать с планом на сегодня, списком задач, свободным временем, советами и переходом к созданию напоминаний. Попробуй одну из кнопок выше.';
+    if(kind==='tip'||/совет/.test(query)) return pending.length?'Совет: выбери одну самую важную задачу и начни с неё. Оставляй промежутки между делами.':'Совет: записывай важные дела сразу, чтобы не держать их в памяти. В Luma можно поставить напоминание.';
+    if(kind==='remind'||/создай напомин|добавь напомин/.test(query)){goTab('reminders');return 'Открыла раздел напоминаний. Введи текст, дату и время — затем сохрани.';}
+    return 'Я могу составить план на сегодня, показать задачи, найти ближайшее свободное время или открыть создание напоминания. Для персонального плана заполни профиль Новы.';
   }
-  function novaAction(kind){const labels={plan:'План на сегодня',tasks:'Мои задачи',free:'Свободное время',tip:'Совет',remind:'Создать напоминание'};novaSay(labels[kind]||kind,'user');novaSay(novaReply(kind));}
-  const novaPage=$('page-nova'); if(novaPage){novaPage.addEventListener('click',e=>{const b=e.target.closest('[data-nova]');if(b)novaAction(b.dataset.nova);});const f=$('novaForm');if(f)f.addEventListener('submit',e=>{e.preventDefault();const input=$('novaInput'),q=(input.value||'').trim();if(!q)return;novaSay(q,'user');novaSay(novaReply('',q.toLowerCase()));input.value='';});}
+  function novaAction(kind){const labels={plan:'План на сегодня',tasks:'Мои задачи',free:'Свободное время',tip:'Совет',remind:'Создать напоминание'};novaSay(labels[kind]||kind,'user');novaSay(novaReply(kind));if(kind==='plan')renderNovaPlan();}
+  const novaPage=$('page-nova'); if(novaPage){
+    novaPage.addEventListener('click',e=>{const b=e.target.closest('[data-nova]');if(b)novaAction(b.dataset.nova);});
+    const f=$('novaForm');if(f)f.addEventListener('submit',e=>{e.preventDefault();const input=$('novaInput'),q=(input.value||'').trim();if(!q)return;novaSay(q,'user');novaSay(novaReply('',q.toLowerCase()));input.value='';});
+    const saveBtn=$('novaProfileSave');if(saveBtn)saveBtn.addEventListener('click',saveNovaProfile);
+    const planBtn=$('novaBuildPlan');if(planBtn)planBtn.addEventListener('click',()=>{renderNovaPlan();novaSay(novaPlanText());});
+  }
+  renderNovaProfile();renderNovaPlan();
 
   const petPage=$('page-pets'); if(petPage){petPage.addEventListener('click',e=>{const c=e.target.closest('[data-petcare]');if(c){petCare(c.dataset.petcare);return;}const b=e.target.closest('[data-pet]');if(b){const pet=PETS.find(x=>x.id===b.dataset.id);if(!pet)return;if(b.dataset.pet==='buy'){if(pet.role){toast('Этот питомец доступен только в панели соответствующей роли.');return;}if(data.coins.bal<pet.price){toast('Не хватает '+(pet.price-data.coins.bal)+' ✧');return;}spendCoins(pet.price);data.pets.owned.push(pet.id);data.pets.active=pet.id;save();renderPets();updateWallet();toast('Питомец открыт: '+pet.name);}else if(b.dataset.pet==='equip'&&petOwned(pet)){data.pets.active=pet.id;data.pets.mood='awake';save();renderPets();toast('Активирован: '+pet.name);}return;}const f=e.target.closest('[data-petfood]');if(f){const food=PET_FOODS.find(x=>x.id===f.dataset.id);if(!food)return;if(data.coins.bal<food.price){toast('Не хватает '+food.price+' ✧');return;}spendCoins(food.price);data.pets.food[food.id]=(data.pets.food[food.id]||0)+1;save();renderPets();toast('Куплено: '+food.name);}});}
 
@@ -4595,30 +4711,40 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     save(); renderNutrition(); toast('Цели рациона обновлены ✓');
   }
 
-  /* ----- Знакомство ----- */
+  /* ----- Знакомство и профиль Новы ----- */
   let obGoal = 'keep', obEdit = false;
   function obRead() {
-    return { name: $('obName').value.trim(), sex: $('obSex').value, age: +$('obAge').value, height: +$('obHeight').value, weight: +$('obWeight').value, activity: +$('obAct').value, goal: obGoal };
+    return {
+      name: $('obName').value.trim(), sex: $('obSex').value,
+      age: +$('obAge').value, height: +$('obHeight').value, weight: +$('obWeight').value,
+      activity: +$('obAct').value,
+      nova: {
+        setup: true, activity: $('obNovaActivity').value,
+        sports: $('obNovaSports').value.trim(), days: $('obNovaDays').value.trim(),
+        trainingTime: $('obNovaTime').value.trim(), schoolStart: $('obNovaSchoolStart').value,
+        schoolEnd: $('obNovaSchoolEnd').value, wake: $('obNovaWake').value || '07:00',
+        sleep: $('obNovaSleep').value || '22:00', focus: $('obNovaFocus').value.trim()
+      }
+    };
   }
   function obPreview() {
-    const pr = obRead(); const pl = calcPlan(pr); const box = $('obPreview');
-    if (!pl) { box.textContent = 'Заполни возраст, рост и вес — здесь появится расчёт.'; return; }
-    box.innerHTML = '<b>ИМТ ' + f1(pl.bmi) + ' — ' + pl.cat + '</b><br>Норма веса: ' + f1(pl.lo) + '–' + f1(pl.hi) + ' кг<br>По ИМТ тебе подходит цель: <b>' + GOAL_NAME[pl.suggest] + '</b><br>Суточная норма: <b>' + pl.kcal + ' ккал</b> · гулять минимум <b>' + pl.walkMin + ' мин/день</b>';
+    const box = $('obPreview');
+    if (box) box.textContent = 'Нова использует расписание, занятия и твои задачи, чтобы предложить удобный план дня. Она не назначает целевой вес и не оценивает тело.';
   }
-  function setGoalUI(g) {
-    obGoal = g;
-    document.querySelectorAll('#goalChoice .choice').forEach(b => b.classList.toggle('on', b.dataset.goal === g));
-  }
+  function setGoalUI(g) { obGoal = 'keep'; }
   function openOnboard(edit) {
     obEdit = !!edit;
-    const pr = prof();
+    const pr = prof(), np = pr.nova || {};
     $('obTitle').textContent = obEdit ? 'Мои параметры' : 'Давай знакомиться';
     $('obSkip').textContent = obEdit ? 'Отмена' : 'Позже';
     $('obName').value = pr.name || '';
     $('obSex').value = pr.sex || 'm';
     $('obAge').value = pr.age || ''; $('obHeight').value = pr.height || ''; $('obWeight').value = pr.weight || '';
     $('obAct').value = String(pr.activity != null ? pr.activity : 1);
-    setGoalUI(pr.goal || 'keep');
+    $('obNovaActivity').value = np.activity || 'moderate';
+    $('obNovaSports').value = np.sports || ''; $('obNovaDays').value = np.days || '';
+    $('obNovaTime').value = np.trainingTime || ''; $('obNovaSchoolStart').value = np.schoolStart || ''; $('obNovaSchoolEnd').value = np.schoolEnd || ''; $('obNovaWake').value = np.wake || '07:00';
+    $('obNovaSleep').value = np.sleep || '22:00'; $('obNovaFocus').value = np.focus || '';
     obPreview();
     const el = $('onboard'); el.classList.add('show'); el.setAttribute('aria-hidden', 'false'); el.scrollTop = 0;
     document.body.classList.add('noscroll');
@@ -4628,25 +4754,23 @@ input:focus, select:focus, html[data-mode="light"] input:focus, html[data-mode="
     document.body.classList.remove('noscroll');
   }
   window.openOnboard = openOnboard;
-  ['obName', 'obSex', 'obAge', 'obHeight', 'obWeight', 'obAct'].forEach(id => { $(id).addEventListener('input', obPreview); $(id).addEventListener('change', obPreview); });
-  document.querySelectorAll('#goalChoice .choice').forEach(b => b.addEventListener('click', () => { setGoalUI(b.dataset.goal); obPreview(); }));
+  ['obName', 'obSex', 'obAge', 'obHeight', 'obWeight', 'obAct', 'obNovaActivity', 'obNovaSports', 'obNovaDays', 'obNovaTime', 'obNovaSchoolStart', 'obNovaSchoolEnd', 'obNovaWake', 'obNovaSleep', 'obNovaFocus'].forEach(id => {
+    const el = $(id); if (el) { el.addEventListener('input', obPreview); el.addEventListener('change', obPreview); }
+  });
   $('obSkip').onclick = () => { try { sessionStorage.setItem('luma-ob-skip', '1'); } catch {} closeOnboard(); renderHome(); };
   $('obSave').onclick = () => {
     const v = obRead();
     if (!(v.age >= 10 && v.age <= 100)) { toast('Укажи возраст от 10 до 100'); $('obAge').focus(); return; }
-    if (!(v.height >= 100 && v.height <= 230)) { toast('Рост должен быть от 100 до 230 см'); $('obHeight').focus(); return; }
-    if (!(v.weight >= 25 && v.weight <= 300)) { toast('Вес должен быть от 25 до 300 кг'); $('obWeight').focus(); return; }
-    const first = !prof().done;
-    data.profile = Object.assign({}, prof(), v, { done: true });
-    if (!v.name) data.profile.name = prof().name || '';
+    if (v.height && !(v.height >= 100 && v.height <= 230)) { toast('Проверь рост'); $('obHeight').focus(); return; }
+    if (v.weight && !(v.weight >= 25 && v.weight <= 300)) { toast('Проверь массу'); $('obWeight').focus(); return; }
+    const old = prof();
+    data.profile = Object.assign({}, old, v, { done: true, nova: Object.assign({}, old.nova || {}, v.nova) });
+    if (!v.name) data.profile.name = old.name || '';
     $('profileName').value = data.profile.name || '';
     save();
-    const pl = calcPlan(data.profile);
-    if (first && pl) applyPlanToGoals(pl);
     closeOnboard();
-    if ($('obGeo').checked) askGeo(true);
-    renderHome(); goTab('walk');
-    toast(first ? 'Готово! Цели рациона рассчитаны ✓' : 'Параметры сохранены ✓');
+    renderNovaProfile(); renderNovaPlan(); renderHome();
+    toast('Профиль сохранён');
   };
 
   /* ----- Геолокация ----- */
