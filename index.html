@@ -1456,7 +1456,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v32 · планировщик Новы</span>
+      <span class="pill" id="topPill">v34 · автономная память</span>
     </header>
 
     <!-- HOME -->
@@ -2018,6 +2018,17 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
         <p class="notice" id="ntfyStatus"></p>
       </div>
 
+      <div class="glass section" id="deviceMemorySection">
+        <div class="section-head"><h2>Память устройства</h2><span class="tag">LOCAL</span></div>
+        <p class="notice" style="margin-top:0">Luma ID помогает переносить один профиль между браузерами. Данные остаются на устройстве; для Safari и Chrome используй экспорт и импорт резервной копии.</p>
+        <div class="field full"><label for="lumaDeviceId">Твой Luma ID</label><input id="lumaDeviceId" readonly value="Создаётся…" autocomplete="off"></div>
+        <div class="form-actions">
+          <button class="btn secondary" type="button" id="copyLumaId">Копировать ID</button>
+          <button class="btn secondary" type="button" id="restoreLocalBackup">Восстановить локальную копию</button>
+        </div>
+        <p class="notice" id="deviceMemoryStatus">Локальная резервная копия создаётся автоматически в этом браузере.</p>
+      </div>
+
       <div class="glass section">
         <div class="section-head"><h2>Данные</h2></div>
         <div class="form-actions">
@@ -2064,7 +2075,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v32 · планировщик Новы</p>
+      <p class="footer" id="appFooter">Luma · v34 · автономная память</p>
     </section>
   </main>
 
@@ -2228,7 +2239,91 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '32';
+  const BUILD = '34';
+
+  /* Локальная память v34: резервная копия IndexedDB + переносимый Luma ID.
+     Это не облачная синхронизация: каждый браузер имеет собственное хранилище. */
+  const DEVICE_ID_KEY = 'luma-device-id';
+  const DEVICE_DB = 'luma-device-memory';
+  const DEVICE_STORE = 'snapshots';
+  let deviceSnapshotTimer = 0;
+  function getLumaDeviceId() {
+    try {
+      let id = localStorage.getItem(DEVICE_ID_KEY);
+      if (!id) {
+        const bytes = new Uint8Array(16);
+        if (crypto && crypto.getRandomValues) crypto.getRandomValues(bytes);
+        else for (let i=0;i<bytes.length;i++) bytes[i]=Math.floor(Math.random()*256);
+        id = 'LUMA-' + Array.from(bytes, b => b.toString(16).padStart(2,'0')).join('').toUpperCase();
+        localStorage.setItem(DEVICE_ID_KEY, id);
+      }
+      return id;
+    } catch { return 'LUMA-LOCAL'; }
+  }
+  function openDeviceDB() {
+    return new Promise((resolve,reject) => {
+      if (!('indexedDB' in window)) return reject(new Error('IndexedDB недоступна'));
+      const req = indexedDB.open(DEVICE_DB, 1);
+      req.onupgradeneeded = () => { if (!req.result.objectStoreNames.contains(DEVICE_STORE)) req.result.createObjectStore(DEVICE_STORE); };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error || new Error('Не удалось открыть IndexedDB'));
+    });
+  }
+  async function writeDeviceSnapshot() {
+    const db = await openDeviceDB();
+    const entries = [];
+    for (let i=0;i<localStorage.length;i++) {
+      const k=localStorage.key(i); if (!k || k==='luma-lk') continue;
+      const v=localStorage.getItem(k); if (v != null) entries.push([k,v]);
+    }
+    const snapshot = { format:'luma-device-snapshot', version:1, savedAt:Date.now(), deviceId:getLumaDeviceId(), entries };
+    await new Promise((resolve,reject) => {
+      const tx=db.transaction(DEVICE_STORE,'readwrite');
+      tx.objectStore(DEVICE_STORE).put(snapshot,'latest');
+      tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error || new Error('Ошибка записи копии'));
+    });
+    db.close();
+    return snapshot;
+  }
+  function scheduleDeviceSnapshot() {
+    clearTimeout(deviceSnapshotTimer);
+    deviceSnapshotTimer=setTimeout(() => writeDeviceSnapshot().then(() => {
+      const el=$('deviceMemoryStatus'); if(el) el.textContent='Локальная копия обновлена · '+new Date().toLocaleString('ru-RU');
+    }).catch(err => {
+      const el=$('deviceMemoryStatus'); if(el) el.textContent='Автокопия недоступна в этом браузере. Используй экспорт JSON.';
+      console.warn('Luma local backup:',err);
+    }), 700);
+  }
+  async function readDeviceSnapshot() {
+    const db=await openDeviceDB();
+    const result=await new Promise((resolve,reject)=>{
+      const tx=db.transaction(DEVICE_STORE,'readonly'); const req=tx.objectStore(DEVICE_STORE).get('latest');
+      req.onsuccess=()=>resolve(req.result||null); req.onerror=()=>reject(req.error);
+    });
+    db.close(); return result;
+  }
+  async function restoreDeviceSnapshot() {
+    const snap=await readDeviceSnapshot();
+    if(!snap || !Array.isArray(snap.entries)) throw new Error('Локальная копия не найдена');
+    if(!confirm('Восстановить локальную копию? Текущие данные этого браузера будут заменены.')) return false;
+    for(const pair of snap.entries) {
+      if(!Array.isArray(pair)||typeof pair[0]!=='string'||typeof pair[1]!=='string') continue;
+      if(pair[0]==='luma-lk') continue;
+      localStorage.setItem(pair[0],pair[1]);
+    }
+    if(snap.deviceId) localStorage.setItem(DEVICE_ID_KEY,String(snap.deviceId).slice(0,80));
+    location.reload(); return true;
+  }
+  function initDeviceMemoryUI() {
+    const id=getLumaDeviceId(), field=$('lumaDeviceId'); if(field) field.value=id;
+    const copy=$('copyLumaId'); if(copy) copy.onclick=()=>{
+      const value=getLumaDeviceId();
+      if(navigator.clipboard?.writeText) navigator.clipboard.writeText(value).then(()=>toast('Luma ID скопирован')).catch(()=>toast('Не удалось скопировать ID'));
+      else { field?.select(); try{document.execCommand('copy');toast('Luma ID скопирован');}catch{toast('Скопируй ID вручную');} }
+    };
+    const restore=$('restoreLocalBackup'); if(restore) restore.onclick=()=>restoreDeviceSnapshot().catch(e=>toast(e.message||'Не удалось восстановить копию'));
+    scheduleDeviceSnapshot();
+  }
   /* ----- Роли и пароли: хранятся только хеши (SHA-256, соль, 4000 итераций) ----- */
   function sha256(str) {
     const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
@@ -2417,7 +2512,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     return d;
   }
   function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(data)); }
+    try { localStorage.setItem(KEY, JSON.stringify(data)); scheduleDeviceSnapshot(); }
     catch { toast('Не удалось сохранить'); }
   }
 
@@ -3256,7 +3351,6 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
   }
 
   function showSystemNotification(title, body, tag) {
-    const icon = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✧</text></svg>";
     if (!('Notification' in window)) {
       setNotifDebug('API уведомлений нет в этом браузере');
       return false;
@@ -3265,55 +3359,34 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
       setNotifDebug('Нет разрешения. Нажми «Включить уведомления».');
       return false;
     }
-    let ok = false;
     const opts = {
       body: body || '',
       tag: tag || ('luma-' + Date.now()),
-      icon,
-      renotify: true,
+      icon: './icon-192.png',
+      badge: './icon-192.png',
+      renotify: false,
       silent: false,
       requireInteraction: false
     };
-    // Prefer SW — works better when tab/app is in background
-    try {
-      if (navigator.serviceWorker) {
-        navigator.serviceWorker.ready.then(reg => {
-          if (reg && reg.showNotification) {
-            reg.showNotification(title, opts).then(() => {
-              setNotifDebug('Уведомление отправлено ✓');
-            }).catch(err => {
-              setNotifDebug('SW notify: ' + (err && err.message ? err.message : String(err)));
-              try {
-                const n = new Notification(title, opts);
-                setTimeout(() => { try { n.close(); } catch {} }, 12000);
-              } catch {}
-            });
-          }
-        }).catch(() => {});
-        if (navigator.serviceWorker.controller) {
-          navigator.serviceWorker.controller.postMessage({
-            type: 'SHOW_NOTIFICATION',
-            title,
-            body: opts.body,
-            tag: opts.tag,
-            icon
-          });
-          ok = true;
-        }
-      }
-    } catch (err) {
-      setNotifDebug(String(err && err.message || err));
+    // Use exactly one notification path: Service Worker when available,
+    // otherwise the page Notification API. This avoids duplicate alerts.
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(reg => {
+        if (!reg || !reg.showNotification) throw new Error('SW notifications unavailable');
+        return reg.showNotification(title || 'Luma', opts);
+      }).then(() => setNotifDebug('Уведомление отправлено ✓'))
+        .catch(err => setNotifDebug('Не удалось отправить уведомление: ' + (err && err.message ? err.message : String(err))));
+      return true;
     }
-    // Also try page Notification (when app is open)
     try {
-      const n = new Notification(title, opts);
-      ok = true;
+      const n = new Notification(title || 'Luma', opts);
       setTimeout(() => { try { n.close(); } catch {} }, 12000);
+      setNotifDebug('Уведомление отправлено ✓');
+      return true;
     } catch (err) {
-      if (!ok) setNotifDebug('Notification error: ' + (err && err.message ? err.message : String(err)));
+      setNotifDebug('Notification error: ' + (err && err.message ? err.message : String(err)));
+      return false;
     }
-    if (ok) setNotifDebug('Уведомление отправлено ✓');
-    return ok;
   }
 
   function setNotifDebug(msg) {
@@ -4244,7 +4317,24 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     updateWallet();
   }
   function openNova(){goTab('nova');} window.openNova=openNova;
-  function novaSay(text,who='bot'){const chat=$('novaChat');if(!chat)return;const el=document.createElement('div');el.className='nova-msg '+who;el.textContent=text;chat.appendChild(el);chat.scrollTop=chat.scrollHeight;}
+  const NOVA_CHAT_KEY='luma-nova-chat-v1';
+  function novaChatHistory(){
+    try { const h=JSON.parse(localStorage.getItem(NOVA_CHAT_KEY)||'[]'); return Array.isArray(h)?h.filter(x=>x&&typeof x.text==='string').slice(-80):[]; }
+    catch { return []; }
+  }
+  function novaRenderChatHistory(){
+    const chat=$('novaChat'); if(!chat)return;
+    const history=novaChatHistory(); if(!history.length)return;
+    chat.innerHTML='';
+    history.forEach(x=>{const el=document.createElement('div');el.className='nova-msg '+(x.who==='user'?'user':'bot');el.textContent=x.text;chat.appendChild(el);});
+    chat.scrollTop=chat.scrollHeight;
+  }
+  function novaSay(text,who='bot'){
+    const chat=$('novaChat');if(!chat)return;
+    const safeWho=who==='user'?'user':'bot', value=String(text==null?'':text).slice(0,4000);
+    const el=document.createElement('div');el.className='nova-msg '+safeWho;el.textContent=value;chat.appendChild(el);chat.scrollTop=chat.scrollHeight;
+    try { const h=novaChatHistory();h.push({who:safeWho,text:value,at:Date.now()});localStorage.setItem(NOVA_CHAT_KEY,JSON.stringify(h.slice(-80)));scheduleDeviceSnapshot(); } catch {}
+  }
   function novaPending(){return (data.reminders||[]).filter(r=>!r.done).sort((a,b)=>a.when-b.when);}
   const novaDayNames=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
   function novaProfileData(){return prof().nova || (prof().nova={setup:false,mode:'study',activity:'moderate',sports:'',days:'',trainingTime:'',schoolStart:'',schoolEnd:'',wake:'07:00',sleep:'22:00',focus:''});}
@@ -4298,6 +4388,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     const rows=[], dayKey=novaDayNames[now.getDay()];
     const mode=n.mode||'study';
     const add=(time,title,note,sort)=>rows.push({time,title,note,sort:sort==null?9999:sort});
+    const activityLabel={low:'спокойный',moderate:'умеренный',active:'активный',varied:'переменный'}[n.activity]||'умеренный';
     const wake=novaTimeMinutes(n.wake), sleep=novaTimeMinutes(n.sleep);
     if(wake!=null)add(n.wake, mode==='free'?'Спокойный подъём':'Подъём и начало дня', mode==='work'?'Соберись перед рабочим днём':'Спокойно подготовься к делам', wake);
     const schoolA=novaTimeMinutes(n.schoolStart),schoolB=novaTimeMinutes(n.schoolEnd);
@@ -4315,6 +4406,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     const reminders=novaPending().filter(r=>r.when>=dayStart&&r.when<dayStart+86400000);
     reminders.forEach(r=>{const d=new Date(r.when),m=d.getHours()*60+d.getMinutes();add(d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}),r.text,'Напоминание Luma',m);});
     if(n.focus)add('Гибко', mode==='work'?'Задачи и цели':'Личные цели','Можно выделить время на: '+n.focus,1100);
+    if(!n.sports && n.activity) add('По самочувствию','Движение и отдых','Обычная активность в профиле: '+activityLabel+'. Выбери прогулку или лёгкое движение, если есть время.',1050);
     if(mode==='free' && !n.focus) add('Днём','Свободное время','Прогулка, отдых или хобби — без жёсткого графика',900);
     if(sleep!=null)add(n.sleep,'Подготовка ко сну','Заверши дела и оставь время на отдых',sleep);
     rows.sort((a,b)=>a.sort-b.sort);
@@ -4391,14 +4483,25 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     return null;
   }
   function novaCalorieAnswer(query){
-    const m=query.match(/(\d+[.,]?\d*)\s*(г|гр|грамм|кг)?/);
-    let grams=100;
-    if(m){ grams=parseFloat(m[1].replace(',','.')); if((m[2]||'').startsWith('кг')) grams*=1000; if(grams<=0||grams>5000) grams=100; }
     const food=novaFindFood(query);
     if(!food) return null;
+    const normalized=String(query||'').toLowerCase().replace(/ё/g,'е');
+    const unitMatch=normalized.match(/(\d+(?:[.,]\d+)?)\s*(кг|грамм(?:а|ов)?|гр|г)\b/);
+    let grams=100, portionNote='';
+    if(unitMatch){
+      grams=parseFloat(unitMatch[1].replace(',','.'));
+      if(unitMatch[2]==='кг') grams*=1000;
+      if(!Number.isFinite(grams)||grams<=0||grams>5000) grams=100;
+    } else if(food.n==='Яйцо куриное'){
+      const countMatch=normalized.match(/(\d+(?:[.,]\d+)?)\s*(?:шт\.?|штук(?:и)?|яиц|яйца|яйцо)(?=\s|$|[,!.?])/);
+      if(countMatch){ const count=parseFloat(countMatch[1].replace(',','.')); if(count>0&&count<=30){grams=count*50;portionNote=' · примерно '+count+' шт.';} }
+      else if(/\b\d+\b/.test(normalized)) portionNote=' · количество не распознано, расчёт на 100 г';
+    } else if(/\b\d+\b/.test(normalized)){
+      portionNote=' · количество без граммов не распознано, расчёт на 100 г';
+    }
     const k=grams/100;
     const line=food.n+' · '+Math.round(food.c*k)+' ккал на '+Math.round(grams)+' г\nБ '+Math.round(food.p*k*10)/10+' · Ж '+Math.round(food.f*k*10)/10+' · У '+Math.round(food.u*k*10)/10;
-    return line+(food.local?'\n(из твоих сохранённых блюд)':'\n(локальная база Luma, ориентир на 100 г)');
+    return line+portionNote+(food.local?'\n(из твоих сохранённых блюд)':'\n(локальная база Luma, приблизительный ориентир)');
   }
   function novaStatusText(){
     const cal=(data.meals||[]).filter(m=>m.date===(typeof todayStr==='function'?todayStr():new Date().toISOString().slice(0,10))).reduce((a,m)=>a+(+m.cal||0),0);
@@ -4468,6 +4571,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     const weekBtn=$('novaBuildWeek');if(weekBtn)weekBtn.addEventListener('click',()=>{renderNovaWeekPlan();novaSay(novaReply('week'));});
     const modeEl=$('novaMode'); if(modeEl) modeEl.addEventListener('change',()=>{ const n=novaProfileData(); n.mode=modeEl.value; renderNovaProfile(); });
   }
+  novaRenderChatHistory();
   renderNovaProfile();renderNovaPlan();
 
 
@@ -4502,6 +4606,13 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
 
   /* ===== Что нового ===== */
   const WHATS_NEW = {
+    '34': [
+      'Luma ID для переноса одного профиля между браузерами',
+      'Автоматическая локальная резервная копия в IndexedDB',
+      'Полный экспорт и импорт истории чатов и настроек',
+      'Восстановление локальной копии после случайной очистки данных',
+      'Обновлён офлайн-кэш приложения'
+    ],
     '32': [
       'Чек-лист дня в бета-сводке',
       'Шаблоны напоминаний (вода, учёба, тренировка…)',
@@ -4885,7 +4996,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     }
     return html;
   }
-  function updateNormLine(k) { const el = $('normLine'); if (el) el.innerHTML = normLineHTML(k); }
+  function updateNormLine(k) { const el = $('normLine-' + k); if (el) el.innerHTML = normLineHTML(k); }
   function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
   /* ----- Панели: админ (урезанная, с лимитами) и создатель (полная). Разметка строится только после входа ----- */
@@ -5198,7 +5309,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
       <h2 style="margin-bottom:8px">⚡ Поймай сияние</h2>
       <p class="muted" style="margin-bottom:12px">Жди зелёный цвет — потом жми как можно быстрее</p>
       <div class="scoreline"><span>Последний <b id="lastR">—</b></span><span>Рекорд <b id="bestR">${best != null ? best + ' мс' : '—'}</b></span></div>
-      <p class="norm-line" id="normLine">${normLineHTML('reaction')}</p>
+      <p class="norm-line" id="normLine-reaction">${normLineHTML('reaction')}</p>
       <div class="reaction-arena" id="arena"><button type="button" id="arenaBtn">Начать</button></div>
       <p class="notice" id="rStatus" style="text-align:center">Готов?</p>`;
     const arena = $('arena');
@@ -5256,7 +5367,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
       <h2 style="margin-bottom:8px;text-align:center">🧠 Память</h2>
       <p class="muted" style="text-align:center;margin-bottom:4px">Ходов: <b id="memMoves">0</b> · Время: <b id="memTime">0</b> с · Найдено: <b id="memFound">0</b>/8</p>
       <p class="muted" style="text-align:center;margin-bottom:4px">Рекорд: <b id="memBest">${recText()}</b></p>
-      <p class="norm-line" id="normLine">${normLineHTML('memory')}</p>
+      <p class="norm-line" id="normLine-memory">${normLineHTML('memory')}</p>
       <div class="memory-grid" id="memGrid"></div>
       <div class="game-bar"><button class="btn secondary small" type="button" id="memHint">💡 Подсказка (${data.inv.hint})</button><button class="btn secondary small" type="button" id="memRestart">Заново</button></div>`;
     $('memRestart').onclick = () => { clearInterval(tmr); initMemory(box); };
@@ -5342,7 +5453,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
       <h2 style="margin-bottom:8px;text-align:center">👆 Кликер</h2>
       <div class="scoreline"><span>Счёт <b id="tapScore">0</b></span><span>Время <b id="tapLeft">${dur}</b> с</span></div>
       <p class="muted" style="text-align:center">Рекорд: <b id="tapBest">${data.stats.tapBest}</b></p>
-      <p class="norm-line" id="normLine">${normLineHTML('tap')}</p>
+      <p class="norm-line" id="normLine-tap">${normLineHTML('tap')}</p>
       <button type="button" class="tap-btn" id="tapBtn">Старт</button>
       <p class="notice" style="text-align:center" id="tapStatus">Кликай ${dur} секунд</p>`;
     const btn = $('tapBtn');
@@ -5385,7 +5496,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     box.innerHTML = `
       <h2 style="margin-bottom:8px;text-align:center">🐍 Змейка</h2>
       <p class="muted" style="text-align:center">Счёт: <b id="snScore">0</b> · Рекорд: <b id="snBest">${data.stats.snakeBest || 0}</b></p>
-      <p class="norm-line" id="normLine">${normLineHTML('snake')}</p>
+      <p class="norm-line" id="normLine-snake">${normLineHTML('snake')}</p>
       <canvas id="snakeCanvas"></canvas>
       <p class="notice" style="text-align:center" id="snHint">Свайпай по полю или жми кнопки · на ПК: стрелки / WASD, пробел — пауза</p>
       <div class="dpad">
@@ -5601,7 +5712,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     box.innerHTML = `
       <h2 style="margin-bottom:8px;text-align:center">🔢 2048</h2>
       <p class="muted" style="text-align:center">Счёт: <b id="gScore">0</b> · Рекорд: <b id="gBest">${best}</b></p>
-      <p class="norm-line" id="normLine">${normLineHTML('g2048')}</p>
+      <p class="norm-line" id="normLine-g2048">${normLineHTML('g2048')}</p>
       <div class="g2048" id="g2048"></div>
       <p class="notice" style="text-align:center">Свайпай по полю · на ПК: стрелки / WASD</p>
       <div class="game-bar"><button class="btn secondary small" type="button" id="gUndo">↩ Отмена (${data.inv.undo})</button><button class="btn secondary small" type="button" id="gRestart">Заново</button></div>`;
@@ -5805,6 +5916,9 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
   function calcPlan(pr) {
     const h = +pr.height, w = +pr.weight, a = +pr.age;
     if (!(h >= 100 && w >= 25 && a >= 10)) return null;
+    // Adult BMI cut-offs and Mifflin–St Jeor are not appropriate for minors.
+    // Do not generate weight, calorie or macro targets for users under 18.
+    if (a < 18) return null;
     const hm = h / 100, bmi = w / (hm * hm);
     const lo = 18.5 * hm * hm, hi = 24.9 * hm * hm;
     let cat, tone, suggest;
@@ -5866,7 +5980,10 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     const box = $('planBox'); if (!box) return;
     const pr = prof(); const pl = pr.done ? calcPlan(pr) : null;
     if (!pl) {
-      box.innerHTML = '<div class="empty"><div class="orb"></div>Заполни параметры, и Luma рассчитает норму калорий и прогулок</div><div class="form-actions"><button class="btn" type="button" onclick="openOnboard(false)">Заполнить параметры</button></div>';
+      const minor = pr.done && +pr.age >= 10 && +pr.age < 18;
+      box.innerHTML = minor
+        ? '<div class="notice">Для пользователей младше 18 лет Luma не рассчитывает взрослые нормы калорий, БЖУ или целевую массу тела. Возраст, рост и масса не используются для оценки тела. Для индивидуальных рекомендаций по питанию лучше обратиться к педиатру или квалифицированному диетологу. Здесь можно продолжать вести дневник питания без заданной нормы.</div>'
+        : '<div class="empty"><div class="orb"></div>Заполни параметры, чтобы увидеть доступные рекомендации по активности</div><div class="form-actions"><button class="btn" type="button" onclick="openOnboard(false)">Заполнить параметры</button></div>';
       return;
     }
     box.innerHTML = planHTML(pl, pr);
@@ -6224,12 +6341,19 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
 
   window.exportData = function() {
     data.lastExport = Date.now(); save(); renderBackupInfo();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const storage = {};
+    for (let i=0;i<localStorage.length;i++) {
+      const k=localStorage.key(i); if (!k || k==='luma-lk') continue;
+      if (k===KEY || k.startsWith('luma-')) storage[k]=localStorage.getItem(k);
+    }
+    const backup = { format:'luma-full-backup', version:1, appVersion:BUILD, createdAt:new Date().toISOString(), deviceId:getLumaDeviceId(), data, storage };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'luma-backup.json';
+    a.download = 'luma-backup-v' + BUILD + '.json';
     a.click();
-    toast('Экспортировано');
+    setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+    toast('Полная резервная копия экспортирована');
   };
 
   $('importFile').onchange = e => {
@@ -6238,23 +6362,32 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     const reader = new FileReader();
     reader.onload = ev => {
       try {
-        const old = data.auth || {}, nd = JSON.parse(ev.target.result);
-        if (!nd || typeof nd !== 'object' || Array.isArray(nd)) throw new Error('bad');
+        const old = data.auth || {};
+        const parsed = JSON.parse(ev.target.result);
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('bad');
+        const isFull = parsed.format === 'luma-full-backup' && parsed.data && typeof parsed.data === 'object';
+        const nd = isFull ? parsed.data : parsed;
         nd.auth = (nd.auth && typeof nd.auth === 'object') ? nd.auth : {};
         if (!authCheck('admin', nd.auth.a)) nd.auth.a = old.a || null;
         if (!authCheck('creator', nd.auth.c)) nd.auth.c = old.c || null;
         data = normalizeData(nd);
+        if (isFull && parsed.storage && typeof parsed.storage === 'object') {
+          Object.entries(parsed.storage).forEach(([k,v]) => {
+            if (typeof k !== 'string' || !k.startsWith('luma-') || k==='luma-lk' || typeof v !== 'string') return;
+            try { localStorage.setItem(k,v); } catch {}
+          });
+          if (parsed.deviceId && typeof parsed.deviceId === 'string') localStorage.setItem(DEVICE_ID_KEY,parsed.deviceId.slice(0,80));
+        }
         $('profileName').value = data.profile.name || '';
         save();
         applyTheme(data.theme);
         applyMode(data.mode);
         syncThemeSwatches(); updateWallet(); checkTitles(); renderBackupInfo();
         window._refreshFoods && window._refreshFoods();
-        renderHome();
-        renderNutrition();
-        renderReminders();
-        toast('Импортировано');
-      } catch { toast('Ошибка файла'); }
+        renderHome(); renderNutrition(); renderReminders();
+        initDeviceMemoryUI();
+        toast(isFull ? 'Полная копия импортирована' : 'Импортировано');
+      } catch { toast('Ошибка файла или неподдерживаемый формат'); }
     };
     reader.readAsText(file);
     e.target.value = '';
@@ -6314,6 +6447,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     $('welcomeClose')?.addEventListener('click', close);
     overlay?.addEventListener('click', e => { if (e.target === overlay) close(); });
   })();
+  initDeviceMemoryUI();
   renderBackupInfo(); backupNudge();
   window.addEventListener('error', e => { try { console.error(e.error || e.message); const t = Date.now(); if (!window._errT || t - window._errT > 30000) { window._errT = t; toast('Что-то пошло не так. Данные сохранены, обнови страницу'); } } catch {} });
   window.addEventListener('unhandledrejection', e => { try { console.error(e.reason); } catch {} });

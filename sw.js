@@ -1,5 +1,5 @@
-/* Luma service worker v28 — offline-first for iOS Safari */
-const CACHE = 'luma-v32';
+/* Luma service worker v33 — offline-first for iOS Safari */
+const CACHE = 'luma-v34';
 const ASSETS = [
   './',
   './index.html',
@@ -75,19 +75,10 @@ async function scheduleAt(title, body, tag, when) {
       return 'trigger';
     }
   } catch (e) {}
-  const delay = Math.max(0, when - Date.now());
-  if (delay > 2147480000) return 'too-far';
-  setTimeout(() => {
-    self.registration.showNotification(title || 'Luma', {
-      body: opts.body,
-      tag: opts.tag + '-fire',
-      icon: ICON,
-      renotify: true,
-      silent: false,
-      vibrate: [200, 100, 200]
-    }).catch(() => {});
-  }, delay);
-  return 'timeout';
+  // A Service Worker may be suspended at any time; setTimeout here is not a
+  // reliable alarm. Without TimestampTrigger, rely on page timers while open
+  // and supported Background Sync events rather than promising a false alarm.
+  return 'unsupported';
 }
 
 async function syncAndSchedule(reminders) {
