@@ -1441,6 +1441,156 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
 .nova-orb{position:relative;overflow:visible}
 .nova-orb svg{width:48px;height:48px;display:block;filter:drop-shadow(0 2px 5px #fff8)}
 
+
+
+/* ===== Luma v35 Beta Design: purple glass dashboard ===== */
+html[data-ui="beta"] {
+  --fit-bg: #08070c;
+  --fit-card: #15131b;
+  --fit-elev: #21172d;
+  --fit-line: rgba(255,255,255,.09);
+  --fit-text: #f7f3ff;
+  --fit-muted: #aaa1b8;
+  --fit-red: #a100ff;
+  --fit-cyan: #c084fc;
+  --fit-lime: #e9d5ff;
+  --fit-r: 20px;
+}
+html[data-ui="beta"] body {
+  background:
+    radial-gradient(ellipse at 12% -8%, rgba(112,22,174,.35), transparent 38%),
+    radial-gradient(ellipse at 100% 35%, rgba(86,24,139,.16), transparent 32%),
+    #08070c !important;
+  color: #f7f3ff !important;
+}
+html[data-ui="beta"] .app {
+  width: min(100%, 470px) !important;
+  max-width: 470px !important;
+  min-height: 100vh;
+  margin: 0 auto !important;
+  padding: max(12px, env(safe-area-inset-top)) 17px calc(104px + env(safe-area-inset-bottom)) !important;
+}
+html[data-ui="beta"] .top {
+  min-height: 42px;
+  margin: 0 1px 19px !important;
+  align-items: center;
+}
+html[data-ui="beta"] .brand { gap: 9px; }
+html[data-ui="beta"] .brand span {
+  font-size: 19px !important; font-weight: 750 !important;
+  letter-spacing: -.65px !important;
+}
+html[data-ui="beta"] .logo {
+  width: 31px !important; height: 31px !important;
+  border-radius: 11px !important;
+  background: linear-gradient(145deg,#b54cff,#6500a8) !important;
+  box-shadow: 0 4px 22px rgba(164,45,255,.38) !important;
+}
+html[data-ui="beta"] #topPill {
+  background: rgba(255,255,255,.07) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  color: #c9bfd5 !important; font-size: 10px !important;
+}
+html[data-ui="beta"] .hero {
+  position: relative; overflow: hidden;
+  padding: 23px 20px 21px !important;
+  margin: 0 0 13px !important;
+  border-radius: 23px !important;
+  background: linear-gradient(135deg,rgba(91,19,139,.72),rgba(35,13,52,.96) 65%,rgba(18,14,25,.98)) !important;
+  border: 1px solid rgba(204,145,255,.16) !important;
+  box-shadow: 0 12px 38px rgba(78,14,121,.20), inset 0 1px rgba(255,255,255,.08) !important;
+}
+html[data-ui="beta"] .hero::after {
+  content: "✦"; position: absolute; right: 18px; top: 12px;
+  font-size: 74px; line-height: 1; color: rgba(224,190,255,.13);
+  text-shadow: 0 0 35px rgba(188,92,255,.5); pointer-events: none;
+}
+html[data-ui="beta"] .hero .eyebrow {
+  color: #d7b5ff !important; letter-spacing: 1.7px !important;
+  font-size: 9px !important; font-weight: 700;
+}
+html[data-ui="beta"] .hero h1 {
+  max-width: 300px; font-size: clamp(27px,7vw,34px) !important;
+  line-height: 1.06 !important; letter-spacing: -1.1px !important;
+  margin: 12px 0 8px !important;
+}
+html[data-ui="beta"] .hero h1 span {
+  color: #d8a5ff !important;
+  background: linear-gradient(90deg,#fff,#d7a0ff 70%,#a95cff);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+html[data-ui="beta"] .hero #greeting { color: #c6b6d3 !important; font-size: 12px !important; }
+html[data-ui="beta"] .home-nova-actions { position: relative; z-index: 1; }
+html[data-ui="beta"] .home-nova-actions .btn {
+  border-radius: 99px !important; padding: 10px 16px !important;
+  background: linear-gradient(100deg,#a100ff,#7415c7) !important;
+  box-shadow: 0 5px 20px rgba(155,32,255,.25) !important;
+}
+html[data-ui="beta"] .glass.section,
+html[data-ui="beta"] .glass:not(.hero) {
+  background: linear-gradient(145deg,rgba(30,27,36,.96),rgba(19,17,24,.98)) !important;
+  border: 1px solid rgba(255,255,255,.065) !important;
+  border-radius: 19px !important;
+  box-shadow: 0 7px 22px rgba(0,0,0,.18), inset 0 1px rgba(255,255,255,.025) !important;
+}
+html[data-ui="beta"] .section-head h2 { letter-spacing: -.35px; }
+html[data-ui="beta"] .btn {
+  border-radius: 13px !important;
+  background: linear-gradient(105deg,#9200e8,#6814b7) !important;
+  border-color: transparent !important;
+}
+html[data-ui="beta"] .btn.secondary {
+  background: rgba(255,255,255,.075) !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+}
+html[data-ui="beta"] input,
+html[data-ui="beta"] select,
+html[data-ui="beta"] textarea {
+  background: #100e15 !important; border-color: rgba(255,255,255,.10) !important;
+  border-radius: 12px !important; color: #f7f3ff !important;
+}
+html[data-ui="beta"] .bottom-nav {
+  position: fixed !important; left: 0 !important; right: 0 !important;
+  bottom: 0 !important; z-index: 1000 !important;
+  padding: 0 12px calc(9px + env(safe-area-inset-bottom)) !important;
+  background: linear-gradient(180deg,transparent,rgba(8,7,12,.88) 24%) !important;
+  border: 0 !important;
+  backdrop-filter: none !important;
+}
+html[data-ui="beta"] .bottom-nav .nav-inner {
+  width: min(100%,440px) !important; margin: 0 auto !important;
+  display: flex !important; justify-content: space-around !important;
+  gap: 2px !important; padding: 7px 6px !important;
+  border-radius: 25px !important;
+  background: rgba(31,28,38,.88) !important;
+  border: 1px solid rgba(255,255,255,.13) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.07) !important;
+  backdrop-filter: blur(24px) saturate(150%) !important;
+  overflow-x: auto; scrollbar-width: none;
+}
+html[data-ui="beta"] .bottom-nav .nav-inner::-webkit-scrollbar { display:none; }
+html[data-ui="beta"] .bottom-nav .nav-btn {
+  min-width: 48px !important; flex: 1 0 48px !important;
+  display: flex !important; flex-direction: column !important;
+  align-items: center !important; justify-content: center !important;
+  gap: 3px !important; padding: 7px 3px !important;
+  border-radius: 18px !important; color: #bcb4c7 !important;
+  font-size: 9px !important; line-height: 1.1 !important;
+}
+html[data-ui="beta"] .bottom-nav .nav-btn span { font-size: 17px !important; }
+html[data-ui="beta"] .bottom-nav .nav-btn.active {
+  background: linear-gradient(145deg,rgba(164,44,255,.28),rgba(111,26,177,.16)) !important;
+  color: #d99cff !important;
+}
+html[data-ui="beta"] .bottom-nav .nav-btn.active::after { display:none !important; }
+html[data-ui="beta"] .wallet .big { color:#f4e8ff !important; }
+html[data-ui="beta"] .tag { border-radius:99px !important; }
+html[data-ui="beta"] .notice { color:#bdb2c9 !important; }
+html[data-ui="beta"] .footer { color:#756c80 !important; }
+@media (min-width:700px) {
+  html[data-ui="beta"] .app { max-width:470px !important; }
+}
+
 </style>
 </head>
 <body>
@@ -1456,7 +1606,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v34 · автономная память</span>
+      <span class="pill" id="topPill">v35 · beta design</span>
     </header>
 
     <!-- HOME -->
@@ -2043,12 +2193,12 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
 
       <div class="glass section">
         <div class="section-head"><h2>Бета-дизайн</h2><span class="tag">UI</span></div>
-        <p class="notice" style="margin-top:0">Полностью другой каркас интерфейса в духе Fitness на iPhone: кольца прогресса, чёрный фон, крупные блоки. Это не смена цвета, а отдельный UI. Не копия Apple Fitness.</p>
+        <p class="notice" style="margin-top:0">Новый фиолетовый интерфейс Luma: чёрный фон, мягкие свечения, объёмные карточки и компактная нижняя навигация. Включение меняет только оформление.</p>
         <div class="form-actions">
-          <button class="btn" type="button" id="uiBetaOn">Включить бета-UI</button>
+          <button class="btn" type="button" id="uiBetaOn">Включить Beta Design</button>
           <button class="btn secondary" type="button" id="uiBetaOff">Классика</button>
         </div>
-        <p class="notice" id="uiBetaStatus">Сейчас: классический дизайн (включи бета для Fitness-стиля)</p>
+        <p class="notice" id="uiBetaStatus">Сейчас: классический дизайн (включи Beta Design)</p>
       </div>
 
       <div class="glass section">
@@ -2075,7 +2225,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v34 · автономная память</p>
+      <p class="footer" id="appFooter">Luma · v35 · beta design</p>
     </section>
   </main>
 
@@ -2239,7 +2389,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '34';
+  const BUILD = '35';
 
   /* Локальная память v34: резервная копия IndexedDB + переносимый Luma ID.
      Это не облачная синхронизация: каждый браузер имеет собственное хранилище. */
@@ -4078,10 +4228,10 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     else document.documentElement.removeAttribute('data-ui');
     save();
     const st = $('uiBetaStatus');
-    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: бета-дизайн (Fitness-стиль)' : 'Сейчас: классический дизайн';
+    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v35' : 'Сейчас: классический дизайн';
     checkAchievements();
     try { renderHome(); } catch {}
-    toast(data.ui === 'beta' ? 'Бета-UI: вид как у спортивного приложения' : 'Классический дизайн');
+    toast(data.ui === 'beta' ? 'Beta Design v35 включён' : 'Классический дизайн');
   }
   function fitRingSvg(move, ex, stand){
     // progress 0..1
@@ -4612,6 +4762,11 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
       'Полный экспорт и импорт истории чатов и настроек',
       'Восстановление локальной копии после случайной очистки данных',
       'Обновлён офлайн-кэш приложения'
+    ],
+    '35': [
+      'Новый фиолетовый Beta Design в стиле твоего референса',
+      'Обновлены карточки, главный экран и нижняя навигация',
+      'Классический дизайн и все существующие функции сохранены'
     ],
     '32': [
       'Чек-лист дня в бета-сводке',
@@ -6460,7 +6615,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
     if (data.ui === 'beta') document.documentElement.setAttribute('data-ui', 'beta');
     else document.documentElement.removeAttribute('data-ui');
     const st = $('uiBetaStatus');
-    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: бета-дизайн' : 'Сейчас: классический дизайн';
+    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v35' : 'Сейчас: классический дизайн';
     $('uiBetaOn')?.addEventListener('click', () => setUIMode('beta'));
     $('uiBetaOff')?.addEventListener('click', () => setUIMode('classic'));
     checkAchievements();
