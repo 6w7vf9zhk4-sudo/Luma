@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="32"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="35.1"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);if(_d.ui==='beta')document.documentElement.setAttribute('data-ui','beta');}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1443,7 +1443,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
 
 
 
-/* ===== Luma v35 Beta Design: purple glass dashboard ===== */
+/* ===== Luma v35.1 Beta Design: productivity glass dashboard (inspired by AI focus UI) ===== */
 html[data-ui="beta"] {
   --fit-bg: #08070c;
   --fit-card: #15131b;
@@ -1591,6 +1591,131 @@ html[data-ui="beta"] .footer { color:#756c80 !important; }
   html[data-ui="beta"] .app { max-width:470px !important; }
 }
 
+/* ===== v35.1 Productivity Home (Dribbble-inspired) ===== */
+html[data-ui="beta"] .prod-home { margin: 0 0 8px; }
+html[data-ui="beta"] .prod-greet {
+  font-size: 22px; font-weight: 750; letter-spacing: -.4px;
+  color: var(--fit-text); margin: 0 0 4px; line-height: 1.2;
+}
+html[data-ui="beta"] .prod-sub {
+  font-size: 13px; color: var(--fit-muted); margin: 0 0 16px;
+}
+html[data-ui="beta"] .prod-ai {
+  background: linear-gradient(135deg, rgba(161,0,255,.18), rgba(100,50,200,.12));
+  border: 1px solid rgba(180,100,255,.22);
+  border-radius: 18px; padding: 14px 16px; margin-bottom: 14px;
+  position: relative; overflow: hidden;
+}
+html[data-ui="beta"] .prod-ai::before {
+  content: ""; position: absolute; top: -20px; right: -20px;
+  width: 80px; height: 80px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(180,80,255,.35), transparent 70%);
+  pointer-events: none;
+}
+html[data-ui="beta"] .prod-ai .ai-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .4px; color: #c084fc; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+html[data-ui="beta"] .prod-ai .ai-label span {
+  width: 6px; height: 6px; border-radius: 50%; background: #a100ff;
+  box-shadow: 0 0 8px #a100ff;
+}
+html[data-ui="beta"] .prod-ai b {
+  display: block; font-size: 15px; font-weight: 700; color: #f7f3ff; margin-bottom: 2px;
+}
+html[data-ui="beta"] .prod-ai small {
+  font-size: 12px; color: var(--fit-muted);
+}
+html[data-ui="beta"] .prod-stats {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px;
+}
+html[data-ui="beta"] .prod-stat {
+  background: var(--fit-card); border: 1px solid var(--fit-line);
+  border-radius: 16px; padding: 14px 10px; text-align: center;
+}
+html[data-ui="beta"] .prod-stat b {
+  display: block; font-size: 26px; font-weight: 800; letter-spacing: -.6px;
+  color: var(--fit-text); line-height: 1.1; margin-bottom: 4px;
+}
+html[data-ui="beta"] .prod-stat span {
+  font-size: 11px; font-weight: 600; color: var(--fit-muted);
+  text-transform: uppercase; letter-spacing: .2px;
+}
+html[data-ui="beta"] .prod-stat.accent b { color: #c084fc; }
+html[data-ui="beta"] .prod-next {
+  background: var(--fit-card); border: 1px solid var(--fit-line);
+  border-radius: 16px; padding: 14px 16px; margin-bottom: 14px;
+}
+html[data-ui="beta"] .prod-next .n-label {
+  font-size: 11px; font-weight: 700; color: var(--fit-muted);
+  text-transform: uppercase; letter-spacing: .3px; margin-bottom: 8px;
+}
+html[data-ui="beta"] .prod-next .n-item {
+  display: flex; align-items: center; gap: 12px;
+}
+html[data-ui="beta"] .prod-next .n-time {
+  font-size: 13px; font-weight: 700; color: #c084fc; min-width: 48px;
+}
+html[data-ui="beta"] .prod-next .n-txt b {
+  display: block; font-size: 14px; font-weight: 650; color: var(--fit-text);
+}
+html[data-ui="beta"] .prod-next .n-txt small {
+  font-size: 12px; color: var(--fit-muted);
+}
+html[data-ui="beta"] .prod-quick {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;
+}
+html[data-ui="beta"] .prod-quick button {
+  background: var(--fit-card); border: 1px solid var(--fit-line);
+  border-radius: 14px; padding: 12px; color: var(--fit-text);
+  font-size: 13px; font-weight: 600; display: flex; align-items: center;
+  gap: 8px; cursor: pointer; transition: background .15s;
+}
+html[data-ui="beta"] .prod-quick button:active { background: var(--fit-elev); }
+html[data-ui="beta"] .prod-quick button span { font-size: 18px; }
+html[data-ui="beta"] .prod-section {
+  margin-bottom: 14px;
+}
+html[data-ui="beta"] .prod-section-h {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+html[data-ui="beta"] .prod-section-h h3 {
+  font-size: 15px; font-weight: 700; color: var(--fit-text); margin: 0;
+}
+html[data-ui="beta"] .prod-section-h button {
+  background: none; border: 0; color: #c084fc; font-size: 13px;
+  font-weight: 600; cursor: pointer; padding: 0;
+}
+html[data-ui="beta"] .prod-pet {
+  background: var(--fit-card); border: 1px solid var(--fit-line);
+  border-radius: 18px; padding: 16px; display: flex; align-items: center; gap: 14px;
+}
+html[data-ui="beta"] .prod-pet .pet-av {
+  width: 56px; height: 56px; border-radius: 16px;
+  background: linear-gradient(145deg, #b54cff33, #6500a833);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; flex-shrink: 0;
+}
+html[data-ui="beta"] .prod-pet .pet-info b {
+  display: block; font-size: 15px; font-weight: 700; color: var(--fit-text);
+}
+html[data-ui="beta"] .prod-pet .pet-info small {
+  font-size: 12px; color: var(--fit-muted);
+}
+html[data-ui="beta"] .prod-pet .pet-bars {
+  display: flex; gap: 6px; margin-top: 6px;
+}
+html[data-ui="beta"] .prod-pet .pet-bar {
+  height: 4px; border-radius: 99px; background: var(--fit-elev); flex: 1;
+  overflow: hidden;
+}
+html[data-ui="beta"] .prod-pet .pet-bar i {
+  display: block; height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, #a100ff, #c084fc);
+}
+
 </style>
 </head>
 <body>
@@ -1606,7 +1731,7 @@ html[data-ui="beta"] .footer { color:#756c80 !important; }
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v35 · beta design</span>
+      <span class="pill" id="topPill">v35.1 · beta</span>
     </header>
 
     <!-- HOME -->
@@ -2225,7 +2350,7 @@ html[data-ui="beta"] .footer { color:#756c80 !important; }
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v35 · beta design</p>
+      <p class="footer" id="appFooter">Luma · v35.1 · beta</p>
     </section>
   </main>
 
@@ -4228,10 +4353,41 @@ html[data-ui="beta"] .footer { color:#756c80 !important; }
     else document.documentElement.removeAttribute('data-ui');
     save();
     const st = $('uiBetaStatus');
-    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v35' : 'Сейчас: классический дизайн';
+    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v35.1' : 'Сейчас: классический дизайн';
+    adaptNavForUI();
     checkAchievements();
     try { renderHome(); } catch {}
-    toast(data.ui === 'beta' ? 'Beta Design v35 включён' : 'Классический дизайн');
+    toast(data.ui === 'beta' ? 'Beta Design v35.1 включён' : 'Классический дизайн');
+  }
+  function adaptNavForUI() {
+    const mapBeta = {
+      home: ['🏠', 'Главная'],
+      nutrition: ['🥗', 'Рацион'],
+      reminders: ['📅', 'Планы'],
+      walk: ['🚶', 'Активность'],
+      games: ['🎮', 'Игры'],
+      settings: ['👤', 'Профиль']
+    };
+    const mapClassic = {
+      home: ['🏠', 'Главная'],
+      nutrition: ['🥗', 'Рацион'],
+      reminders: ['⏰', 'Планы'],
+      walk: ['🚶', 'Ходьба'],
+      games: ['🎮', 'Игры'],
+      settings: ['⚙️', 'Ещё']
+    };
+    const m = data.ui === 'beta' ? mapBeta : mapClassic;
+    document.querySelectorAll('.nav-btn[data-tab]').forEach(btn => {
+      const tab = btn.getAttribute('data-tab');
+      if (m[tab]) {
+        const span = btn.querySelector('span');
+        if (span) span.textContent = m[tab][0];
+        // text node after span
+        const nodes = Array.from(btn.childNodes);
+        nodes.forEach(n => { if (n.nodeType === 3) n.textContent = ''; });
+        btn.appendChild(document.createTextNode(m[tab][1]));
+      }
+    });
   }
   function fitRingSvg(move, ex, stand){
     // progress 0..1
@@ -4256,72 +4412,105 @@ html[data-ui="beta"] .footer { color:#756c80 !important; }
     const st = planDayStats();
     const goal = data.water && data.water.goal ? data.water.goal : 2000;
     const curW = (data.water && data.water.date === st.day) ? (data.water.current || 0) : 0;
-    const move = Math.min(1, curW / goal);
-    let walkP = 0;
-    const walksToday = (data.walks || []).filter(w => w.date === st.day);
-    if (walksToday.length) {
-      const ms = walksToday.reduce((a,w)=>a+(+w.ms||0),0);
-      walkP = Math.min(1, ms / (30 * 60000));
-    }
     let remDoneN = 0;
     if (st.rems) {
       const start = new Date(st.day+'T00:00:00').getTime();
       remDoneN = (data.reminders||[]).filter(r => r.when>=start && r.when<start+86400000 && r.done).length;
     }
-    const remP = st.rems ? remDoneN / st.rems : (st.meals > 0 ? 1 : 0.12);
     const weekN = countPlanDays(7);
     const monthN = countPlanDays(30);
     const marked = !!(data.planLog && data.planLog[st.day]);
     const achN = ACHIEVEMENTS.filter(a => data.ach && data.ach[a.id]).length;
     const cal = $('homeCal') ? $('homeCal').textContent : '0';
+    const name = (data.profile && data.profile.name) ? data.profile.name : '';
+    const greetName = name ? name : 'друг';
     // next reminder
-    let nextTxt = 'Нет дел на сегодня';
-    const now = Date.now();
+    let nextTime = '';
+    let nextTitle = 'Нет дел на сегодня';
+    let nextSub = 'Добавь напоминание или открой Планы';
     const dayStart = new Date(st.day+'T00:00:00').getTime();
     const pending = (data.reminders||[]).filter(r => !r.done && r.when >= dayStart && r.when < dayStart+86400000).sort((a,b)=>a.when-b.when);
     if (pending.length) {
       const r = pending[0];
-      nextTxt = new Date(r.when).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) + ' · ' + (r.text||'Напоминание');
+      nextTime = new Date(r.when).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+      nextTitle = r.text || 'Напоминание';
+      nextSub = pending.length > 1 ? ('ещё ' + (pending.length-1) + ' сегодня') : 'ближайшее';
     }
-    const dateLabel = new Date(st.day+'T12:00:00').toLocaleDateString('ru-RU',{weekday:'long', day:'numeric', month:'long'});
+    // focus text
+    let focusTitle = 'Лёгкий день';
+    let focusSub = '2–3 важных дела';
+    if (st.rems >= 5) { focusTitle = 'Плотный день'; focusSub = st.rems + ' дел · держи фокус'; }
+    else if (st.rems >= 3) { focusTitle = 'Активный день'; focusSub = st.rems + ' дел · 1–2 приоритета'; }
+    else if (st.rems === 0 && st.meals === 0) { focusTitle = 'Свободный день'; focusSub = 'Можно отдохнуть или запланировать'; }
+    // pet
+    let petHtml = '';
+    try {
+      const p = (typeof PETS !== 'undefined' && data.pets) ? (PETS.find(x => x.id === data.pets.active) || PETS[0]) : null;
+      if (p) {
+        const hunger = Math.max(0, Math.min(100, data.pets.hunger || 50));
+        const energy = Math.max(0, Math.min(100, data.pets.energy || 50));
+        const moodTxt = (data.pets.mood === 'sleeping') ? 'Спит' : (hunger < 25 ? 'Проголодался' : 'Бодрствует');
+        const av = (typeof petCharacter === 'function') ? petCharacter(p.id) : (p.icon || '🐾');
+        petHtml =
+          '<div class="prod-section">' +
+            '<div class="prod-section-h"><h3>Питомец</h3><button type="button" onclick="openPets()">Уход ›</button></div>' +
+            '<div class="prod-pet">' +
+              '<div class="pet-av">' + av + '</div>' +
+              '<div class="pet-info">' +
+                '<b>' + esc(p.name || 'Питомец') + '</b>' +
+                '<small>' + moodTxt + '</small>' +
+                '<div class="pet-bars">' +
+                  '<div class="pet-bar" title="Сытость"><i style="width:' + hunger + '%"></i></div>' +
+                  '<div class="pet-bar" title="Энергия"><i style="width:' + energy + '%"></i></div>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+      }
+    } catch(e) {}
+    // completed this week approx
+    const completedWeek = (data.cnt && data.cnt.remDone) ? Math.min(99, data.cnt.remDone) : remDoneN;
     host.innerHTML =
-      '<div class="fit-wrap">' +
-        '<div class="fit-date">' + dateLabel + '</div>' +
-        '<div class="fit-title">Сводка</div>' +
-        '<div class="fit-rings">' +
-          fitRingSvg(move, walkP, remP) +
-          '<div class="fit-legend">' +
-            '<div class="fit-leg move"><small>Вода</small><b>' + Math.round(curW) + '</b></div>' +
-            '<div class="fit-leg ex"><small>Ходьба</small><b>' + Math.round(walkP*100) + '%</b></div>' +
-            '<div class="fit-leg stand"><small>Дела</small><b>' + (st.rems ? (remDoneN+'/'+st.rems) : '—') + '</b></div>' +
+      '<div class="prod-home">' +
+        '<div class="prod-greet">Привет, ' + esc(greetName) + '!</div>' +
+        '<div class="prod-sub">У тебя есть время для глубокого фокуса сегодня</div>' +
+        '<div class="prod-ai" onclick="openNova()" style="cursor:pointer">' +
+          '<div class="ai-label"><span></span>AI Summary · Нова</div>' +
+          '<b>Сегодняшний фокус</b>' +
+          '<small>' + focusTitle + ' · ' + focusSub + '</small>' +
+        '</div>' +
+        '<div class="prod-stats">' +
+          '<div class="prod-stat"><b>' + st.rems + '</b><span>Дела</span></div>' +
+          '<div class="prod-stat accent"><b>' + (st.rems - remDoneN) + '</b><span>В работе</span></div>' +
+          '<div class="prod-stat"><b>' + remDoneN + '</b><span>Готово</span></div>' +
+        '</div>' +
+        '<div class="prod-next" onclick="goTab(\'reminders\')" style="cursor:pointer">' +
+          '<div class="n-label">Дальше</div>' +
+          '<div class="n-item">' +
+            (nextTime ? '<div class="n-time">' + nextTime + '</div>' : '') +
+            '<div class="n-txt"><b>' + esc(nextTitle) + '</b><small>' + esc(nextSub) + '</small></div>' +
           '</div>' +
         '</div>' +
-        '<div class="fit-quick">' +
+        '<div class="prod-quick">' +
           '<button type="button" onclick="addWater(250)"><span>💧</span>+250 мл</button>' +
           '<button type="button" onclick="goTab(\'nutrition\')"><span>🍽</span>Еда · ' + cal + '</button>' +
           '<button type="button" onclick="goTab(\'walk\')"><span>🚶</span>Ходьба</button>' +
+          '<button type="button" onclick="openNova()"><span>✦</span>Спросить Нову</button>' +
         '</div>' +
-        '<div class="fit-check">' +
-          '<label><input type="checkbox" disabled ' + (curW>=goal?'checked':'') + '> Вода к цели</label>' +
-          '<label><input type="checkbox" disabled ' + (st.meals>0?'checked':'') + '> Еда записана</label>' +
-          '<label><input type="checkbox" disabled ' + (st.walk?'checked':'') + '> Прогулка</label>' +
-          '<label><input type="checkbox" disabled ' + ((st.rems===0||st.remDone)?'checked':'') + '> Дела закрыты</label>' +
-        '</div>' +
-        '<div class="fit-next"><b>Дальше</b>' + nextTxt + '</div>' +
-        '<div class="week-report">' + weekReportText() + '</div>' +
-        '<div class="fit-plan-card">' +
-          '<div class="fit-plan-meta"><span>День</span><span>' + st.score + '%' + (marked ? ' · ✓' : '') + '</span></div>' +
-          '<div class="fit-plan-bar"><i style="width:' + st.score + '%"></i></div>' +
-          '<div class="fit-plan-meta" style="margin-top:8px;margin-bottom:0"><span>Неделя ' + weekN + '/7 · месяц ' + monthN + '/20</span></div>' +
-          '<div class="fit-actions">' +
-            '<button type="button" class="btn" onclick="markPlanDay()">Засчитать</button>' +
-            '<button type="button" class="btn secondary" onclick="openNova()">Нова</button>' +
+        petHtml +
+        '<div class="prod-section">' +
+          '<div class="prod-section-h"><h3>Прогресс дня</h3><button type="button" onclick="markPlanDay()">Засчитать</button></div>' +
+          '<div class="fit-plan-card" style="margin:0">' +
+            '<div class="fit-plan-meta"><span>Выполнение</span><span>' + st.score + '%' + (marked ? ' · ✓' : '') + '</span></div>' +
+            '<div class="fit-plan-bar"><i style="width:' + st.score + '%"></i></div>' +
+            '<div class="fit-plan-meta" style="margin-top:8px;margin-bottom:0"><span>Неделя ' + weekN + '/7 · месяц ' + monthN + '/20 · 🏅 ' + achN + '</span></div>' +
           '</div>' +
         '</div>' +
         '<div class="beta-cat-list">' +
-          '<button type="button" class="beta-cat" onclick="goTab(\'reminders\')"><span class="ic" style="background:#ff375f22">⏰</span><span class="meta"><b>Планы</b><small>' + st.rems + ' на сегодня</small></span><span class="chev">›</span></button>' +
+          '<button type="button" class="beta-cat" onclick="goTab(\'reminders\')"><span class="ic" style="background:#a100ff22">⏰</span><span class="meta"><b>Планы</b><small>' + st.rems + ' на сегодня</small></span><span class="chev">›</span></button>' +
+          '<button type="button" class="beta-cat" onclick="goTab(\'games\')"><span class="ic" style="background:#c084fc22">🎮</span><span class="meta"><b>Мини-игры</b><small>Реакция, память и другие</small></span><span class="chev">›</span></button>' +
           '<button type="button" class="beta-cat" onclick="goTab(\'achievements\')"><span class="ic" style="background:#bf5af222">🏅</span><span class="meta"><b>Достижения</b><small>' + achN + '/' + ACHIEVEMENTS.length + '</small></span><span class="chev">›</span></button>' +
-          '<button type="button" class="beta-cat" onclick="goTab(\'settings\')"><span class="ic" style="background:#64d2ff22">⚙️</span><span class="meta"><b>Ещё</b><small>Тема, бэта, поддержка</small></span><span class="chev">›</span></button>' +
+          '<button type="button" class="beta-cat" onclick="goTab(\'settings\')"><span class="ic" style="background:#64d2ff22">⚙️</span><span class="meta"><b>Профиль</b><small>Тема, бета, поддержка</small></span><span class="chev">›</span></button>' +
         '</div>' +
       '</div>';
     if (st.complete && !marked) {
@@ -6615,7 +6804,8 @@ html[data-ui="beta"] .footer { color:#756c80 !important; }
     if (data.ui === 'beta') document.documentElement.setAttribute('data-ui', 'beta');
     else document.documentElement.removeAttribute('data-ui');
     const st = $('uiBetaStatus');
-    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v35' : 'Сейчас: классический дизайн';
+    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v35.1' : 'Сейчас: классический дизайн';
+    adaptNavForUI();
     $('uiBetaOn')?.addEventListener('click', () => setUIMode('beta'));
     $('uiBetaOff')?.addEventListener('click', () => setUIMode('classic'));
     checkAchievements();
