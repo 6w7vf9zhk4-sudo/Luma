@@ -1591,71 +1591,103 @@ html[data-ui="beta"] .footer { color:#756c80 !important; }
   html[data-ui="beta"] .app { max-width:470px !important; }
 }
 
-/* ===== v35.1 Productivity Home (Dribbble-inspired) ===== */
-html[data-ui="beta"] .prod-home { margin: 0 0 8px; }
+/* ===== v35.1 — Dribbble AI Productivity Home ===== */
+html[data-ui="beta"] {
+  --fit-bg: #0a0612;
+  --fit-card: #14101c;
+  --fit-elev: #1c1628;
+  --fit-line: rgba(255,255,255,.07);
+  --fit-text: #f4f0ff;
+  --fit-muted: #9b92ad;
+  --fit-purple: #a855f7;
+  --fit-purple2: #7c3aed;
+}
+html[data-ui="beta"] body {
+  background: #0a0612 !important;
+}
+html[data-ui="beta"] .app {
+  padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
+}
+html[data-ui="beta"] .prod-home { margin: 0; padding: 0 2px; }
+html[data-ui="beta"] .prod-top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 18px;
+}
 html[data-ui="beta"] .prod-greet {
-  font-size: 22px; font-weight: 750; letter-spacing: -.4px;
-  color: var(--fit-text); margin: 0 0 4px; line-height: 1.2;
+  font-size: 24px; font-weight: 750; letter-spacing: -.5px;
+  color: var(--fit-text); margin: 0 0 4px; line-height: 1.15;
 }
 html[data-ui="beta"] .prod-sub {
-  font-size: 13px; color: var(--fit-muted); margin: 0 0 16px;
+  font-size: 13px; color: var(--fit-muted); margin: 0; line-height: 1.35;
+}
+html[data-ui="beta"] .prod-bell {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: var(--fit-elev); border: 1px solid var(--fit-line);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0; cursor: pointer;
 }
 html[data-ui="beta"] .prod-ai {
-  background: linear-gradient(135deg, rgba(161,0,255,.18), rgba(100,50,200,.12));
-  border: 1px solid rgba(180,100,255,.22);
-  border-radius: 18px; padding: 14px 16px; margin-bottom: 14px;
+  background: linear-gradient(145deg, #1a0f2e 0%, #2a1450 50%, #1e0f3a 100%);
+  border: 1px solid rgba(168,85,247,.28);
+  border-radius: 20px; padding: 16px 18px; margin-bottom: 16px;
   position: relative; overflow: hidden;
+  box-shadow: 0 8px 32px rgba(124,58,237,.18);
 }
-html[data-ui="beta"] .prod-ai::before {
-  content: ""; position: absolute; top: -20px; right: -20px;
-  width: 80px; height: 80px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(180,80,255,.35), transparent 70%);
+html[data-ui="beta"] .prod-ai::after {
+  content: ""; position: absolute; top: -40px; right: -30px;
+  width: 140px; height: 140px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(168,85,247,.35), transparent 65%);
   pointer-events: none;
 }
 html[data-ui="beta"] .prod-ai .ai-label {
-  font-size: 11px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: .4px; color: #c084fc; margin-bottom: 6px;
-  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: .3px;
+  color: #c4b5fd; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 7px;
 }
 html[data-ui="beta"] .prod-ai .ai-label span {
-  width: 6px; height: 6px; border-radius: 50%; background: #a100ff;
-  box-shadow: 0 0 8px #a100ff;
+  width: 7px; height: 7px; border-radius: 50%; background: #a855f7;
+  box-shadow: 0 0 10px #a855f7;
 }
 html[data-ui="beta"] .prod-ai b {
-  display: block; font-size: 15px; font-weight: 700; color: #f7f3ff; margin-bottom: 2px;
+  display: block; font-size: 16px; font-weight: 700; color: #f4f0ff; margin-bottom: 3px;
 }
 html[data-ui="beta"] .prod-ai small {
-  font-size: 12px; color: var(--fit-muted);
+  font-size: 12.5px; color: #b8a9d4;
 }
 html[data-ui="beta"] .prod-stats {
-  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px;
+  display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 10px; margin-bottom: 16px;
 }
 html[data-ui="beta"] .prod-stat {
   background: var(--fit-card); border: 1px solid var(--fit-line);
-  border-radius: 16px; padding: 14px 10px; text-align: center;
+  border-radius: 18px; padding: 16px 12px 14px; text-align: left;
+  position: relative;
 }
 html[data-ui="beta"] .prod-stat b {
-  display: block; font-size: 26px; font-weight: 800; letter-spacing: -.6px;
-  color: var(--fit-text); line-height: 1.1; margin-bottom: 4px;
+  display: block; font-size: 28px; font-weight: 800; letter-spacing: -.8px;
+  color: var(--fit-text); line-height: 1; margin-bottom: 6px;
 }
 html[data-ui="beta"] .prod-stat span {
   font-size: 11px; font-weight: 600; color: var(--fit-muted);
-  text-transform: uppercase; letter-spacing: .2px;
+  line-height: 1.25;
 }
-html[data-ui="beta"] .prod-stat.accent b { color: #c084fc; }
+html[data-ui="beta"] .prod-stat .stat-extra {
+  display: block; font-size: 10px; color: #7c3aed; margin-top: 4px; font-weight: 600;
+}
+html[data-ui="beta"] .prod-stat.wide { grid-column: 1; }
 html[data-ui="beta"] .prod-next {
   background: var(--fit-card); border: 1px solid var(--fit-line);
-  border-radius: 16px; padding: 14px 16px; margin-bottom: 14px;
+  border-radius: 18px; padding: 14px 16px; margin-bottom: 16px;
 }
 html[data-ui="beta"] .prod-next .n-label {
   font-size: 11px; font-weight: 700; color: var(--fit-muted);
-  text-transform: uppercase; letter-spacing: .3px; margin-bottom: 8px;
+  letter-spacing: .25px; margin-bottom: 10px;
 }
-html[data-ui="beta"] .prod-next .n-item {
+html[data-ui="beta"] .prod-next .n-card {
+  background: var(--fit-elev); border-radius: 14px; padding: 12px 14px;
   display: flex; align-items: center; gap: 12px;
 }
 html[data-ui="beta"] .prod-next .n-time {
-  font-size: 13px; font-weight: 700; color: #c084fc; min-width: 48px;
+  font-size: 13px; font-weight: 700; color: #c4b5fd; min-width: 44px;
 }
 html[data-ui="beta"] .prod-next .n-txt b {
   display: block; font-size: 14px; font-weight: 650; color: var(--fit-text);
@@ -1663,20 +1695,7 @@ html[data-ui="beta"] .prod-next .n-txt b {
 html[data-ui="beta"] .prod-next .n-txt small {
   font-size: 12px; color: var(--fit-muted);
 }
-html[data-ui="beta"] .prod-quick {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;
-}
-html[data-ui="beta"] .prod-quick button {
-  background: var(--fit-card); border: 1px solid var(--fit-line);
-  border-radius: 14px; padding: 12px; color: var(--fit-text);
-  font-size: 13px; font-weight: 600; display: flex; align-items: center;
-  gap: 8px; cursor: pointer; transition: background .15s;
-}
-html[data-ui="beta"] .prod-quick button:active { background: var(--fit-elev); }
-html[data-ui="beta"] .prod-quick button span { font-size: 18px; }
-html[data-ui="beta"] .prod-section {
-  margin-bottom: 14px;
-}
+html[data-ui="beta"] .prod-section { margin-bottom: 16px; }
 html[data-ui="beta"] .prod-section-h {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 10px;
@@ -1685,19 +1704,20 @@ html[data-ui="beta"] .prod-section-h h3 {
   font-size: 15px; font-weight: 700; color: var(--fit-text); margin: 0;
 }
 html[data-ui="beta"] .prod-section-h button {
-  background: none; border: 0; color: #c084fc; font-size: 13px;
+  background: none; border: 0; color: #a855f7; font-size: 13px;
   font-weight: 600; cursor: pointer; padding: 0;
 }
 html[data-ui="beta"] .prod-pet {
   background: var(--fit-card); border: 1px solid var(--fit-line);
-  border-radius: 18px; padding: 16px; display: flex; align-items: center; gap: 14px;
+  border-radius: 18px; padding: 14px 16px; display: flex; align-items: center; gap: 14px;
 }
 html[data-ui="beta"] .prod-pet .pet-av {
-  width: 56px; height: 56px; border-radius: 16px;
-  background: linear-gradient(145deg, #b54cff33, #6500a833);
+  width: 52px; height: 52px; border-radius: 16px;
+  background: linear-gradient(145deg, #7c3aed44, #a855f733);
   display: flex; align-items: center; justify-content: center;
-  font-size: 32px; flex-shrink: 0;
+  font-size: 28px; flex-shrink: 0;
 }
+html[data-ui="beta"] .prod-pet .pet-info { flex: 1; min-width: 0; }
 html[data-ui="beta"] .prod-pet .pet-info b {
   display: block; font-size: 15px; font-weight: 700; color: var(--fit-text);
 }
@@ -1705,7 +1725,7 @@ html[data-ui="beta"] .prod-pet .pet-info small {
   font-size: 12px; color: var(--fit-muted);
 }
 html[data-ui="beta"] .prod-pet .pet-bars {
-  display: flex; gap: 6px; margin-top: 6px;
+  display: flex; gap: 6px; margin-top: 7px;
 }
 html[data-ui="beta"] .prod-pet .pet-bar {
   height: 4px; border-radius: 99px; background: var(--fit-elev); flex: 1;
@@ -1713,8 +1733,58 @@ html[data-ui="beta"] .prod-pet .pet-bar {
 }
 html[data-ui="beta"] .prod-pet .pet-bar i {
   display: block; height: 100%; border-radius: 99px;
-  background: linear-gradient(90deg, #a100ff, #c084fc);
+  background: linear-gradient(90deg, #7c3aed, #a855f7);
 }
+html[data-ui="beta"] .prod-chips {
+  display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;
+  scrollbar-width: none; margin-bottom: 4px;
+}
+html[data-ui="beta"] .prod-chips::-webkit-scrollbar { display: none; }
+html[data-ui="beta"] .prod-chip {
+  flex-shrink: 0; background: var(--fit-card); border: 1px solid var(--fit-line);
+  border-radius: 14px; padding: 12px 14px; min-width: 110px;
+  cursor: pointer;
+}
+html[data-ui="beta"] .prod-chip b {
+  display: block; font-size: 14px; font-weight: 700; color: var(--fit-text); margin-bottom: 2px;
+}
+html[data-ui="beta"] .prod-chip small {
+  font-size: 11px; color: var(--fit-muted);
+}
+/* Beta bottom nav — closer to reference (4 items + FAB) */
+html[data-ui="beta"] .bottom-nav .nav-inner {
+  padding: 8px 8px 8px 8px !important;
+  border-radius: 28px !important;
+  background: rgba(20,16,28,.92) !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
+}
+html[data-ui="beta"] .bottom-nav .nav-btn[data-tab="walk"],
+html[data-ui="beta"] .bottom-nav .nav-btn[data-tab="nutrition"] {
+  display: none !important;
+}
+html[data-ui="beta"] .bottom-nav .nav-btn {
+  min-width: 56px !important; flex: 1 !important;
+  font-size: 10px !important;
+}
+html[data-ui="beta"] .bottom-nav .nav-btn.active {
+  background: transparent !important;
+  color: #c4b5fd !important;
+}
+html[data-ui="beta"] .bottom-nav .nav-btn.active span {
+  color: #a855f7 !important;
+}
+html[data-ui="beta"] .beta-fab {
+  position: fixed; right: max(18px, calc(50% - 220px + 18px));
+  bottom: calc(78px + env(safe-area-inset-bottom));
+  width: 52px; height: 52px; border-radius: 50%;
+  background: linear-gradient(145deg, #a855f7, #7c3aed);
+  color: #fff; border: 0; font-size: 26px; font-weight: 300;
+  display: none; align-items: center; justify-content: center;
+  box-shadow: 0 8px 28px rgba(124,58,237,.45);
+  z-index: 1001; cursor: pointer;
+}
+html[data-ui="beta"] .beta-fab { display: flex !important; }
+html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
 
 </style>
 </head>
@@ -4361,12 +4431,10 @@ html[data-ui="beta"] .prod-pet .pet-bar i {
   }
   function adaptNavForUI() {
     const mapBeta = {
-      home: ['🏠', 'Главная'],
-      nutrition: ['🥗', 'Рацион'],
-      reminders: ['📅', 'Планы'],
-      walk: ['🚶', 'Активность'],
-      games: ['🎮', 'Игры'],
-      settings: ['👤', 'Профиль']
+      home: ['⌂', 'Home'],
+      reminders: ['☰', 'Planner'],
+      games: ['▦', 'Projects'],
+      settings: ['☺', 'Profile']
     };
     const mapClassic = {
       home: ['🏠', 'Главная'],
@@ -4382,12 +4450,28 @@ html[data-ui="beta"] .prod-pet .pet-bar i {
       if (m[tab]) {
         const span = btn.querySelector('span');
         if (span) span.textContent = m[tab][0];
-        // text node after span
         const nodes = Array.from(btn.childNodes);
         nodes.forEach(n => { if (n.nodeType === 3) n.textContent = ''; });
         btn.appendChild(document.createTextNode(m[tab][1]));
       }
     });
+    // FAB
+    let fab = document.getElementById('betaFab');
+    if (data.ui === 'beta') {
+      if (!fab) {
+        fab = document.createElement('button');
+        fab.id = 'betaFab';
+        fab.className = 'beta-fab';
+        fab.type = 'button';
+        fab.setAttribute('aria-label', 'Добавить');
+        fab.textContent = '+';
+        fab.onclick = () => { try { openNova(); } catch { goTab('reminders'); } };
+        document.body.appendChild(fab);
+      }
+      fab.style.display = 'flex';
+    } else if (fab) {
+      fab.style.display = 'none';
+    }
   }
   function fitRingSvg(move, ex, stand){
     // progress 0..1
@@ -4410,38 +4494,33 @@ html[data-ui="beta"] .prod-pet .pet-bar i {
     if (data.ui !== 'beta') { host.innerHTML = ''; host.hidden = true; return; }
     host.hidden = false;
     const st = planDayStats();
-    const goal = data.water && data.water.goal ? data.water.goal : 2000;
-    const curW = (data.water && data.water.date === st.day) ? (data.water.current || 0) : 0;
     let remDoneN = 0;
     if (st.rems) {
       const start = new Date(st.day+'T00:00:00').getTime();
       remDoneN = (data.reminders||[]).filter(r => r.when>=start && r.when<start+86400000 && r.done).length;
     }
-    const weekN = countPlanDays(7);
-    const monthN = countPlanDays(30);
-    const marked = !!(data.planLog && data.planLog[st.day]);
-    const achN = ACHIEVEMENTS.filter(a => data.ach && data.ach[a.id]).length;
-    const cal = $('homeCal') ? $('homeCal').textContent : '0';
+    const inProgress = Math.max(0, st.rems - remDoneN);
+    const weekDone = (data.cnt && data.cnt.remDone) ? data.cnt.remDone : remDoneN;
     const name = (data.profile && data.profile.name) ? data.profile.name : '';
-    const greetName = name ? name : 'друг';
-    // next reminder
-    let nextTime = '';
+    const greetName = name || 'там';
+    // next
+    let nextTime = '—';
     let nextTitle = 'Нет дел на сегодня';
-    let nextSub = 'Добавь напоминание или открой Планы';
+    let nextSub = 'Создай напоминание в Планах';
     const dayStart = new Date(st.day+'T00:00:00').getTime();
     const pending = (data.reminders||[]).filter(r => !r.done && r.when >= dayStart && r.when < dayStart+86400000).sort((a,b)=>a.when-b.when);
     if (pending.length) {
       const r = pending[0];
       nextTime = new Date(r.when).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
       nextTitle = r.text || 'Напоминание';
-      nextSub = pending.length > 1 ? ('ещё ' + (pending.length-1) + ' сегодня') : 'ближайшее';
+      nextSub = pending.length > 1 ? ('ещё ' + (pending.length-1)) : 'ближайшее';
     }
-    // focus text
-    let focusTitle = 'Лёгкий день';
-    let focusSub = '2–3 важных дела';
-    if (st.rems >= 5) { focusTitle = 'Плотный день'; focusSub = st.rems + ' дел · держи фокус'; }
-    else if (st.rems >= 3) { focusTitle = 'Активный день'; focusSub = st.rems + ' дел · 1–2 приоритета'; }
-    else if (st.rems === 0 && st.meals === 0) { focusTitle = 'Свободный день'; focusSub = 'Можно отдохнуть или запланировать'; }
+    // AI focus
+    let focusTitle = 'Light day';
+    let focusSub = '2 high-impact tasks';
+    if (st.rems >= 6) { focusTitle = 'Heavy day'; focusSub = st.rems + ' tasks · stay focused'; }
+    else if (st.rems >= 3) { focusTitle = 'Active day'; focusSub = st.rems + ' tasks · prioritise'; }
+    else if (st.rems === 0) { focusTitle = 'Free day'; focusSub = 'Plan something or rest'; }
     // pet
     let petHtml = '';
     try {
@@ -4449,71 +4528,60 @@ html[data-ui="beta"] .prod-pet .pet-bar i {
       if (p) {
         const hunger = Math.max(0, Math.min(100, data.pets.hunger || 50));
         const energy = Math.max(0, Math.min(100, data.pets.energy || 50));
-        const moodTxt = (data.pets.mood === 'sleeping') ? 'Спит' : (hunger < 25 ? 'Проголодался' : 'Бодрствует');
-        const av = (typeof petCharacter === 'function') ? petCharacter(p.id) : (p.icon || '🐾');
+        const moodTxt = (data.pets.mood === 'sleeping') ? 'Sleeping' : (hunger < 25 ? 'Hungry' : 'Active');
+        const av = (typeof petCharacter === 'function') ? petCharacter(p.id) : '🐾';
         petHtml =
           '<div class="prod-section">' +
-            '<div class="prod-section-h"><h3>Питомец</h3><button type="button" onclick="openPets()">Уход ›</button></div>' +
+            '<div class="prod-section-h"><h3>Companion</h3><button type="button" onclick="openPets()">Care ›</button></div>' +
             '<div class="prod-pet">' +
               '<div class="pet-av">' + av + '</div>' +
-              '<div class="pet-info">' +
-                '<b>' + esc(p.name || 'Питомец') + '</b>' +
-                '<small>' + moodTxt + '</small>' +
-                '<div class="pet-bars">' +
-                  '<div class="pet-bar" title="Сытость"><i style="width:' + hunger + '%"></i></div>' +
-                  '<div class="pet-bar" title="Энергия"><i style="width:' + energy + '%"></i></div>' +
-                '</div>' +
-              '</div>' +
-            '</div>' +
-          '</div>';
+              '<div class="pet-info"><b>' + esc(p.name) + '</b><small>' + moodTxt + '</small>' +
+              '<div class="pet-bars"><div class="pet-bar"><i style="width:'+hunger+'%"></i></div><div class="pet-bar"><i style="width:'+energy+'%"></i></div></div></div>' +
+            '</div></div>';
       }
     } catch(e) {}
-    // completed this week approx
-    const completedWeek = (data.cnt && data.cnt.remDone) ? Math.min(99, data.cnt.remDone) : remDoneN;
+    const cal = ($('homeCal') && $('homeCal').textContent) || '0';
     host.innerHTML =
       '<div class="prod-home">' +
-        '<div class="prod-greet">Привет, ' + esc(greetName) + '!</div>' +
-        '<div class="prod-sub">У тебя есть время для глубокого фокуса сегодня</div>' +
+        '<div class="prod-top">' +
+          '<div>' +
+            '<div class="prod-greet">Hey ' + esc(greetName) + '!</div>' +
+            '<div class="prod-sub">You have time for deep focus today</div>' +
+          '</div>' +
+          '<div class="prod-bell" onclick="goTab(\'reminders\')" title="Планы">🔔</div>' +
+        '</div>' +
         '<div class="prod-ai" onclick="openNova()" style="cursor:pointer">' +
-          '<div class="ai-label"><span></span>AI Summary · Нова</div>' +
-          '<b>Сегодняшний фокус</b>' +
+          '<div class="ai-label"><span></span>AI Summary</div>' +
+          '<b>Today\'s focus</b>' +
           '<small>' + focusTitle + ' · ' + focusSub + '</small>' +
         '</div>' +
         '<div class="prod-stats">' +
-          '<div class="prod-stat"><b>' + st.rems + '</b><span>Дела</span></div>' +
-          '<div class="prod-stat accent"><b>' + (st.rems - remDoneN) + '</b><span>В работе</span></div>' +
-          '<div class="prod-stat"><b>' + remDoneN + '</b><span>Готово</span></div>' +
+          '<div class="prod-stat"><b>' + st.rems + '</b><span>Current tasks</span>' +
+            (st.rems ? '<span class="stat-extra">+' + Math.min(3,st.rems) + ' today</span>' : '') +
+          '</div>' +
+          '<div class="prod-stat"><b>' + inProgress + '</b><span>In Progress</span></div>' +
+          '<div class="prod-stat"><b>' + Math.max(remDoneN, weekDone) + '</b><span>Completed</span></div>' +
         '</div>' +
         '<div class="prod-next" onclick="goTab(\'reminders\')" style="cursor:pointer">' +
-          '<div class="n-label">Дальше</div>' +
-          '<div class="n-item">' +
-            (nextTime ? '<div class="n-time">' + nextTime + '</div>' : '') +
+          '<div class="n-label">Next</div>' +
+          '<div class="n-card">' +
+            '<div class="n-time">' + nextTime + '</div>' +
             '<div class="n-txt"><b>' + esc(nextTitle) + '</b><small>' + esc(nextSub) + '</small></div>' +
           '</div>' +
         '</div>' +
-        '<div class="prod-quick">' +
-          '<button type="button" onclick="addWater(250)"><span>💧</span>+250 мл</button>' +
-          '<button type="button" onclick="goTab(\'nutrition\')"><span>🍽</span>Еда · ' + cal + '</button>' +
-          '<button type="button" onclick="goTab(\'walk\')"><span>🚶</span>Ходьба</button>' +
-          '<button type="button" onclick="openNova()"><span>✦</span>Спросить Нову</button>' +
-        '</div>' +
-        petHtml +
         '<div class="prod-section">' +
-          '<div class="prod-section-h"><h3>Прогресс дня</h3><button type="button" onclick="markPlanDay()">Засчитать</button></div>' +
-          '<div class="fit-plan-card" style="margin:0">' +
-            '<div class="fit-plan-meta"><span>Выполнение</span><span>' + st.score + '%' + (marked ? ' · ✓' : '') + '</span></div>' +
-            '<div class="fit-plan-bar"><i style="width:' + st.score + '%"></i></div>' +
-            '<div class="fit-plan-meta" style="margin-top:8px;margin-bottom:0"><span>Неделя ' + weekN + '/7 · месяц ' + monthN + '/20 · 🏅 ' + achN + '</span></div>' +
+          '<div class="prod-section-h"><h3>Quick</h3></div>' +
+          '<div class="prod-chips">' +
+            '<div class="prod-chip" onclick="addWater(250)"><b>💧 +250</b><small>Water</small></div>' +
+            '<div class="prod-chip" onclick="goTab(\'nutrition\')"><b>🍽 ' + cal + '</b><small>Calories</small></div>' +
+            '<div class="prod-chip" onclick="goTab(\'walk\')"><b>🚶 Walk</b><small>Activity</small></div>' +
+            '<div class="prod-chip" onclick="goTab(\'games\')"><b>🎮 Play</b><small>Mini-games</small></div>' +
           '</div>' +
         '</div>' +
-        '<div class="beta-cat-list">' +
-          '<button type="button" class="beta-cat" onclick="goTab(\'reminders\')"><span class="ic" style="background:#a100ff22">⏰</span><span class="meta"><b>Планы</b><small>' + st.rems + ' на сегодня</small></span><span class="chev">›</span></button>' +
-          '<button type="button" class="beta-cat" onclick="goTab(\'games\')"><span class="ic" style="background:#c084fc22">🎮</span><span class="meta"><b>Мини-игры</b><small>Реакция, память и другие</small></span><span class="chev">›</span></button>' +
-          '<button type="button" class="beta-cat" onclick="goTab(\'achievements\')"><span class="ic" style="background:#bf5af222">🏅</span><span class="meta"><b>Достижения</b><small>' + achN + '/' + ACHIEVEMENTS.length + '</small></span><span class="chev">›</span></button>' +
-          '<button type="button" class="beta-cat" onclick="goTab(\'settings\')"><span class="ic" style="background:#64d2ff22">⚙️</span><span class="meta"><b>Профиль</b><small>Тема, бета, поддержка</small></span><span class="chev">›</span></button>' +
-        '</div>' +
+        petHtml +
       '</div>';
-    if (st.complete && !marked) {
+    if (st.complete && !(data.planLog && data.planLog[st.day])) {
+      if (!data.planLog) data.planLog = {};
       data.planLog[st.day] = 1; save(); checkAchievements();
     }
   }
