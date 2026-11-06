@@ -8,8 +8,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="35.1"><title>Luma — время для себя</title>
-  <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);if(_d.ui==='beta')document.documentElement.setAttribute('data-ui','beta');}catch(e){}</script>
+  <meta name="luma-build" content="36.0"><title>Luma — время для себя</title>
+  <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);if(_d.ui==='beta')if(_d.ui==='beta')document.documentElement.setAttribute('data-ui','beta');}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" href="icon-192.png">
@@ -1443,7 +1443,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
 
 
 
-/* ===== Luma v35.1 Beta Design: productivity glass dashboard (inspired by AI focus UI) ===== */
+/* ===== Luma v36 Beta Design: productivity glass dashboard (inspired by AI focus UI) ===== */
 html[data-ui="beta"] {
   --fit-bg: #08070c;
   --fit-card: #15131b;
@@ -1591,7 +1591,7 @@ html[data-ui="beta"] .footer { color:#756c80 !important; }
   html[data-ui="beta"] .app { max-width:470px !important; }
 }
 
-/* ===== v35.1 — Dribbble AI Productivity Home ===== */
+/* ===== v36 — Dribbble AI Productivity Home ===== */
 html[data-ui="beta"] {
   --fit-bg: #0a0612;
   --fit-card: #14101c;
@@ -1603,7 +1603,11 @@ html[data-ui="beta"] {
   --fit-purple2: #7c3aed;
 }
 html[data-ui="beta"] body {
-  background: #0a0612 !important;
+  background:
+    radial-gradient(ellipse at 20% -10%, rgba(139, 40, 220, 0.28), transparent 42%),
+    radial-gradient(ellipse at 90% 20%, rgba(88, 28, 165, 0.18), transparent 40%),
+    radial-gradient(ellipse at 50% 100%, rgba(60, 20, 110, 0.15), transparent 50%),
+    #0a0612 !important;
 }
 html[data-ui="beta"] .app {
   padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
@@ -1627,11 +1631,12 @@ html[data-ui="beta"] .prod-bell {
   font-size: 18px; flex-shrink: 0; cursor: pointer;
 }
 html[data-ui="beta"] .prod-ai {
-  background: linear-gradient(145deg, #1a0f2e 0%, #2a1450 50%, #1e0f3a 100%);
-  border: 1px solid rgba(168,85,247,.28);
-  border-radius: 20px; padding: 16px 18px; margin-bottom: 16px;
+  background: linear-gradient(145deg, rgba(40, 16, 70, 0.95) 0%, rgba(70, 28, 120, 0.9) 45%, rgba(30, 12, 55, 0.98) 100%);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+  border-radius: 22px; padding: 18px 18px; margin-bottom: 16px;
   position: relative; overflow: hidden;
-  box-shadow: 0 8px 32px rgba(124,58,237,.18);
+  box-shadow: 0 12px 40px rgba(124,58,237,.28), inset 0 1px 0 rgba(255,255,255,.1);
+  backdrop-filter: blur(12px);
 }
 html[data-ui="beta"] .prod-ai::after {
   content: ""; position: absolute; top: -40px; right: -30px;
@@ -1658,9 +1663,11 @@ html[data-ui="beta"] .prod-stats {
   display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 10px; margin-bottom: 16px;
 }
 html[data-ui="beta"] .prod-stat {
-  background: var(--fit-card); border: 1px solid var(--fit-line);
+  background: linear-gradient(160deg, rgba(30, 22, 48, 0.9), rgba(20, 14, 32, 0.95));
+  border: 1px solid rgba(168, 85, 247, 0.18);
   border-radius: 18px; padding: 16px 12px 14px; text-align: left;
   position: relative;
+  box-shadow: 0 8px 24px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.06);
 }
 html[data-ui="beta"] .prod-stat b {
   display: block; font-size: 28px; font-weight: 800; letter-spacing: -.8px;
@@ -1801,7 +1808,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v35.1 · beta</span>
+      <span class="pill" id="topPill">v36</span>
     </header>
 
     <!-- HOME -->
@@ -2388,7 +2395,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
 
       <div class="glass section">
         <div class="section-head"><h2>Бета-дизайн</h2><span class="tag">UI</span></div>
-        <p class="notice" style="margin-top:0">Новый фиолетовый интерфейс Luma: чёрный фон, мягкие свечения, объёмные карточки и компактная нижняя навигация. Включение меняет только оформление.</p>
+        <p class="notice" style="margin-top:0">Beta Design v36: фиолетовый интерфейс в стиле AI Productivity (Dribbble) — глубокий фон, стеклянные карточки, AI Summary и компактная навигация. Классический дизайн остаётся доступным.</p>
         <div class="form-actions">
           <button class="btn" type="button" id="uiBetaOn">Включить Beta Design</button>
           <button class="btn secondary" type="button" id="uiBetaOff">Классика</button>
@@ -2420,7 +2427,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v35.1 · beta</p>
+      <p class="footer" id="appFooter">Luma · v36</p>
     </section>
   </main>
 
@@ -2584,7 +2591,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '35';
+  const BUILD = '36';
 
   /* Локальная память v34: резервная копия IndexedDB + переносимый Luma ID.
      Это не облачная синхронизация: каждый браузер имеет собственное хранилище. */
@@ -4423,11 +4430,11 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
     else document.documentElement.removeAttribute('data-ui');
     save();
     const st = $('uiBetaStatus');
-    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v35.1' : 'Сейчас: классический дизайн';
+    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v36' : 'Сейчас: классический дизайн';
     adaptNavForUI();
     checkAchievements();
     try { renderHome(); } catch {}
-    toast(data.ui === 'beta' ? 'Beta Design v35.1 включён' : 'Классический дизайн');
+    toast(data.ui === 'beta' ? 'Beta Design v36 включён' : 'Классический дизайн');
   }
   function adaptNavForUI() {
     const mapBeta = {
@@ -4516,11 +4523,11 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
       nextSub = pending.length > 1 ? ('ещё ' + (pending.length-1)) : 'ближайшее';
     }
     // AI focus
-    let focusTitle = 'Light day';
-    let focusSub = '2 high-impact tasks';
-    if (st.rems >= 6) { focusTitle = 'Heavy day'; focusSub = st.rems + ' tasks · stay focused'; }
-    else if (st.rems >= 3) { focusTitle = 'Active day'; focusSub = st.rems + ' tasks · prioritise'; }
-    else if (st.rems === 0) { focusTitle = 'Free day'; focusSub = 'Plan something or rest'; }
+    let focusTitle = 'Лёгкий день';
+    let focusSub = '2 важные задачи';
+    if (st.rems >= 6) { focusTitle = 'Насыщенный день'; focusSub = st.rems + ' задач · держи фокус'; }
+    else if (st.rems >= 3) { focusTitle = 'Активный день'; focusSub = st.rems + ' задач · приоритеты'; }
+    else if (st.rems === 0) { focusTitle = 'Свободный день'; focusSub = 'Запланируй или отдохни'; }
     // pet
     let petHtml = '';
     try {
@@ -4545,25 +4552,25 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
       '<div class="prod-home">' +
         '<div class="prod-top">' +
           '<div>' +
-            '<div class="prod-greet">Hey ' + esc(greetName) + '!</div>' +
-            '<div class="prod-sub">You have time for deep focus today</div>' +
+            '<div class="prod-greet">Привет' + (name ? ', ' + esc(name) : '') + '!</div>' +
+            '<div class="prod-sub">Сегодня есть время для глубокого фокуса</div>' +
           '</div>' +
           '<div class="prod-bell" onclick="goTab(\'reminders\')" title="Планы">🔔</div>' +
         '</div>' +
         '<div class="prod-ai" onclick="openNova()" style="cursor:pointer">' +
           '<div class="ai-label"><span></span>AI Summary</div>' +
-          '<b>Today\'s focus</b>' +
+          '<b>Фокус на сегодня</b>' +
           '<small>' + focusTitle + ' · ' + focusSub + '</small>' +
         '</div>' +
         '<div class="prod-stats">' +
-          '<div class="prod-stat"><b>' + st.rems + '</b><span>Current tasks</span>' +
-            (st.rems ? '<span class="stat-extra">+' + Math.min(3,st.rems) + ' today</span>' : '') +
+          '<div class="prod-stat"><b>' + st.rems + '</b><span>Задачи сейчас</span>' +
+            (st.rems ? '<span class="stat-extra">+' + Math.min(3,st.rems) + ' сегодня</span>' : '') +
           '</div>' +
-          '<div class="prod-stat"><b>' + inProgress + '</b><span>In Progress</span></div>' +
-          '<div class="prod-stat"><b>' + Math.max(remDoneN, weekDone) + '</b><span>Completed</span></div>' +
+          '<div class="prod-stat"><b>' + inProgress + '</b><span>В процессе</span></div>' +
+          '<div class="prod-stat"><b>' + Math.max(remDoneN, weekDone) + '</b><span>Готово</span></div>' +
         '</div>' +
         '<div class="prod-next" onclick="goTab(\'reminders\')" style="cursor:pointer">' +
-          '<div class="n-label">Next</div>' +
+          '<div class="n-label">Далее</div>' +
           '<div class="n-card">' +
             '<div class="n-time">' + nextTime + '</div>' +
             '<div class="n-txt"><b>' + esc(nextTitle) + '</b><small>' + esc(nextSub) + '</small></div>' +
@@ -5019,6 +5026,12 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
       'Полный экспорт и импорт истории чатов и настроек',
       'Восстановление локальной копии после случайной очистки данных',
       'Обновлён офлайн-кэш приложения'
+    ],
+    '36': [
+      'Beta Design v36: интерфейс ближе к референсу AI Productivity (Dribbble)',
+      'Улучшены свечения, стеклянные карточки и блок AI Summary',
+      'Главный экран бета: приветствие, фокус дня, статистика задач, «Далее»',
+      'Классический дизайн сохранён и доступен переключателем'
     ],
     '35': [
       'Новый фиолетовый Beta Design в стиле твоего референса',
@@ -6872,7 +6885,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
     if (data.ui === 'beta') document.documentElement.setAttribute('data-ui', 'beta');
     else document.documentElement.removeAttribute('data-ui');
     const st = $('uiBetaStatus');
-    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v35.1' : 'Сейчас: классический дизайн';
+    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v36' : 'Сейчас: классический дизайн';
     adaptNavForUI();
     $('uiBetaOn')?.addEventListener('click', () => setUIMode('beta'));
     $('uiBetaOff')?.addEventListener('click', () => setUIMode('classic'));
