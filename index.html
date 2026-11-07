@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="36.0"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="37.0-beta"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);if(_d.ui==='beta')if(_d.ui==='beta')document.documentElement.setAttribute('data-ui','beta');}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -1816,6 +1816,114 @@ html[data-ui="beta"] .diary-day { background:var(--fit-elev); border-color:var(-
 html[data-ui="beta"] .diary-day.selected { background:rgba(168,85,247,.22); border-color:#a855f7; }
 html[data-ui="beta"] .diary-weekdays { color:var(--fit-muted); }
 @media(max-width:360px){.diary-day{min-height:36px;font-size:12px}.diary-weekdays,.diary-calendar-grid{gap:3px}}
+
+/* ===== LUMA v37 BETA — full productivity workspace redesign ===== */
+html[data-ui="beta"] {
+  --bg:#090811; --glass:rgba(24,20,38,.82); --line:rgba(185,153,255,.13);
+  --muted:#a59bb8; --white:#f7f3ff; --violet:#9b4dff; --primary:#a855f7;
+  --primary-soft:rgba(168,85,247,.16);
+  color-scheme:dark;
+}
+html[data-ui="beta"] body {
+  background:
+    radial-gradient(ellipse at 72% 0%,rgba(92,26,145,.22),transparent 36%),
+    radial-gradient(ellipse at 50% 100%,rgba(63,18,112,.18),transparent 42%),
+    #090811 !important;
+  color:#f7f3ff !important;
+}
+html[data-ui="beta"] .app {
+  width:auto !important; max-width:none !important;
+  margin:0 0 0 252px !important; padding:26px 34px 70px !important;
+}
+html[data-ui="beta"] .top {
+  max-width:none !important; margin:0 0 26px !important;
+  padding:0 0 18px !important; border-bottom:1px solid rgba(190,160,255,.12);
+  background:transparent !important;
+}
+html[data-ui="beta"] .brand span {font-size:21px!important;letter-spacing:-.7px;font-weight:750!important}
+html[data-ui="beta"] .logo {
+  width:36px!important;height:36px!important;border-radius:12px!important;
+  background:linear-gradient(145deg,#a855f7,#6124a8)!important;
+  box-shadow:0 5px 22px #8b35e755!important;color:white!important;
+}
+html[data-ui="beta"] #topPill {margin-left:10px}
+html[data-ui="beta"] .page {max-width:1440px!important;margin:0 auto!important}
+html[data-ui="beta"] .glass,
+html[data-ui="beta"] .glass.section {
+  background:linear-gradient(145deg,rgba(30,25,47,.94),rgba(17,15,29,.94))!important;
+  border:1px solid rgba(187,151,255,.13)!important;
+  border-radius:19px!important;box-shadow:0 12px 34px rgba(0,0,0,.18)!important;
+  backdrop-filter:blur(18px);
+}
+html[data-ui="beta"] .hero {
+  padding:30px!important;border-radius:24px!important;
+  background:linear-gradient(120deg,rgba(92,39,143,.35),rgba(30,22,48,.86))!important;
+  border:1px solid rgba(191,151,255,.18)!important;
+}
+html[data-ui="beta"] .hero h1 {font-size:clamp(30px,4vw,48px)!important;letter-spacing:-1.8px}
+html[data-ui="beta"] .section-head h2 {font-size:19px!important;letter-spacing:-.4px}
+html[data-ui="beta"] .btn:not(.secondary):not(.danger) {
+  background:linear-gradient(135deg,#9c45f5,#6926bc)!important;
+  box-shadow:0 5px 18px rgba(124,44,203,.22)!important;
+}
+html[data-ui="beta"] input,html[data-ui="beta"] select,html[data-ui="beta"] textarea {
+  background:rgba(8,7,16,.7)!important;border:1px solid rgba(190,160,255,.18)!important;
+  color:#f7f3ff!important;border-radius:12px!important;
+}
+html[data-ui="beta"] .bottom-nav {
+  position:fixed!important;inset:0 auto 0 0!important;width:232px!important;
+  padding:24px 14px!important;z-index:10000!important;
+  background:rgba(13,11,22,.96)!important;border-right:1px solid rgba(190,160,255,.13)!important;
+  backdrop-filter:blur(24px)!important;box-shadow:12px 0 40px rgba(0,0,0,.22)!important;
+}
+html[data-ui="beta"] .bottom-nav::before {
+  content:"LUMA  /  WORKSPACE";display:block;padding:8px 13px 22px;
+  color:#9b8baa;font-size:10px;font-weight:800;letter-spacing:1.7px;
+}
+html[data-ui="beta"] .nav-inner {
+  max-width:none!important;width:100%!important;margin:0!important;padding:0!important;
+  display:flex!important;flex-direction:column!important;gap:5px!important;
+  background:transparent!important;border:0!important;box-shadow:none!important;
+}
+html[data-ui="beta"] .nav-btn {
+  width:100%!important;min-height:46px!important;padding:0 14px!important;
+  display:flex!important;flex-direction:row!important;align-items:center!important;
+  justify-content:flex-start!important;gap:13px!important;text-align:left!important;
+  border-radius:12px!important;color:#a99dbb!important;font-size:13px!important;
+  font-weight:600!important;background:transparent!important;
+}
+html[data-ui="beta"] .nav-btn span {font-size:17px!important;width:22px;text-align:center}
+html[data-ui="beta"] .nav-btn.active {
+  color:#fff!important;background:linear-gradient(100deg,rgba(143,65,220,.28),rgba(112,57,166,.12))!important;
+  box-shadow:inset 3px 0 #a855f7!important;
+}
+html[data-ui="beta"] .nav-btn.active::after {display:none!important}
+html[data-ui="beta"] .beta-fab {display:flex!important;position:fixed!important;left:174px!important;bottom:26px!important;z-index:10001!important}
+html[data-ui="beta"] .footer {color:#766c84!important}
+@media(max-width:760px) {
+  html[data-ui="beta"] .app {margin:0!important;padding:16px 14px 104px!important}
+  html[data-ui="beta"] .top {margin-bottom:16px!important}
+  html[data-ui="beta"] .bottom-nav {
+    inset:auto 0 0!important;width:100%!important;height:auto!important;
+    padding:7px 8px calc(7px + env(safe-area-inset-bottom))!important;
+    border-right:0!important;border-top:1px solid rgba(190,160,255,.13)!important;
+    background:rgba(13,11,22,.94)!important;
+  }
+  html[data-ui="beta"] .bottom-nav::before {display:none!important}
+  html[data-ui="beta"] .nav-inner {
+    display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    flex-direction:row!important;gap:3px!important;
+  }
+  html[data-ui="beta"] .nav-btn {
+    min-width:0!important;min-height:52px!important;padding:5px 2px!important;
+    flex-direction:column!important;justify-content:center!important;gap:3px!important;
+    font-size:9px!important;text-align:center!important;
+  }
+  html[data-ui="beta"] .nav-btn span {font-size:16px!important;width:auto!important}
+  html[data-ui="beta"] .nav-btn.active {box-shadow:inset 0 -2px #a855f7!important}
+  html[data-ui="beta"] .beta-fab {left:auto!important;right:16px!important;bottom:86px!important}
+}
+
 </style>
 </head>
 <body>
