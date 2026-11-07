@@ -1,11 +1,12 @@
 /* Luma service worker v33 — offline-first for iOS Safari */
-const CACHE = 'luma-v36';
+const CACHE = 'luma-v37-beta';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
+  './icon-maskable-512.png',
   './apple-touch-icon.png',
   './sw.js'
 ];

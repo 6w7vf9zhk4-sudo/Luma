@@ -1443,7 +1443,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
 
 
 
-/* ===== Luma v36 Beta Design: productivity glass dashboard (inspired by AI focus UI) ===== */
+/* ===== Luma v37 Beta Design: productivity glass dashboard (inspired by AI focus UI) ===== */
 html[data-ui="beta"] {
   --fit-bg: #08070c;
   --fit-card: #15131b;
@@ -1591,7 +1591,7 @@ html[data-ui="beta"] .footer { color:#756c80 !important; }
   html[data-ui="beta"] .app { max-width:470px !important; }
 }
 
-/* ===== v36 — Dribbble AI Productivity Home ===== */
+/* ===== v37 — Dribbble AI Productivity Home ===== */
 html[data-ui="beta"] {
   --fit-bg: #0a0612;
   --fit-card: #14101c;
@@ -1793,6 +1793,29 @@ html[data-ui="beta"] .beta-fab {
 html[data-ui="beta"] .beta-fab { display: flex !important; }
 html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
 
+
+html:not([data-ui="beta"]) .bottom-nav .nav-btn[data-tab="diary"] { display:none !important; }
+/* Diary calendar */
+.diary-calendar-card .section-head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.diary-calendar-card .section-head h2 { flex:1; text-align:center; text-transform:capitalize; margin:0; }
+.diary-weekdays,.diary-calendar-grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:5px; }
+.diary-weekdays { margin:12px 0 7px; color:var(--muted); text-align:center; font-size:11px; }
+.diary-day { position:relative; min-height:42px; border:1px solid var(--line); border-radius:12px; background:var(--card2); color:var(--text); font:inherit; font-size:13px; cursor:pointer; }
+.diary-day.outside { visibility:hidden; }
+.diary-day.today { border-color:var(--accent); }
+.diary-day.selected { background:linear-gradient(145deg,rgba(168,85,247,.3),rgba(124,58,237,.18)); border-color:#a855f7; box-shadow:inset 0 0 0 1px rgba(168,85,247,.3); }
+.day-dots { position:absolute; left:50%; bottom:4px; transform:translateX(-50%); display:flex; gap:3px; width:14px; height:4px; }
+.day-dots:before,.day-dots:after { content:''; width:4px; height:4px; border-radius:50%; background:transparent; }
+.day-dots.has-rem:before { background:#f59e0b; }
+.day-dots.has-entry:after { background:#a78bfa; }
+.diary-legend { display:flex; flex-wrap:wrap; gap:14px; margin-top:12px; color:var(--muted); font-size:11px; }
+.diary-legend span { display:flex; align-items:center; gap:6px; }
+.diary-dot { width:7px; height:7px; border-radius:50%; display:inline-block; }
+.diary-dot.reminder { background:#f59e0b; }.diary-dot.entry { background:#a78bfa; }
+html[data-ui="beta"] .diary-day { background:var(--fit-elev); border-color:var(--fit-line); color:var(--fit-text); border-radius:13px; }
+html[data-ui="beta"] .diary-day.selected { background:rgba(168,85,247,.22); border-color:#a855f7; }
+html[data-ui="beta"] .diary-weekdays { color:var(--fit-muted); }
+@media(max-width:360px){.diary-day{min-height:36px;font-size:12px}.diary-weekdays,.diary-calendar-grid{gap:3px}}
 </style>
 </head>
 <body>
@@ -1808,7 +1831,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v36</span>
+      <span class="pill" id="topPill">v37 Beta</span>
     </header>
 
     <!-- HOME -->
@@ -2053,6 +2076,37 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
         <div class="list" id="remList">
           <div class="empty"><div class="orb"></div>Добавь первое напоминание</div>
         </div>
+      </div>
+    </section>
+
+    <!-- DIARY + REMINDER CALENDAR (Beta addition) -->
+    <section class="page" id="page-diary">
+      <div class="hero">
+        <div class="eyebrow">LUMA JOURNAL</div>
+        <h1>Дневник<br><span>твой день в одном месте</span></h1>
+        <p class="muted">Календарь, планы и заметки по дням.</p>
+      </div>
+      <div class="glass section diary-calendar-card">
+        <div class="section-head">
+          <button class="btn secondary small" type="button" id="diaryPrev" aria-label="Предыдущий месяц">‹</button>
+          <h2 id="diaryMonthTitle" aria-live="polite">Месяц</h2>
+          <button class="btn secondary small" type="button" id="diaryNext" aria-label="Следующий месяц">›</button>
+        </div>
+        <div class="diary-weekdays" aria-hidden="true"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span></div>
+        <div class="diary-calendar-grid" id="diaryCalendarGrid" role="group" aria-label="Календарь дневника"></div>
+        <div class="diary-legend"><span><i class="diary-dot reminder"></i> Напоминания</span><span><i class="diary-dot entry"></i> Запись</span></div>
+      </div>
+      <div class="glass section">
+        <div class="section-head"><h2 id="diarySelectedTitle">Сегодня</h2><span class="tag" id="diaryDayCount">0 событий</span></div>
+        <div id="diaryDayEvents" class="list"><div class="empty">На этот день пока ничего нет.</div></div>
+        <div class="form-actions"><button class="btn secondary small" type="button" id="diaryAddReminder">＋ Напоминание на этот день</button></div>
+      </div>
+      <div class="glass section">
+        <div class="section-head"><h2>✎ Запись дня</h2><span class="tag">ЛИЧНОЕ</span></div>
+        <div class="field"><label for="diaryMood">Настроение</label><select id="diaryMood"><option value="">Не выбрано</option><option value="😊">😊 Хорошее</option><option value="🙂">🙂 Нормальное</option><option value="😐">😐 Спокойное</option><option value="😔">😔 Не очень</option><option value="😴">😴 Устал(а)</option></select></div>
+        <div class="field" style="margin-top:10px"><label for="diaryText">Что хочется сохранить?</label><textarea id="diaryText" rows="4" maxlength="2000" placeholder="Мысли, события, маленькие победы…"></textarea></div>
+        <div class="form-actions"><button class="btn" type="button" id="diarySave">Сохранить запись</button><button class="btn secondary" type="button" id="diaryClear">Очистить</button></div>
+        <p class="notice" style="margin-bottom:0">Записи хранятся только в данных Luma на этом устройстве и входят в экспорт.</p>
       </div>
     </section>
 
@@ -2395,7 +2449,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
 
       <div class="glass section">
         <div class="section-head"><h2>Бета-дизайн</h2><span class="tag">UI</span></div>
-        <p class="notice" style="margin-top:0">Beta Design v36: фиолетовый интерфейс в стиле AI Productivity (Dribbble) — глубокий фон, стеклянные карточки, AI Summary и компактная навигация. Классический дизайн остаётся доступным.</p>
+        <p class="notice" style="margin-top:0">Beta Design v37: фиолетовый интерфейс в стиле AI Productivity (Dribbble) — глубокий фон, стеклянные карточки, AI Summary и компактная навигация. Классический дизайн остаётся доступным.</p>
         <div class="form-actions">
           <button class="btn" type="button" id="uiBetaOn">Включить Beta Design</button>
           <button class="btn secondary" type="button" id="uiBetaOff">Классика</button>
@@ -2427,7 +2481,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v36</p>
+      <p class="footer" id="appFooter">Luma · v37 Beta</p>
     </section>
   </main>
 
@@ -2437,6 +2491,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
       <button type="button" class="nav-btn active" data-tab="home" onclick="window.goTab && goTab('home')"><span aria-hidden="true">🏠</span>Главная</button>
       <button type="button" class="nav-btn" data-tab="nutrition" onclick="window.goTab && goTab('nutrition')"><span aria-hidden="true">🥗</span>Рацион</button>
       <button type="button" class="nav-btn" data-tab="reminders" onclick="window.goTab && goTab('reminders')"><span aria-hidden="true">⏰</span>Планы</button>
+      <button type="button" class="nav-btn" data-tab="diary" onclick="window.goTab && goTab('diary')"><span aria-hidden="true">📅</span>Дневник</button>
       <button type="button" class="nav-btn" data-tab="walk" onclick="window.goTab && goTab('walk')"><span aria-hidden="true">🚶</span>Ходьба</button>
       <button type="button" class="nav-btn" data-tab="games" onclick="window.goTab && goTab('games')"><span aria-hidden="true">🎮</span>Игры</button>
       <button type="button" class="nav-btn" data-tab="settings" onclick="window.goTab && goTab('settings')"><span aria-hidden="true">⚙️</span>Ещё</button>
@@ -2564,6 +2619,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
         if (name === 'home' && typeof renderHome === 'function') renderHome();
         if (name === 'nutrition' && typeof renderNutrition === 'function') renderNutrition();
         if (name === 'reminders') { if (typeof renderReminders === 'function') renderReminders(); if (typeof initRemDefaults === 'function') initRemDefaults(); }
+        if (name === 'diary' && typeof diaryRender === 'function') { diaryLoadEntry(); diaryRender(); diaryRenderEvents(); }
         if (name === 'games' && typeof exitGame === 'function') exitGame();
         if (name === 'settings' && typeof updateNotifUI === 'function') updateNotifUI();
         if (name === 'nova') { renderNovaProfile(); renderNovaPlan(); }
@@ -2746,6 +2802,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
       category: str(r.category, 30) || 'Личное', repeat: ['daily', 'weekly'].includes(r.repeat) ? r.repeat : 'none',
       ntfySeq: r.ntfySeq ? sid(r.ntfySeq) : null, ntfyWhen: r.ntfyWhen ? num(r.ntfyWhen, 0, 8.64e15) : null
     }), 1000);
+    d.diary = list(d.diary, e => ({ id: sid(e.id), date: dt(e.date), mood: ['😊','🙂','😐','😔','😴'].includes(e.mood) ? e.mood : '', text: str(e.text, 2000), updated: num(e.updated, 0, 8.64e15) }), 2000);
     d.walks = list(d.walks, w => ({
       id: sid(w.id), date: dt(w.date), start: num(w.start, 0, 8.64e15), ms: num(w.ms, 0, 864e5), dist: num(w.dist, 0, 1e6), steps: num(w.steps, 0, 5e6), kcal: num(w.kcal, 0, 1e5),
       pts: (Array.isArray(w.pts) ? w.pts : []).slice(0, 400).filter(p => p && Number.isFinite(+p.la) && Number.isFinite(+p.lo)).map(p => ({ la: +p.la, lo: +p.lo }))
@@ -2774,6 +2831,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
     meals: [],
     water: { current: 0, goal: 2000, date: todayStr() },
     reminders: [],
+    diary: [],
     profile: { name: '', done: false, weightLog: [], nova: { setup: false, mode: 'study', activity: 'moderate', sports: '', days: '', trainingTime: '', schoolStart: '', schoolEnd: '', wake: '07:00', sleep: '22:00', focus: '' } },
     theme: 'violet',
     ntfy: { enabled: false, topic: '' },
@@ -2839,7 +2897,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
       d.cnt.meals = Array.isArray(d.meals) ? d.meals.length : 0;
     }
     ['goals', 'water'].forEach(k => { if (!d[k] || typeof d[k] !== 'object') d[k] = base[k]; });
-    ['meals', 'reminders', 'customFoods', 'walks'].forEach(k => { if (!Array.isArray(d[k])) d[k] = []; });
+    ['meals', 'reminders', 'customFoods', 'walks', 'diary'].forEach(k => { if (!Array.isArray(d[k])) d[k] = []; });
     if (d.ui !== 'beta') d.ui = 'classic';
     if (!d.ach || typeof d.ach !== 'object') d.ach = {};
     if (!d.planLog || typeof d.planLog !== 'object') d.planLog = {};
@@ -2981,6 +3039,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
       if (name === 'pets') renderPets();
       if (name === 'nutrition') renderNutrition();
       if (name === 'reminders') { renderReminders(); initRemDefaults(); }
+      if (name === 'diary') { diaryLoadEntry(); diaryRender(); diaryRenderEvents(); }
       if (name === 'walk') { renderWalk(); }
       if (name === 'games') { exitGame(); }
       if (name === 'settings') { updateNotifUI(); renderBackupInfo(); }
@@ -3549,11 +3608,73 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
     $('remCount').textContent = `${n} ${word}`;
     if (!items.length) {
       list.innerHTML = '<div class="empty"><div class="orb"></div>Добавь первое напоминание</div>';
+      try { if ($('page-diary')) { diaryRender(); diaryRenderEvents(); } } catch {}
       return;
     }
     list.innerHTML = '';
     items.forEach(r => list.appendChild(remItem(r, false)));
+    try { if ($('page-diary')) { diaryRender(); diaryRenderEvents(); } } catch {}
   }
+
+  /* ----- Diary calendar ----- */
+  let diaryViewMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  let diarySelectedDate = todayStr();
+  const diaryDateKey = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  function diaryEntry(date) { return (data.diary || []).find(x => x.date === date); }
+  function diaryRender() {
+    const grid = $('diaryCalendarGrid'); if (!grid) return;
+    const y = diaryViewMonth.getFullYear(), m = diaryViewMonth.getMonth();
+    $('diaryMonthTitle').textContent = diaryViewMonth.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+    grid.innerHTML = '';
+    const first = new Date(y, m, 1), offset = (first.getDay() + 6) % 7;
+    const days = new Date(y, m + 1, 0).getDate();
+    const total = Math.ceil((offset + days) / 7) * 7;
+    for (let i=0; i<total; i++) {
+      const day = i-offset+1;
+      const cell = document.createElement('button'); cell.type='button'; cell.className='diary-day';
+      if (day < 1 || day > days) { cell.disabled=true; cell.classList.add('outside'); cell.textContent=''; }
+      else {
+        const date = diaryDateKey(new Date(y,m,day));
+        cell.textContent=String(day); cell.dataset.date=date;
+        if (date === todayStr()) cell.classList.add('today');
+        if (date === diarySelectedDate) cell.classList.add('selected');
+        const hasRem = data.reminders.some(r => diaryDateKey(new Date(r.when)) === date && !r.done);
+        const hasEntry = !!diaryEntry(date);
+        if (hasRem || hasEntry) { const dots=document.createElement('i'); dots.className='day-dots'; if(hasRem)dots.classList.add('has-rem'); if(hasEntry)dots.classList.add('has-entry'); cell.appendChild(dots); }
+        cell.addEventListener('click', () => { diarySelectedDate=date; diaryLoadEntry(); diaryRender(); diaryRenderEvents(); });
+      }
+      grid.appendChild(cell);
+    }
+    $('diaryPrev').disabled = y <= 2000 && m === 0;
+  }
+  function diaryRenderEvents() {
+    const box=$('diaryDayEvents'); if(!box)return;
+    const d=new Date(diarySelectedDate+'T12:00:00');
+    $('diarySelectedTitle').textContent=d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});
+    const items=data.reminders.filter(r=>diaryDateKey(new Date(r.when))===diarySelectedDate).sort((a,b)=>a.when-b.when);
+    const entry=diaryEntry(diarySelectedDate); $('diaryDayCount').textContent=(items.length+(entry?1:0))+' событий';
+    box.innerHTML='';
+    if(entry){const el=document.createElement('div');el.className='item';const body=document.createElement('div');body.className='body';const title=document.createElement('strong');title.textContent=(entry.mood?entry.mood+' ':'')+'Запись дневника';const sub=document.createElement('span');sub.textContent=entry.text||'Без текста';body.append(title,sub);el.appendChild(body);box.appendChild(el);}
+    items.forEach(r=>{const el=document.createElement('div');el.className='item';const time=document.createElement('div');time.className='timebox';const strong=document.createElement('strong');const dt=new Date(r.when);strong.textContent=dt.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});time.appendChild(strong);const body=document.createElement('div');body.className='body';const title=document.createElement('strong');title.textContent=(r.done?'✓ ':'')+r.text;const sub=document.createElement('span');sub.textContent=(r.category||'Личное')+(r.done?' · выполнено':' · напоминание');body.append(title,sub);el.append(time,body);box.appendChild(el);});
+    if(!items.length&&!entry)box.innerHTML='<div class="empty">На этот день пока ничего нет.</div>';
+  }
+  function diaryLoadEntry() { const e=diaryEntry(diarySelectedDate); $('diaryMood').value=e?.mood||''; $('diaryText').value=e?.text||''; }
+  function diarySaveEntry() {
+    const mood=$('diaryMood').value, text=$('diaryText').value.trim();
+    const i=(data.diary||[]).findIndex(e=>e.date===diarySelectedDate);
+    if(!mood&&!text){ if(i>=0)data.diary.splice(i,1); toast('Пустая запись удалена'); }
+    else { const item={id:i>=0?data.diary[i].id:'diary_'+Date.now().toString(36),date:diarySelectedDate,mood,text,updated:Date.now()}; if(i>=0)data.diary[i]=item;else data.diary.push(item); toast('Запись сохранена'); }
+    save(); diaryRender(); diaryRenderEvents();
+  }
+  function diaryInit() {
+    $('diaryPrev')?.addEventListener('click',()=>{diaryViewMonth=new Date(diaryViewMonth.getFullYear(),diaryViewMonth.getMonth()-1,1);diaryRender();});
+    $('diaryNext')?.addEventListener('click',()=>{diaryViewMonth=new Date(diaryViewMonth.getFullYear(),diaryViewMonth.getMonth()+1,1);diaryRender();});
+    $('diarySave')?.addEventListener('click',diarySaveEntry);
+    $('diaryClear')?.addEventListener('click',()=>{$('diaryMood').value='';$('diaryText').value='';diarySaveEntry();});
+    $('diaryAddReminder')?.addEventListener('click',()=>{if(diarySelectedDate<todayStr()){toast('Для напоминания выбери сегодня или будущую дату');return;}goTab('reminders');const d=$('remDate');if(d)d.value=diarySelectedDate;remUserEdited=true;$('remText')?.focus();});
+    diaryLoadEntry(); diaryRender(); diaryRenderEvents();
+  }
+  diaryInit();
 
   function completeRem(id) {
     const r = data.reminders.find(x => x.id === id);
@@ -4430,16 +4551,17 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
     else document.documentElement.removeAttribute('data-ui');
     save();
     const st = $('uiBetaStatus');
-    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v36' : 'Сейчас: классический дизайн';
+    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v37' : 'Сейчас: классический дизайн';
     adaptNavForUI();
     checkAchievements();
     try { renderHome(); } catch {}
-    toast(data.ui === 'beta' ? 'Beta Design v36 включён' : 'Классический дизайн');
+    toast(data.ui === 'beta' ? 'Beta Design v37 включён' : 'Классический дизайн');
   }
   function adaptNavForUI() {
     const mapBeta = {
       home: ['⌂', 'Home'],
       reminders: ['☰', 'Planner'],
+      diary: ['▦', 'Diary'],
       games: ['▦', 'Projects'],
       settings: ['☺', 'Profile']
     };
@@ -5028,7 +5150,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
       'Обновлён офлайн-кэш приложения'
     ],
     '36': [
-      'Beta Design v36: интерфейс ближе к референсу AI Productivity (Dribbble)',
+      'Beta Design v37: интерфейс ближе к референсу AI Productivity (Dribbble)',
       'Улучшены свечения, стеклянные карточки и блок AI Summary',
       'Главный экран бета: приветствие, фокус дня, статистика задач, «Далее»',
       'Классический дизайн сохранён и доступен переключателем'
@@ -6885,7 +7007,7 @@ html[data-ui="beta"] .beta-fab:active { transform: scale(.94); }
     if (data.ui === 'beta') document.documentElement.setAttribute('data-ui', 'beta');
     else document.documentElement.removeAttribute('data-ui');
     const st = $('uiBetaStatus');
-    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v36' : 'Сейчас: классический дизайн';
+    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v37' : 'Сейчас: классический дизайн';
     adaptNavForUI();
     $('uiBetaOn')?.addEventListener('click', () => setUIMode('beta'));
     $('uiBetaOff')?.addEventListener('click', () => setUIMode('classic'));

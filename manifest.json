@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "Luma",
-  "short_name": "Luma",
+  "name": "Luma v37 Beta",
+  "short_name": "Luma Beta",
   "description": "Персональный планировщик Новы, напоминания, питомцы и мини-игры",
   "lang": "ru",
   "start_url": "./index.html",
