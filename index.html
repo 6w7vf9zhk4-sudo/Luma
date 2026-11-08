@@ -8,8 +8,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="37.0-beta"><title>Luma — время для себя</title>
-  <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);if(_d.ui==='beta')if(_d.ui==='beta')document.documentElement.setAttribute('data-ui','beta');}catch(e){}</script>
+  <meta name="luma-build" content="38.0-beta"><title>Luma — время для себя</title>
+  <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);if(_d.ui==='beta')document.documentElement.setAttribute('data-ui','beta');}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" href="icon-192.png">
@@ -1443,7 +1443,7 @@ html[data-ui="beta"] .page > .glass.section { margin-bottom: 8px !important; }
 
 
 
-/* ===== Luma v37 Beta Design: productivity glass dashboard (inspired by AI focus UI) ===== */
+/* ===== Luma v38 Design: productivity glass dashboard (inspired by AI focus UI) ===== */
 html[data-ui="beta"] {
   --fit-bg: #08070c;
   --fit-card: #15131b;
@@ -1591,7 +1591,7 @@ html[data-ui="beta"] .footer { color:#756c80 !important; }
   html[data-ui="beta"] .app { max-width:470px !important; }
 }
 
-/* ===== v37 — Dribbble AI Productivity Home ===== */
+/* ===== v38 — Dribbble AI Productivity Home ===== */
 html[data-ui="beta"] {
   --fit-bg: #0a0612;
   --fit-card: #14101c;
@@ -1817,7 +1817,7 @@ html[data-ui="beta"] .diary-day.selected { background:rgba(168,85,247,.22); bord
 html[data-ui="beta"] .diary-weekdays { color:var(--fit-muted); }
 @media(max-width:360px){.diary-day{min-height:36px;font-size:12px}.diary-weekdays,.diary-calendar-grid{gap:3px}}
 
-/* ===== LUMA v37 BETA — full productivity workspace redesign ===== */
+/* ===== LUMA v38 — full productivity workspace redesign ===== */
 html[data-ui="beta"] {
   --bg:#090811; --glass:rgba(24,20,38,.82); --line:rgba(185,153,255,.13);
   --muted:#a59bb8; --white:#f7f3ff; --violet:#9b4dff; --primary:#a855f7;
@@ -1924,6 +1924,25 @@ html[data-ui="beta"] .footer {color:#766c84!important}
   html[data-ui="beta"] .beta-fab {left:auto!important;right:16px!important;bottom:86px!important}
 }
 
+
+/* v38 home widgets + help + weight trend */
+.help-list li { margin-bottom: 6px; }
+.widget-row { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--line); border-radius:14px; background:rgba(255,255,255,.04); }
+.widget-row .w-name { flex:1; font-size:14px; font-weight:600; }
+.widget-row .w-actions { display:flex; gap:6px; }
+.widget-row button { border:1px solid var(--line); background:rgba(255,255,255,.08); color:inherit; border-radius:10px; padding:6px 10px; font-size:12px; cursor:pointer; }
+.widget-row.hidden-w { opacity:.55; }
+.weight-trend { display:flex; gap:12px; flex-wrap:wrap; margin:10px 0 6px; }
+.weight-trend .wt { flex:1; min-width:90px; padding:10px; border-radius:14px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); text-align:center; }
+.weight-trend .wt b { display:block; font-size:18px; margin-top:4px; }
+.weight-trend .wt span { font-size:11px; color:var(--muted); }
+.weight-bars { display:flex; align-items:flex-end; gap:6px; height:100px; padding:8px 4px 0; }
+.weight-bar { flex:1; min-width:0; background:linear-gradient(180deg,#c4b5fd,#7c3aed); border-radius:8px 8px 4px 4px; position:relative; display:flex; align-items:flex-end; justify-content:center; }
+.weight-bar span { position:absolute; bottom:-18px; font-size:9px; color:var(--muted); white-space:nowrap; }
+.weight-entry { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border:1px solid rgba(255,255,255,.1); border-radius:14px; margin-bottom:6px; background:rgba(255,255,255,.03); }
+[data-widget].widget-hidden { display:none !important; }
+#homeWidgetsEditor .widget-row button:active { transform:scale(.96); }
+
 </style>
 </head>
 <body>
@@ -1939,7 +1958,7 @@ html[data-ui="beta"] .footer {color:#766c84!important}
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v37 Beta</span>
+      <span class="pill" id="topPill">v38</span>
     </header>
 
     <!-- HOME -->
@@ -1953,7 +1972,7 @@ html[data-ui="beta"] .footer {color:#766c84!important}
 
       <div id="betaHomeExtras" hidden></div>
 
-      <div class="glass section wallet" id="walletCard">
+      <div class="glass section wallet" id="walletCard" data-widget="wallet">
         <div class="wallet-top">
           <div><small>Баланс</small><b class="big" id="wBal">0 ✧</b></div>
           <div><small>Серия дней</small><b class="mid" id="wStreak">0 дн.</b></div>
@@ -1965,18 +1984,18 @@ html[data-ui="beta"] .footer {color:#766c84!important}
         </div>
       </div>
 
-      <div class="glass section" id="petHomeCard">
+      <div class="glass section" id="petHomeCard" data-widget="pet">
         <div class="section-head"><h2>🐾 Твой питомец</h2><button class="btn secondary small" type="button" onclick="openPets()">Уход и питомцы</button></div>
         <div id="homePet"></div>
       </div>
 
-      <div class="stats-row">
+      <div class="stats-row" data-widget="stats" id="homeStatsRow">
         <div class="stat-card glass"><span>ккал сегодня</span><b id="homeCal">0</b></div>
         <div class="stat-card glass"><span>вода, мл</span><b id="homeWater">0</b></div>
         <div class="stat-card glass"><span>напоминания</span><b id="homeRem">0</b></div>
       </div>
 
-      <div class="glass section" id="weekCard">
+      <div class="glass section" id="weekCard" data-widget="week">
         <div class="section-head"><h2>📊 Неделя</h2><span class="tag" id="weekAvg">—</span></div>
         <div class="chips-row" id="weekTabs">
           <button type="button" class="chip on" data-wk="cal">🍽 Ккал</button>
@@ -1986,7 +2005,7 @@ html[data-ui="beta"] .footer {color:#766c84!important}
         <div class="week-chart" id="weekChart" role="img" aria-label="График за 7 дней"></div>
       </div>
 
-      <div class="glass section" id="homeWaterCard">
+      <div class="glass section" id="homeWaterCard" data-widget="water">
         <div class="section-head"><h2>💧 Вода</h2><span class="tag" id="waterTag">0 / 2000</span></div>
         <div class="bar"><div id="waterFill" style="background:linear-gradient(90deg,#67e8f9,#22d3ee)"></div></div>
         <div class="water-btns">
@@ -2000,21 +2019,21 @@ html[data-ui="beta"] .footer {color:#766c84!important}
         </div>
       </div>
 
-      <div class="glass section" id="homeWalk">
+      <div class="glass section" id="homeWalk" data-widget="walk">
         <div class="section-head"><h2>🚶 Прогулка сегодня</h2><span class="tag" id="homeWalkTag">—</span></div>
         <div class="bar walkbar"><div id="homeWalkFill"></div></div>
         <p class="notice" id="homeWalkText"></p>
         <div class="form-actions"><button class="btn secondary small" type="button" id="homeWalkBtn" onclick="goTab('walk')">Открыть</button></div>
       </div>
 
-      <div class="glass section" id="homeRemCard">
+      <div class="glass section" id="homeRemCard" data-widget="rem">
         <div class="section-head"><h2>Ближайшие напоминания</h2></div>
         <div class="list" id="homeRemList">
           <div class="empty"><div class="orb"></div>Пока пусто</div>
         </div>
       </div>
 
-      <div class="glass section" id="homeGamesCard">
+      <div class="glass section" id="homeGamesCard" data-widget="games">
         <div class="section-head"><h2>Быстрые игры</h2></div>
         <div class="games-grid">
           <div class="game-card" onclick="goTab('games'); startGame('reaction')">
@@ -2497,7 +2516,7 @@ html[data-ui="beta"] .footer {color:#766c84!important}
       </div>
 
       <div class="glass section" id="weightHistorySection">
-        <div class="section-head"><h2>📈 История веса</h2><span class="tag">Личные записи</span></div>
+        <div class="section-head"><h2>📈 История веса</h2><span class="tag">Тренд</span></div>
         <p class="notice" style="margin-top:0">Можно сохранять измерения и смотреть изменения со временем. Это только журнал наблюдений — без оценки тела и целевого веса.</p>
         <div class="fields">
           <div class="field"><label for="weightLogValue">Вес, кг</label><input type="number" id="weightLogValue" min="25" max="300" step="0.1" inputmode="decimal" placeholder="Например, 50"></div>
@@ -2543,7 +2562,43 @@ html[data-ui="beta"] .footer {color:#766c84!important}
         <p class="notice" id="deviceMemoryStatus">Локальная резервная копия создаётся автоматически в этом браузере.</p>
       </div>
 
-      <div class="glass section">
+      
+      <div class="glass section" id="helpOfflineSection">
+        <div class="section-head"><h2>📖 Инструкция</h2><span class="tag">ОФЛАЙН</span></div>
+        <p class="notice" style="margin-top:0"><b>Как пользоваться без интернета</b></p>
+        <ol class="help-list" style="margin:8px 0 12px 18px;line-height:1.55;color:var(--muted);font-size:13px">
+          <li>Открой Luma <b>один раз онлайн</b> — оболочка сохранится в кэш.</li>
+          <li>На iPhone: «Поделиться» → «На экран «Домой»». На Android: меню браузера → «Установить приложение».</li>
+          <li>После установки приложение открывается как обычное и работает офлайн.</li>
+          <li>Данные (рацион, дневник, прогулки) хранятся только на этом устройстве.</li>
+          <li>Делай экспорт JSON раз в 1–2 недели — так не потеряешь прогресс при смене браузера.</li>
+          <li>Уведомления зависят от разрешений системы и могут не приходить, если браузер «заморожен».</li>
+        </ol>
+        <div class="form-actions" style="flex-wrap:wrap">
+          <button class="btn secondary small" type="button" id="checkCacheBtn">Проверить кэш</button>
+          <button class="btn secondary small" type="button" id="forcePrecacheBtn">Обновить кэш</button>
+        </div>
+        <p class="notice" id="cacheStatusLine">Состояние кэша ещё не проверяли.</p>
+      </div>
+
+      <div class="glass section" id="homeWidgetsSection">
+        <div class="section-head"><h2>🧩 Блоки на главной</h2><span class="tag">ПОРЯДОК</span></div>
+        <p class="notice" style="margin-top:0">Включи/выключи блоки и измени порядок стрелками. Изменения сохраняются сразу.</p>
+        <div id="homeWidgetsEditor" class="list" style="gap:8px"></div>
+        <div class="form-actions"><button class="btn secondary small" type="button" id="homeWidgetsReset">Сбросить порядок</button></div>
+      </div>
+
+      <div class="glass section" id="exportExtraSection">
+        <div class="section-head"><h2>📤 Экспорт данных</h2><span class="tag">CSV</span></div>
+        <p class="notice" style="margin-top:0">Полный JSON-бэкап — ниже. Здесь можно выгрузить дневник и прогулки отдельно.</p>
+        <div class="form-actions" style="flex-wrap:wrap">
+          <button class="btn secondary" type="button" id="exportDiaryCsv">Дневник → CSV</button>
+          <button class="btn secondary" type="button" id="exportDiaryTxt">Дневник → текст</button>
+          <button class="btn secondary" type="button" id="exportWalksCsv">Прогулки → CSV</button>
+        </div>
+      </div>
+
+<div class="glass section">
         <div class="section-head"><h2>Данные</h2></div>
         <div class="form-actions">
           <button class="btn secondary" type="button" onclick="exportData()">Экспорт</button>
@@ -2557,7 +2612,7 @@ html[data-ui="beta"] .footer {color:#766c84!important}
 
       <div class="glass section">
         <div class="section-head"><h2>Бета-дизайн</h2><span class="tag">UI</span></div>
-        <p class="notice" style="margin-top:0">Beta Design v37: фиолетовый интерфейс в стиле AI Productivity (Dribbble) — глубокий фон, стеклянные карточки, AI Summary и компактная навигация. Классический дизайн остаётся доступным.</p>
+        <p class="notice" style="margin-top:0">Beta Design v38: фиолетовый интерфейс в стиле AI Productivity (Dribbble) — глубокий фон, стеклянные карточки, AI Summary и компактная навигация. Классический дизайн остаётся доступным.</p>
         <div class="form-actions">
           <button class="btn" type="button" id="uiBetaOn">Включить Beta Design</button>
           <button class="btn secondary" type="button" id="uiBetaOff">Классика</button>
@@ -2589,7 +2644,7 @@ html[data-ui="beta"] .footer {color:#766c84!important}
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v37 Beta</p>
+      <p class="footer" id="appFooter">Luma · v38</p>
     </section>
   </main>
 
@@ -2755,7 +2810,7 @@ html[data-ui="beta"] .footer {color:#766c84!important}
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '36';
+  const BUILD = '38';
 
   /* Локальная память v34: резервная копия IndexedDB + переносимый Luma ID.
      Это не облачная синхронизация: каждый браузер имеет собственное хранилище. */
@@ -2930,6 +2985,16 @@ html[data-ui="beta"] .footer {color:#766c84!important}
     const au = d.auth && typeof d.auth === 'object' ? d.auth : {}; d.auth = { a: typeof au.a === 'string' ? au.a.slice(0, 64) : null, c: typeof au.c === 'string' ? au.c.slice(0, 64) : null };
     const g = d.admin.grant; d.admin.grant = (g && typeof g === 'object') ? { date: dt(g.date), sum: num(g.sum, 0, 1e9) } : { date: '', sum: 0 };
     d.lastExport = num(d.lastExport, 0, 8.64e15);
+    // home widgets
+    {
+      const defOrder = ['wallet','pet','stats','week','water','walk','rem','games'];
+      const hw = (d.homeWidgets && typeof d.homeWidgets === 'object') ? d.homeWidgets : {};
+      let order = Array.isArray(hw.order) ? hw.order.filter(x => defOrder.includes(x)) : [];
+      defOrder.forEach(id => { if (!order.includes(id)) order.push(id); });
+      const hidden = Array.isArray(hw.hidden) ? hw.hidden.filter(x => defOrder.includes(x)) : [];
+      d.homeWidgets = { order, hidden };
+    }
+
     if (typeof d.theme !== 'string') d.theme = 'violet';
   }
 
@@ -2958,6 +3023,7 @@ html[data-ui="beta"] .footer {color:#766c84!important}
     customFoods: [],
     walks: [],
     mode: 'dark',
+    homeWidgets: { order: ['wallet','pet','stats','week','water','walk','rem','games'], hidden: [] },
     auth: { a: null, c: null },
     hist: {},
     lastExport: 0,
@@ -3180,6 +3246,8 @@ html[data-ui="beta"] .footer {color:#766c84!important}
 
   function renderHome() {
     resetWaterIfNeeded();
+    try { applyHomeWidgets(); } catch (e) {}
+
     try { updateWallet(); } catch (e) { console.error(e); }
     try { renderHomeWalk(); } catch (e) { console.error(e); }
     $('greeting').textContent = greeting() + '. Вот твоя сводка.';
@@ -4659,11 +4727,11 @@ html[data-ui="beta"] .footer {color:#766c84!important}
     else document.documentElement.removeAttribute('data-ui');
     save();
     const st = $('uiBetaStatus');
-    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v37' : 'Сейчас: классический дизайн';
+    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v38' : 'Сейчас: классический дизайн';
     adaptNavForUI();
     checkAchievements();
     try { renderHome(); } catch {}
-    toast(data.ui === 'beta' ? 'Beta Design v37 включён' : 'Классический дизайн');
+    toast(data.ui === 'beta' ? 'Beta Design v38 включён' : 'Классический дизайн');
   }
   function adaptNavForUI() {
     const mapBeta = {
@@ -5250,6 +5318,16 @@ html[data-ui="beta"] .footer {color:#766c84!important}
 
   /* ===== Что нового ===== */
   const WHATS_NEW = {
+    '38': [
+      'Настраиваемые блоки на главной: порядок и видимость',
+      'Улучшенный журнал веса: тренд, среднее, разница',
+      'Экспорт дневника и прогулок в CSV / текст',
+      'Инструкция по офлайн-режиму и установке в настройках',
+      'Надёжнее кэш Service Worker — приложение лучше работает без сети',
+      'Проверка состояния кэша в настройках',
+      'Исправлена несогласованность номера версии'
+    ],
+
     '34': [
       'Luma ID для переноса одного профиля между браузерами',
       'Автоматическая локальная резервная копия в IndexedDB',
@@ -5258,7 +5336,7 @@ html[data-ui="beta"] .footer {color:#766c84!important}
       'Обновлён офлайн-кэш приложения'
     ],
     '36': [
-      'Beta Design v37: интерфейс ближе к референсу AI Productivity (Dribbble)',
+      'Beta Design v38: интерфейс ближе к референсу AI Productivity (Dribbble)',
       'Улучшены свечения, стеклянные карточки и блок AI Summary',
       'Главный экран бета: приветствие, фокус дня, статистика задач, «Далее»',
       'Классический дизайн сохранён и доступен переключателем'
@@ -7071,6 +7149,214 @@ html[data-ui="beta"] .footer {color:#766c84!important}
     return d.innerHTML;
   }
 
+
+  /* ===== Luma v38: home widgets, weight trend, CSV export, cache helpers ===== */
+  const WIDGET_LABELS = {
+    wallet: '💰 Кошелёк и серия',
+    pet: '🐾 Питомец',
+    stats: '📊 Сводка (ккал / вода / планы)',
+    week: '📈 Неделя',
+    water: '💧 Вода',
+    walk: '🚶 Прогулка',
+    rem: '⏰ Напоминания',
+    games: '🎮 Игры'
+  };
+  function ensureHomeWidgets() {
+    const defOrder = ['wallet','pet','stats','week','water','walk','rem','games'];
+    if (!data.homeWidgets || typeof data.homeWidgets !== 'object') data.homeWidgets = { order: defOrder.slice(), hidden: [] };
+    let order = Array.isArray(data.homeWidgets.order) ? data.homeWidgets.order.filter(x => defOrder.includes(x)) : [];
+    defOrder.forEach(id => { if (!order.includes(id)) order.push(id); });
+    data.homeWidgets.order = order;
+    data.homeWidgets.hidden = Array.isArray(data.homeWidgets.hidden) ? data.homeWidgets.hidden.filter(x => defOrder.includes(x)) : [];
+  }
+  function applyHomeWidgets() {
+    try {
+      ensureHomeWidgets();
+      const page = $('page-home'); if (!page) return;
+      const hidden = new Set(data.homeWidgets.hidden || []);
+      const nodes = {};
+      page.querySelectorAll('[data-widget]').forEach(el => { nodes[el.getAttribute('data-widget')] = el; });
+      // reorder within page: keep hero/header, then widgets in order, then rest
+      const order = data.homeWidgets.order || [];
+      let anchor = $('betaHomeExtras') || page.querySelector('.hero');
+      order.forEach(id => {
+        const el = nodes[id];
+        if (!el) return;
+        el.classList.toggle('widget-hidden', hidden.has(id));
+        if (anchor && anchor.parentNode === page) {
+          if (anchor.nextSibling) page.insertBefore(el, anchor.nextSibling);
+          else page.appendChild(el);
+          anchor = el;
+        }
+      });
+    } catch (e) { console.error('applyHomeWidgets', e); }
+  }
+  function renderHomeWidgetsEditor() {
+    const box = $('homeWidgetsEditor'); if (!box) return;
+    ensureHomeWidgets();
+    const order = data.homeWidgets.order;
+    const hidden = new Set(data.homeWidgets.hidden);
+    box.innerHTML = '';
+    order.forEach((id, idx) => {
+      const row = document.createElement('div');
+      row.className = 'widget-row' + (hidden.has(id) ? ' hidden-w' : '');
+      row.innerHTML = '<span class="w-name">' + (WIDGET_LABELS[id] || id) + '</span><div class="w-actions">' +
+        '<button type="button" data-wact="up" data-id="' + id + '" ' + (idx===0?'disabled':'') + '>↑</button>' +
+        '<button type="button" data-wact="down" data-id="' + id + '" ' + (idx===order.length-1?'disabled':'') + '>↓</button>' +
+        '<button type="button" data-wact="toggle" data-id="' + id + '">' + (hidden.has(id) ? 'Показать' : 'Скрыть') + '</button></div>';
+      box.appendChild(row);
+    });
+  }
+  function moveWidget(id, dir) {
+    ensureHomeWidgets();
+    const o = data.homeWidgets.order;
+    const i = o.indexOf(id); if (i < 0) return;
+    const j = i + dir; if (j < 0 || j >= o.length) return;
+    [o[i], o[j]] = [o[j], o[i]];
+    save(); renderHomeWidgetsEditor(); applyHomeWidgets();
+  }
+  function toggleWidget(id) {
+    ensureHomeWidgets();
+    const h = data.homeWidgets.hidden;
+    const ix = h.indexOf(id);
+    if (ix >= 0) h.splice(ix, 1); else h.push(id);
+    save(); renderHomeWidgetsEditor(); applyHomeWidgets();
+  }
+  function bindHomeWidgetsUI() {
+    const box = $('homeWidgetsEditor');
+    if (box) box.addEventListener('click', e => {
+      const b = e.target.closest('[data-wact]'); if (!b) return;
+      const id = b.dataset.id, act = b.dataset.wact;
+      if (act === 'up') moveWidget(id, -1);
+      else if (act === 'down') moveWidget(id, 1);
+      else if (act === 'toggle') toggleWidget(id);
+    });
+    $('homeWidgetsReset')?.addEventListener('click', () => {
+      data.homeWidgets = { order: ['wallet','pet','stats','week','water','walk','rem','games'], hidden: [] };
+      save(); renderHomeWidgetsEditor(); applyHomeWidgets(); toast('Порядок блоков сброшен');
+    });
+  }
+
+  function downloadBlob(filename, text, mime) {
+    const blob = new Blob([text], { type: mime || 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+  }
+  function csvEscape(v) {
+    const s = String(v == null ? '' : v);
+    if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+  function exportDiaryCsv() {
+    const rows = (data.diary || []).slice().sort((a,b) => (a.date||'').localeCompare(b.date||''));
+    let out = 'date,mood,text,updated\n';
+    rows.forEach(r => {
+      out += [csvEscape(r.date), csvEscape(r.mood), csvEscape(r.text), csvEscape(r.updated ? new Date(r.updated).toISOString() : '')].join(',') + '\n';
+    });
+    downloadBlob('luma-diary-' + todayStr() + '.csv', out, 'text/csv;charset=utf-8');
+    toast(rows.length ? 'Дневник экспортирован (' + rows.length + ')' : 'Дневник пуст — файл всё равно создан');
+  }
+  function exportDiaryTxt() {
+    const rows = (data.diary || []).slice().sort((a,b) => (a.date||'').localeCompare(b.date||''));
+    let out = 'Luma — дневник\nЭкспорт: ' + new Date().toLocaleString('ru-RU') + '\n\n';
+    if (!rows.length) out += '(записей нет)\n';
+    rows.forEach(r => {
+      out += '——— ' + (r.date || '') + ' ' + (r.mood || '') + ' ———\n';
+      out += (r.text || '(без текста)') + '\n\n';
+    });
+    downloadBlob('luma-diary-' + todayStr() + '.txt', out, 'text/plain;charset=utf-8');
+    toast(rows.length ? 'Текстовый дневник сохранён' : 'Дневник пуст');
+  }
+  function exportWalksCsv() {
+    const rows = (data.walks || []).slice().sort((a,b) => (b.start||0) - (a.start||0));
+    let out = 'date,start,duration_min,distance_km,steps,kcal,avg_speed_kmh\n';
+    rows.forEach(x => {
+      const min = Math.max(1, Math.round((x.ms || 0) / 60000));
+      const km = ((x.dist || 0) / 1000);
+      const speed = (x.ms > 0 && x.dist > 0) ? (km / (x.ms / 3600000)) : 0;
+      out += [csvEscape(x.date), csvEscape(x.start ? new Date(x.start).toISOString() : ''), csvEscape(min), csvEscape(km.toFixed(3)), csvEscape(x.steps || ''), csvEscape(x.kcal || ''), csvEscape(speed.toFixed(2))].join(',') + '\n';
+    });
+    downloadBlob('luma-walks-' + todayStr() + '.csv', out, 'text/csv;charset=utf-8');
+    toast(rows.length ? 'Прогулки экспортированы (' + rows.length + ')' : 'Прогулок нет — файл создан');
+  }
+  function bindExportExtra() {
+    $('exportDiaryCsv')?.addEventListener('click', exportDiaryCsv);
+    $('exportDiaryTxt')?.addEventListener('click', exportDiaryTxt);
+    $('exportWalksCsv')?.addEventListener('click', exportWalksCsv);
+  }
+
+  async function checkCacheStatus() {
+    const line = $('cacheStatusLine');
+    try {
+      if (!('caches' in window)) { if (line) line.textContent = 'Cache API недоступен в этом браузере.'; return; }
+      const keys = await caches.keys();
+      const lumaKeys = keys.filter(k => k.indexOf('luma') >= 0);
+      let files = 0;
+      for (const k of lumaKeys) {
+        try { const c = await caches.open(k); const ks = await c.keys(); files += ks.length; } catch {}
+      }
+      const sw = navigator.serviceWorker ? (navigator.serviceWorker.controller ? 'активен' : 'ожидает') : 'нет';
+      const online = navigator.onLine ? 'онлайн' : 'офлайн';
+      if (line) line.textContent = 'Кэш: ' + (lumaKeys[0] || '—') + ' · файлов ≈ ' + files + ' · SW: ' + sw + ' · сеть: ' + online;
+      toast(files > 0 ? 'Кэш в порядке (' + files + ' файлов)' : 'Кэш пуст — открой приложение онлайн и нажми «Обновить кэш»');
+    } catch (e) {
+      if (line) line.textContent = 'Не удалось проверить кэш';
+      toast('Ошибка проверки кэша');
+    }
+  }
+  async function forcePrecache() {
+    try {
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'PRECACHE' });
+        toast('Запрошено обновление кэша');
+      } else if (navigator.serviceWorker) {
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (reg && reg.active) reg.active.postMessage({ type: 'PRECACHE' });
+        else toast('Service Worker ещё не готов — открой онлайн');
+      } else toast('Service Worker недоступен');
+      setTimeout(checkCacheStatus, 1200);
+    } catch { toast('Не удалось обновить кэш'); }
+  }
+  function bindCacheUI() {
+    $('checkCacheBtn')?.addEventListener('click', checkCacheStatus);
+    $('forcePrecacheBtn')?.addEventListener('click', forcePrecache);
+  }
+
+  // Enhanced weight log
+  function renderWeightLog(){
+    const chart=$('weightLogChart'), list=$('weightLogList'); if(!chart||!list)return;
+    const all=(prof().weightLog||[]).slice();
+    const rows=all.slice(-14);
+    if(!rows.length){
+      chart.innerHTML='<div class="empty">Пока нет записей. Добавь измерение, если хочешь вести историю.</div>';
+      list.innerHTML='';
+      return;
+    }
+    const vals=rows.map(x=>x.kg), lo=Math.min(...vals), hi=Math.max(...vals), span=Math.max(0.5,hi-lo);
+    const last=rows[rows.length-1], prev=rows.length>1?rows[rows.length-2]:null;
+    const delta=prev?Math.round((last.kg-prev.kg)*10)/10:null;
+    const avg=Math.round(vals.reduce((s,v)=>s+v,0)/vals.length*10)/10;
+    const deltaTxt = delta==null ? '—' : ((delta>0?'+':'')+delta.toFixed(1)+' кг');
+    const deltaColor = delta==null ? '' : (delta>0 ? '#fca5a5' : (delta<0 ? '#86efac' : ''));
+    chart.innerHTML =
+      '<div class="weight-trend">' +
+        '<div class="wt"><span>Последний</span><b>'+last.kg.toFixed(1)+' кг</b></div>' +
+        '<div class="wt"><span>Изменение</span><b style="color:'+deltaColor+'">'+deltaTxt+'</b></div>' +
+        '<div class="wt"><span>Среднее ('+rows.length+')</span><b>'+avg.toFixed(1)+' кг</b></div>' +
+        '<div class="wt"><span>Мин / макс</span><b>'+lo.toFixed(1)+' – '+hi.toFixed(1)+'</b></div>' +
+      '</div>' +
+      '<div class="weight-bars">'+rows.map(x=>{
+        const h=Math.round(18+(x.kg-lo)/span*70);
+        return '<div class="weight-bar" title="'+x.kg+' кг · '+x.date+'" style="height:'+h+'%"><span>'+x.date.slice(5)+'</span></div>';
+      }).join('')+'</div>' +
+      '<p class="notice" style="margin-top:22px">Последняя запись: <b>'+last.kg.toFixed(1)+' кг</b> · '+last.date+'</p>';
+    list.innerHTML=rows.slice().reverse().map((x,i)=>'<div class="weight-entry"><span><b>'+x.kg.toFixed(1)+' кг</b><br><small>'+x.date+'</small></span><button class="btn secondary small" type="button" data-weight-delete="'+(rows.length-1-i)+'">Удалить</button></div>').join('');
+  }
+
+
   /* ----- Init ----- */
   applyTheme(data.theme || 'violet');
   applyMode(data.mode || 'dark');
@@ -7109,13 +7395,18 @@ html[data-ui="beta"] .footer {color:#766c84!important}
   maybeOnboard();
   try { showWhatsNewIfNeeded(); } catch (e) {}
 
+  try { bindHomeWidgetsUI(); renderHomeWidgetsEditor(); applyHomeWidgets(); } catch (e) { console.error(e); }
+  try { bindExportExtra(); } catch (e) {}
+  try { bindCacheUI(); } catch (e) {}
+
+
 
   /* UI beta buttons + initial ui */
   try {
     if (data.ui === 'beta') document.documentElement.setAttribute('data-ui', 'beta');
     else document.documentElement.removeAttribute('data-ui');
     const st = $('uiBetaStatus');
-    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v37' : 'Сейчас: классический дизайн';
+    if (st) st.textContent = data.ui === 'beta' ? 'Сейчас: Beta Design v38' : 'Сейчас: классический дизайн';
     adaptNavForUI();
     $('uiBetaOn')?.addEventListener('click', () => setUIMode('beta'));
     $('uiBetaOff')?.addEventListener('click', () => setUIMode('classic'));

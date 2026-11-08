@@ -1,5 +1,5 @@
-/* Luma service worker v33 — offline-first for iOS Safari */
-const CACHE = 'luma-v37-beta';
+/* Luma service worker v38 — offline-first, resilient cache */
+const CACHE = 'luma-v38-beta';
 const ASSETS = [
   './',
   './index.html',
@@ -76,9 +76,6 @@ async function scheduleAt(title, body, tag, when) {
       return 'trigger';
     }
   } catch (e) {}
-  // A Service Worker may be suspended at any time; setTimeout here is not a
-  // reliable alarm. Without TimestampTrigger, rely on page timers while open
-  // and supported Background Sync events rather than promising a false alarm.
   return 'unsupported';
 }
 
@@ -114,26 +111,30 @@ async function checkStoredReminders(force) {
   checkingNow = false;
 }
 
-/** Precache shell under several URL keys (iOS navigates to /, /index.html, full URL) */
 async function precacheShell() {
   const cache = await caches.open(CACHE);
   const results = await Promise.allSettled(
     ASSETS.map(async (a) => {
       try {
         const res = await fetch(a, { cache: 'reload' });
-        if (res && res.ok) await cache.put(a, res.clone());
+        if (res && res.ok) {
+          await cache.put(a, res.clone());
+          // also store without leading ./
+          if (a.startsWith('./')) {
+            try { await cache.put(a.slice(2) || './', res.clone()); } catch {}
+          }
+        }
       } catch {}
     })
   );
-  // Mirror index under common navigation keys
   try {
-    const idx = await cache.match('./index.html') || await cache.match('index.html');
+    const idx = await cache.match('./index.html') || await cache.match('index.html') || await cache.match('./');
     if (idx) {
       const base = self.registration.scope;
-      await cache.put(base, idx.clone());
-      await cache.put(base + 'index.html', idx.clone());
-      await cache.put('./', idx.clone());
-      await cache.put('./index.html', idx.clone());
+      const clones = [base, base + 'index.html', './', './index.html', 'index.html', base.replace(/\/$/, '')];
+      for (const key of clones) {
+        try { await cache.put(key, idx.clone()); } catch {}
+      }
     }
   } catch {}
   return results;
@@ -150,7 +151,8 @@ async function matchShell(req) {
     url.pathname,
     url.pathname.replace(/\/$/, '') + '/index.html',
     self.registration.scope,
-    self.registration.scope + 'index.html'
+    self.registration.scope + 'index.html',
+    self.registration.scope.replace(/\/$/, '')
   ];
   for (const c of candidates) {
     try {
@@ -158,13 +160,23 @@ async function matchShell(req) {
       if (hit) return hit;
     } catch {}
   }
-  // last resort: any cached HTML
   try {
     const keys = await cache.keys();
     for (const k of keys) {
       if (k.url.includes('index.html') || k.url.endsWith('/')) {
         const hit = await cache.match(k);
         if (hit) return hit;
+      }
+    }
+  } catch {}
+  // any html in this cache
+  try {
+    const keys = await cache.keys();
+    for (const k of keys) {
+      const hit = await cache.match(k);
+      if (hit) {
+        const ct = hit.headers.get('content-type') || '';
+        if (ct.includes('text/html')) return hit;
       }
     }
   } catch {}
@@ -190,7 +202,6 @@ self.addEventListener('activate', (event) => {
     const keys = await caches.keys();
     await Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)));
     await self.clients.claim();
-    // refresh shell once activated (when online)
     try { await precacheShell(); } catch {}
     await checkStoredReminders();
   })());
@@ -207,7 +218,6 @@ self.addEventListener('fetch', (event) => {
 
   if (isShell) {
     event.respondWith((async () => {
-      // Prefer network when available, always update cache
       try {
         const net = await fetch(req);
         if (net && net.ok) {
@@ -217,12 +227,12 @@ self.addEventListener('fetch', (event) => {
             if (isNav) {
               await cache.put('./index.html', net.clone());
               await cache.put('./', net.clone());
+              await cache.put('index.html', net.clone());
             }
           } catch {}
           return net;
         }
       } catch {}
-      // Offline / failed network
       const cached = await matchShell(req);
       if (cached) return cached;
       return offlinePage();
@@ -231,10 +241,22 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // icons and static: cache-first
+  // static: cache-first, then network, then shell
   event.respondWith((async () => {
     const cached = await caches.match(req, { ignoreSearch: true });
-    if (cached) return cached;
+    if (cached) {
+      // background refresh
+      event.waitUntil((async () => {
+        try {
+          const net = await fetch(req);
+          if (net && net.ok) {
+            const cache = await caches.open(CACHE);
+            await cache.put(req, net.clone());
+          }
+        } catch {}
+      })());
+      return cached;
+    }
     try {
       const net = await fetch(req);
       if (net && net.ok) {
@@ -266,6 +288,16 @@ self.addEventListener('message', (event) => {
   }
   if (data.type === 'SKIP_WAITING') self.skipWaiting();
   if (data.type === 'PRECACHE') event.waitUntil(precacheShell());
+  if (data.type === 'CACHE_STATUS') {
+    event.waitUntil((async () => {
+      try {
+        const cache = await caches.open(CACHE);
+        const keys = await cache.keys();
+        const client = event.source;
+        if (client && client.postMessage) client.postMessage({ type: 'CACHE_STATUS_RESULT', cache: CACHE, count: keys.length });
+      } catch {}
+    })());
+  }
 });
 
 self.addEventListener('notificationclick', (event) => {
