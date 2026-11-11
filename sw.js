@@ -1,8 +1,11 @@
 /* Luma service worker v38 — offline-first, resilient cache */
-const CACHE = 'luma-v38-beta';
+const CACHE = 'luma-v40-luma2';
 const ASSETS = [
   './',
   './index.html',
+  './style.css',
+  './app.js',
+  './luma2.js',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
