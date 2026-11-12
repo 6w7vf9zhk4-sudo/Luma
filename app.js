@@ -2601,6 +2601,7 @@
     try {
       const seen = localStorage.getItem('luma-seen-build');
       if (seen === BUILD) return;
+      if (seen === null) { localStorage.setItem('luma-seen-build', BUILD); return; } /* новым пользователям окно «Что нового» не показываем */
       const list = $('wnList'); const ver = $('wnVer'); const box = $('whatsNew');
       if (!list || !box) { localStorage.setItem('luma-seen-build', BUILD); return; }
       const items = WHATS_NEW[BUILD] || ['Обновление Luma v' + BUILD];
@@ -4621,13 +4622,14 @@
     if (a) a.textContent = tips[(new Date().getDate() + h) % tips.length];
     const close = () => { if (!overlay) return; overlay.classList.add('hide'); setTimeout(() => overlay.remove(), 380); };
     $('welcomeClose')?.addEventListener('click', close);
+    setTimeout(close, 3500); /* приветствие закрывается само и не мешает входу */
     overlay?.addEventListener('click', e => { if (e.target === overlay) close(); });
   })();
   initDeviceMemoryUI();
   renderBackupInfo(); backupNudge();
   window.addEventListener('error', e => { try { console.error(e.error || e.message); const t = Date.now(); if (!window._errT || t - window._errT > 30000) { window._errT = t; toast('Что-то пошло не так. Данные сохранены, обнови страницу'); } } catch {} });
   window.addEventListener('unhandledrejection', e => { try { console.error(e.reason); } catch {} });
-  maybeOnboard();
+  /* знакомство больше не открывается поверх страницы само: оно доступно по кнопке «Заполнить параметры» */
   try { showWhatsNewIfNeeded(); } catch (e) {}
 
   try { bindHomeWidgetsUI(); renderHomeWidgetsEditor(); applyHomeWidgets(); } catch (e) { console.error(e); }
