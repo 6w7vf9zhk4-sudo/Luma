@@ -32,6 +32,40 @@
       <span class="pill" id="topPill">v40</span>
     </header>
 
+    <!-- AUTH (вверху страницы, всегда видна) -->
+    <div class="glass section" id="authSection" style="margin-top:0">
+      <div class="section-head">
+        <h2>Аккаунт</h2>
+        <span class="tag" id="authStatusTag">Не вошёл</span>
+      </div>
+
+      <div id="authLoggedOut">
+        <div class="fields">
+          <div class="field full">
+            <label for="authEmail">Email</label>
+            <input type="email" id="authEmail" placeholder="you@email.com" autocomplete="email" inputmode="email">
+          </div>
+          <div class="field full">
+            <label for="authPassword">Пароль</label>
+            <input type="password" id="authPassword" placeholder="Минимум 6 символов" autocomplete="current-password">
+          </div>
+        </div>
+        <div class="form-actions" style="margin-top:12px">
+          <button class="btn" type="button" id="authLoginBtn">Войти</button>
+          <button class="btn secondary" type="button" id="authRegisterBtn">Регистрация</button>
+        </div>
+        <p class="notice" id="authMessage" style="margin-top:10px"></p>
+      </div>
+
+      <div id="authLoggedIn" style="display:none">
+        <p class="muted" id="authUserEmail" style="margin-bottom:6px"></p>
+        <p class="notice" id="authRoleInfo" style="margin:0 0 10px"></p>
+        <div class="form-actions" style="margin-top:0">
+          <button class="btn secondary small" type="button" id="authLogoutBtn">Выйти</button>
+        </div>
+      </div>
+    </div>
+
     <!-- HOME -->
     <section class="page active" id="page-home">
       <div class="hero">
@@ -960,45 +994,16 @@
   <div class="toast" id="toast"></div>
 
 
-  window.lumaCloud = window.supabase.createClient(
-    "https://onraegpedsvqufnyptvw.supabase.co/rest/v1/",
-    "sb_publishable_9VoMytJ1YEaVaNrErFKDpw_GEUCvt1N
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  try {
+    window.lumaCloud = window.supabase.createClient(
+      "https://onraegpedsvqufnyptvw.supabase.co",
+      "sb_publishable_9VoMytJ1YEaVaNrErFKDpw_GEUCvt1N"
+    );
+  } catch (e) { console.warn("Supabase не загрузился:", e); }
+</script>
 <script src="app.js"></script>
 <script src="luma2.js"></script>
 </body>
 </html>
-
-<!-- Auth -->
-<div class="glass section" id="authSection">
-  <div class="section-head">
-    <h2>Аккаунт</h2>
-    <span class="tag" id="authStatusTag">Не вошёл</span>
-  </div>
-
-  <div id="authLoggedOut">
-    <div class="fields">
-      <div class="field full">
-        <label>Email</label>
-        <input type="email" id="authEmail" placeholder="you@email.com" autocomplete="email">
-      </div>
-      <div class="field full">
-        <label>Пароль</label>
-        <input type="password" id="authPassword" placeholder="Минимум 6 символов" autocomplete="current-password">
-      </div>
-    </div>
-    <div class="form-actions" style="margin-top:12px">
-      <button class="btn" type="button" id="authLoginBtn">Войти</button>
-      <button class="btn secondary" type="button" id="authRegisterBtn">Регистрация</button>
-    </div>
-    <p class="notice" id="authMessage" style="margin-top:10px"></p>
-  </div>
-
-  <div id="authLoggedIn" style="display:none">
-    <p class="muted" id="authUserEmail" style="margin-bottom:10px"></p>
-    <p class="notice" id="authRoleInfo"></p>
-    <div class="form-actions">
-      <button class="btn secondary" type="button" id="authLogoutBtn">Выйти</button>
-    </div>
-  </div>
-</div>

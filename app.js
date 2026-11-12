@@ -4774,7 +4774,7 @@ const Auth = {
 
     const { error } = await lumaCloud.auth.signInWithPassword({ email, password });
     if (error) {
-      if (msg) msg.textContent = error.message;
+      if (msg) msg.textContent = this.errText(error);
       return;
     }
     if (msg) msg.textContent = 'Успешный вход';
@@ -4794,12 +4794,26 @@ const Auth = {
       return;
     }
 
-    const { error } = await lumaCloud.auth.signUp({ email, password });
+    const { data, error } = await lumaCloud.auth.signUp({ email, password });
     if (error) {
-      if (msg) msg.textContent = error.message;
+      if (msg) msg.textContent = this.errText(error);
       return;
     }
-    if (msg) msg.textContent = 'Аккаунт создан. Теперь можно войти.';
+    if (data && data.session) {
+      if (msg) msg.textContent = 'Аккаунт создан, вы вошли.';
+    } else if (msg) {
+      msg.textContent = 'Аккаунт создан. Проверьте почту и подтвердите адрес по ссылке, затем нажмите «Войти».';
+    }
+  },
+
+  errText(error) {
+    const m = String((error && error.message) || error || '');
+    if (/invalid login credentials/i.test(m)) return 'Неверный email или пароль (или почта ещё не подтверждена).';
+    if (/email not confirmed/i.test(m)) return 'Почта не подтверждена. Откройте письмо и перейдите по ссылке.';
+    if (/already registered|already been registered/i.test(m)) return 'Этот email уже зарегистрирован. Нажмите «Войти».';
+    if (/rate limit/i.test(m)) return 'Слишком много попыток. Подождите немного.';
+    if (/failed to fetch|network/i.test(m)) return 'Нет связи с сервером. Проверьте интернет.';
+    return m;
   },
 
   async logout() {
@@ -4814,6 +4828,13 @@ const Auth = {
 // Запускаем после загрузки
 document.addEventListener('DOMContentLoaded', () => {
   if (window.lumaCloud) Auth.init();
+  else {
+    const m = $('authMessage');
+    if (m) m.textContent = 'Сервер входа недоступен: не загрузилась библиотека Supabase. Проверьте интернет и обновите страницу.';
+    ['authLoginBtn', 'authRegisterBtn'].forEach(id => $(id)?.addEventListener('click', () => {
+      if (m) m.textContent = 'Сервер входа недоступен. Проверьте интернет и обновите страницу.';
+    }));
+  }
 }); 
 })();
   
