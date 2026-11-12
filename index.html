@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="40.0-luma2"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="44.0-luma2-research"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);if(_d.ui==='beta')document.documentElement.setAttribute('data-ui','beta');}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -29,7 +29,7 @@
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v41</span>
+      <span class="pill" id="topPill">v44</span>
     </header>
 
     <!-- AUTH (вверху страницы, всегда видна) -->
@@ -77,6 +77,7 @@
         <div class="form-actions home-nova-actions" style="margin-top:12px"><button class="btn" type="button" onclick="openNova()">✦ Спросить Нову</button><span class="tag">Помощник</span></div>
       </div>
 
+      <div class="glass section announcement-feed" id="announcementFeed" hidden aria-live="polite"></div>
       <div id="betaHomeExtras" hidden></div>
 
       <div class="glass section luma2-shortcuts" aria-label="Новые инструменты Luma">
@@ -86,6 +87,7 @@
           <button class="luma2-shortcut" type="button" onclick="goTab('focus')"><span>⏳</span><b>Фокус</b><small>Время для дела</small></button>
           <button class="luma2-shortcut" type="button" onclick="goTab('stats')"><span>📊</span><b>Статистика</b><small>Твой прогресс</small></button>
           <button class="luma2-shortcut" type="button" onclick="goTab('nova')"><span>✦</span><b>Нова 2.0</b><small>Сводка дня</small></button>
+          <button class="luma2-shortcut research-shortcut" type="button" onclick="goTab('research')"><span>⌕</span><b>Nova Research</b><small>Поиск и сравнение · Beta</small></button>
         </div>
       </div>
 
@@ -483,26 +485,27 @@
     <!-- NOVA ASSISTANT -->
     <section class="page" id="page-nova">
       <div class="hero">
-        <div class="eyebrow">LOCAL SMART ASSISTANT</div>
+        <div class="eyebrow">AI POWERED ASSISTANT</div>
         <h1>Нова<br><span>твой помощник</span></h1>
-        <p class="muted">Помогает разбирать планы и напоминания. Работает прямо на устройстве.</p>
+        <p class="muted">Умный помощник Luma на базе ИИ. Для ответов онлайн требуется вход в аккаунт.</p>
       </div>
       
       <div class="glass section l2-nova-panel">
-        <div class="section-head"><h2>✦ Нова 2.0 · Центр дня</h2><span class="tag">Офлайн</span></div>
-        <p class="notice" style="margin-top:0">Нова собирает сводку из твоих локальных планов, событий и фокус-сессий. Это не облачная ИИ-модель.</p>
+        <div class="section-head"><h2>✦ Нова 2.0 · Центр дня</h2><span class="tag">Локальная сводка</span></div>
+        <p class="notice" style="margin-top:0">Сводка строится локально из календаря, напоминаний и фокус-сессий. Для свободного диалога ниже используется ИИ.</p>
         <div id="l2NovaBrief" class="l2-nova-brief">Сводка появится после загрузки.</div>
         <div class="l2-nova-actions">
           <button class="btn secondary small" type="button" onclick="goTab('calendar')">🗓️ Календарь</button>
           <button class="btn secondary small" type="button" onclick="goTab('focus')">⏳ Начать фокус</button>
           <button class="btn secondary small" type="button" onclick="goTab('stats')">📊 Мой прогресс</button>
+          <button class="btn secondary small" type="button" onclick="goTab('research')">⌕ Nova Research Beta</button>
           <button class="btn small" type="button" id="l2NovaRefresh">Обновить сводку</button>
         </div>
       </div>
 
       <div class="glass section nova-card">
-        <div class="nova-head"><div class="nova-orb" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M14 27 Q8 9 22 17 L28 22 Q36 12 46 17 Q57 20 51 31 L49 43 Q44 55 31 54 Q17 54 14 42Z" fill="#e9ddff" stroke="#7550d8" stroke-width="3"/><path d="M16 25 L7 15 Q5 30 17 34 M48 24 L58 14 Q60 29 48 34" fill="#c4b5fd" stroke="#7550d8" stroke-width="3"/><rect x="17" y="26" width="30" height="19" rx="9" fill="#21154f"/><path d="M23 34 Q27 28 31 34 M34 34 Q38 28 42 34" fill="none" stroke="#65e8ff" stroke-width="3" stroke-linecap="round"/><path d="M28 48 Q32 52 36 48" fill="none" stroke="#9b78ff" stroke-width="2" stroke-linecap="round"/><path d="M32 2 L35 10 L43 13 L35 16 L32 24 L29 16 L21 13 L29 10Z" fill="#ffe69a" stroke="#fff4c4" stroke-width="1"/></svg></div><div><b>Нова</b><small>Локальный помощник · без аккаунта и сервера</small></div><span class="tag">Готова</span></div>
-        <div class="nova-welcome"><b>Привет! Я Нова.</b><br>Я могу посмотреть твои планы, помочь составить расписание и подготовить напоминание.</div>
+        <div class="nova-head"><div class="nova-orb" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M14 27 Q8 9 22 17 L28 22 Q36 12 46 17 Q57 20 51 31 L49 43 Q44 55 31 54 Q17 54 14 42Z" fill="#e9ddff" stroke="#7550d8" stroke-width="3"/><path d="M16 25 L7 15 Q5 30 17 34 M48 24 L58 14 Q60 29 48 34" fill="#c4b5fd" stroke="#7550d8" stroke-width="3"/><rect x="17" y="26" width="30" height="19" rx="9" fill="#21154f"/><path d="M23 34 Q27 28 31 34 M34 34 Q38 28 42 34" fill="none" stroke="#65e8ff" stroke-width="3" stroke-linecap="round"/><path d="M28 48 Q32 52 36 48" fill="none" stroke="#9b78ff" stroke-width="2" stroke-linecap="round"/><path d="M32 2 L35 10 L43 13 L35 16 L32 24 L29 16 L21 13 L29 10Z" fill="#ffe69a" stroke="#fff4c4" stroke-width="1"/></svg></div><div><b>Нова 2.0</b><small>ИИ-помощник · защищённый API</small></div><span class="tag">AI API</span></div>
+        <div class="nova-welcome"><b>Привет! Я Нова.</b><br>Могу объяснять сложные темы, помогать с идеями и анализировать твои планы. Пока я только консультирую: не утверждаю, что изменила данные Luma без твоего действия.</div>
         <div class="form-actions" style="margin:12px 0 4px;gap:8px;flex-wrap:wrap">
           <button class="btn secondary" type="button" onclick="goTab('chat')">💬 Чат про спорт</button>
         </div>
@@ -542,13 +545,48 @@
           <button class="btn secondary small" type="button" data-nova="tip">💡 Совет</button>
           <button class="btn secondary small" type="button" data-nova="remind">⏰ Создать напоминание</button>
         </div>
-        <div class="nova-chat" id="novaChat" aria-live="polite"><div class="nova-msg bot">Выбери действие или напиши, что хочешь узнать. Я отвечаю на основе данных, сохранённых в Luma.</div></div>
-        <form id="novaForm" class="nova-input-row"><input id="novaInput" maxlength="180" placeholder="Например: что у меня сегодня?" autocomplete="off"><button class="btn" type="submit">Отправить</button></form>
-        <p class="notice">Нова не подключена к ИИ: она использует встроенные правила и данные Luma. Вопросы вроде «что такое …» и калории незнакомых продуктов уходят напрямую в Википедию и Open Food Facts (своего сервера у Luma нет), найденные ответы запоминаются на устройстве.</p>
+        <div class="nova-chat" id="novaChat" aria-live="polite"><div class="nova-msg bot">Выбери действие или напиши вопрос. Для ИИ-ответов войди в аккаунт Luma.</div></div>
+        <form id="novaForm" class="nova-input-row"><input id="novaInput" maxlength="1200" placeholder="Спроси что-нибудь…" autocomplete="off"><button class="btn" type="submit">Отправить</button></form>
+        <label class="notice" style="display:flex;align-items:flex-start;gap:9px;margin-top:10px"><input id="novaShareContext" type="checkbox" style="margin-top:3px;flex:0 0 auto"><span>Разрешить передавать Нове ограниченный контекст Luma: расписание, ближайшие напоминания и план дня. Без галочки отправляются только текст сообщений и история этого чата.</span></label>
+        <p class="notice">Сообщения отправляются во внешний ИИ-сервис для обработки. Не отправляй пароли, платёжные данные и другую конфиденциальную информацию. Подключение API и расходы должен одобрить и контролировать родитель или опекун. Локальные планы и кнопки работают отдельно от ИИ.</p>
       </div>
     </section>
 
     <!-- SETTINGS -->
+    <!-- NOVA RESEARCH BETA -->
+    <section class="page luma2-page" id="page-research">
+      <div class="research-heading">
+        <div class="research-orb" aria-hidden="true">⌕</div>
+        <div><div class="eyebrow">LUMA INTELLIGENCE LAB</div><h1>Nova Research <span class="research-beta">BETA</span></h1><p class="muted">Поиск. Сравнение. Анализ. Проверка доказательств.</p></div>
+      </div>
+      <div class="glass section research-intro"><span class="research-spark">✦</span><div><b>Интеллектуальный поиск по нескольким источникам</b><p class="notice">Nova будет сопоставлять утверждения, искать противоречия и оценивать качество доказательств — а не просто считать голоса сайтов.</p></div></div>
+      <div class="glass section research-search-card">
+        <form id="researchForm" class="research-form">
+          <span class="research-search-icon">⌕</span><input id="researchQuery" maxlength="300" placeholder="Введите вопрос для исследования…" autocomplete="off" aria-label="Вопрос для исследования"><button class="btn research-submit" type="submit" aria-label="Начать поиск">➤</button>
+        </form>
+        <div class="research-suggestions"><button type="button" data-research-query="Почему меняется климат?">✦ Почему меняется климат?</button><button type="button" data-research-query="Как проверить достоверность информации?">⌁ Как проверить информацию?</button><button type="button" data-research-query="Как работает искусственный интеллект?">◉ Как работает ИИ?</button></div>
+      </div>
+      <div class="glass section research-process">
+        <div class="section-head"><h2>Как работает анализ</h2><span class="tag">5 этапов</span></div>
+        <div class="research-steps">
+          <div class="research-step active"><i>◎</i><b>Поиск</b><small>источников</small></div><span>›</span><div class="research-step"><i>⚖</i><b>Сравнение</b><small>утверждений</small></div><span>›</span><div class="research-step"><i>✓</i><b>Проверка</b><small>доказательств</small></div><span>›</span><div class="research-step"><i>▥</i><b>Анализ</b><small>различий</small></div><span>›</span><div class="research-step"><i>✓</i><b>Вывод</b><small>со ссылками</small></div>
+        </div>
+        <div class="research-progress"><span></span></div>
+        <p class="notice research-demo-note"><b>Предпросмотр интерфейса.</b> Реальный поиск и анализ источников пока не подключены.</p>
+      </div>
+      <div class="glass section research-result">
+        <div class="section-head"><h2>Пример результата</h2><span class="tag">Демо · не реальные данные</span></div>
+        <div class="research-result-grid">
+          <div class="research-score"><div class="research-ring"><b>—</b></div><b>Надёжность вывода</b><small>Появится после проверки</small></div>
+          <div class="research-source-count"><h3>Сопоставление источников</h3><p><i class="dot green"></i> Совпадает — <b>—</b></p><p><i class="dot amber"></i> Дополняет — <b>—</b></p><p><i class="dot red"></i> Есть противоречия — <b>—</b></p><details><summary>Как будут оцениваться источники</summary><p>Независимость публикаций, первичные данные, квалификация автора, дата и наличие проверяемых доказательств.</p></details></div>
+          <div class="research-conclusion"><h3>Вывод Nova</h3><p>После поиска Nova сформирует краткий ответ, отдельно покажет подтверждённые факты, спорные утверждения и то, чего пока нельзя установить.</p></div>
+        </div>
+        <div class="research-feature-row"><span>♢ Проверка достоверности</span><span>⚖ Сравнение утверждений</span><span>↗ Ссылки на источники</span></div>
+      </div>
+      <div class="research-bottom"><span>✦</span><input id="researchBottomInput" maxlength="300" placeholder="Задайте новый вопрос…" aria-label="Новый вопрос"><button class="btn" id="researchBottomSend" type="button">➤</button></div>
+      <p class="notice research-footer-note">Nova Research Beta — экспериментальный раздел. Обычная Nova продолжает работать отдельно.</p>
+    </section>
+
     <section class="page" id="page-chat">
       <div class="hero">
         <div class="eyebrow">SPORTS CHAT</div>

@@ -45,7 +45,7 @@
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '41';
+  const BUILD = '44';
 
   /* Локальная память v34: резервная копия IndexedDB + переносимый Luma ID.
      Это не облачная синхронизация: каждый браузер имеет собственное хранилище. */
@@ -2514,15 +2514,42 @@
     if(kind==='remind'||/создай напомин|добавь напомин/.test(query)){goTab('reminders');return 'Открыла раздел напоминаний. Введи текст, дату и время — затем сохрани.';}
     return NOVA_FALLBACK;
   }
-  function novaAction(kind){const labels={plan:'План на сегодня',week:'План на неделю',tasks:'Мои задачи',free:'Свободное время',tip:'Совет',remind:'Создать напоминание',status:'Сводка дня',evening:'Собери вечер'};novaSay(labels[kind]||kind,'user');novaSay(novaReply(kind));if(kind==='plan')renderNovaPlan();if(kind==='week')renderNovaWeekPlan();}
+  async function novaAction(kind){const labels={plan:'Проанализируй мой план на сегодня',week:'Помоги составить и проверить план на неделю',tasks:'Посмотри мои задачи и помоги расставить приоритеты',free:'Помоги оценить свободное время',tip:'Дай мне полезный совет на сегодня',remind:'Помоги подготовить новое напоминание и объясни, как его добавить',status:'Сделай сводку моего дня',evening:'Помоги спокойно спланировать остаток вечера'};const q=labels[kind]||String(kind);novaSay(q,'user');if(kind==='plan')renderNovaPlan();if(kind==='week')renderNovaWeekPlan();await novaRequestAI(q);}
+  function novaAIContext(){
+    const n=novaProfileData();
+    const reminders=novaPending().slice(0,8).map(r=>({text:String(r.text||'').slice(0,100),when:Number(r.when)||null}));
+    const plan=buildNovaPlan().slice(0,10).map(r=>({time:String(r.time||'').slice(0,30),title:String(r.title||'').slice(0,100),note:String(r.note||'').slice(0,120)}));
+    return {
+      date:todayStr(),
+      schedule:{mode:n.mode||'study',activity:n.activity||'moderate',sports:String(n.sports||'').slice(0,80),days:String(n.days||'').slice(0,60),trainingTime:String(n.trainingTime||'').slice(0,30),schoolStart:n.schoolStart||'',schoolEnd:n.schoolEnd||'',wake:n.wake||'',sleep:n.sleep||'',focus:String(n.focus||'').slice(0,120)},
+      plan, reminders
+    };
+  }
+  async function novaRequestAI(message){
+    const chat=$('novaChat');
+    const pending=document.createElement('div');pending.className='nova-msg bot';pending.textContent='Нова формирует ответ…';
+    if(chat){chat.appendChild(pending);chat.scrollTop=chat.scrollHeight;}
+    try{
+      if(!window.lumaCloud)throw new Error('Supabase не подключён.');
+      const sessionResult=await window.lumaCloud.auth.getSession();
+      const session=sessionResult?.data?.session;
+      if(!session?.access_token)throw new Error('Для ИИ-чата войдите в аккаунт Luma. Локальные функции остаются доступны.');
+      const history=novaChatHistory().slice(0,-1).slice(-10).map(x=>({role:x.who==='user'?'user':'assistant',content:String(x.text||'').slice(0,1000)}));
+      const share=$('novaShareContext')?.checked===true;
+      const response=await fetch('/api/nova',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({message:String(message||'').slice(0,1200),history,context:share?novaAIContext():null})});
+      let payload={};try{payload=await response.json();}catch{}
+      if(!response.ok)throw new Error(payload.error||('Ошибка сервера Nova: '+response.status));
+      if(!payload.answer)throw new Error('Сервер не вернул ответ.');
+      novaSay(payload.answer);
+      return true;
+    }catch(error){
+      novaSay('Не удалось получить ответ от ИИ. '+(error?.message||'Проверь подключение и настройки API.'));
+      return false;
+    }finally{pending.remove();}
+  }
   const novaPage=$('page-nova'); if(novaPage){
     novaPage.addEventListener('click',e=>{const b=e.target.closest('[data-nova]');if(b)novaAction(b.dataset.nova);});
-    const f=$('novaForm');if(f)f.addEventListener('submit',async e=>{e.preventDefault();const input=$('novaInput'),q=(input.value||'').trim();if(!q)return;novaSay(q,'user');input.value='';const low=q.toLowerCase();
-      if(LOOKUP_MORE.test(low)){ novaSay(lookupMore()); return; }
-      let mode=null,miss=NOVA_FALLBACK;
-      if(NOVA_KNOW.test(low)) mode='wiki';
-      else { const r=novaReply('',low); if(r===NOVA_FOOD_MISS){mode='food';miss=NOVA_FOOD_MISS;} else if(r===NOVA_FALLBACK){mode='wiki';} else { novaSay(r); return; } }
-      const a=await lookupAnswer(q,'novaChat',mode); novaSay(a===LOOKUP_NONE?miss:a);});
+    const f=$('novaForm');if(f)f.addEventListener('submit',async e=>{e.preventDefault();const input=$('novaInput'),q=(input.value||'').trim();if(!q)return;novaSay(q,'user');input.value='';await novaRequestAI(q);});
     const saveBtn=$('novaProfileSave');if(saveBtn)saveBtn.addEventListener('click',saveNovaProfile);
     const planBtn=$('novaBuildPlan');if(planBtn)planBtn.addEventListener('click',()=>{renderNovaPlan();novaSay(novaPlanText());});
     const weekBtn=$('novaBuildWeek');if(weekBtn)weekBtn.addEventListener('click',()=>{renderNovaWeekPlan();novaSay(novaReply('week'));});
@@ -2563,6 +2590,20 @@
 
   /* ===== Что нового ===== */
   const WHATS_NEW = {
+    '44': [
+      'Добавлен экспериментальный раздел Nova Research Beta с новым Liquid Glass интерфейсом',
+      'Подготовлены экраны поиска, сравнения источников и оценки доказательств; подключение реального поиска — следующий этап'
+    ],
+    '43': [
+      'Nova 2.0 подключает настоящую ИИ-модель через защищённый сервер Vercel',
+      'ИИ-чат использует историю диалога; данные Luma передаются только по отдельному разрешению',
+      'Добавлены проверка входа, дневной лимит запросов и фильтрация небезопасного контента'
+    ],
+    '42': [
+      'Новая система объявлений: публикация из админ-панели и просмотр на главной',
+      'Объявления хранятся в Supabase и доступны после входа с разных устройств',
+      'Администраторы и разработчик могут управлять публикациями'
+    ],
     '38': [
       'Настраиваемые блоки на главной: порядок и видимость',
       'Улучшенный журнал веса: тренд, среднее, разница',
@@ -2984,6 +3025,68 @@
   const ADMIN_LIM = { grant: 500, day: 2000, priceMin: 10, priceMax: 5000 };
   const panelCan = r => r === 'creator' ? ROLE.creator : (r === 'admin' ? ROLE.admin : false);
 
+  /* ===== Объявления v42: серверная публикация через защищённый Vercel API ===== */
+  let announcementCache = [];
+  const ANNOUNCEMENT_HIDE_KEY = 'luma-announcements-hidden-v1';
+  async function announcementApi(action, payload = {}, method = 'POST') {
+    if (!window.lumaCloud) throw new Error('Supabase не подключён');
+    const { data: sessionData, error: sessionError } = await window.lumaCloud.auth.getSession();
+    if (sessionError) throw sessionError;
+    const token = sessionData?.session?.access_token;
+    if (!token) throw new Error('Сначала войди в аккаунт');
+    const url = method === 'GET' ? '/api/admin?action=' + encodeURIComponent(action) : '/api/admin';
+    const response = await fetch(url, {
+      method,
+      headers: { 'Authorization': 'Bearer ' + token, ...(method === 'POST' ? {'Content-Type':'application/json'} : {}) },
+      ...(method === 'POST' ? { body: JSON.stringify({ action, ...payload }) } : {})
+    });
+    let result = {};
+    try { result = await response.json(); } catch {}
+    if (!response.ok) throw new Error(result.error || ('Ошибка сервера: ' + response.status));
+    return result;
+  }
+  const annEscape = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  function hiddenAnnouncementIds() {
+    try { const value = JSON.parse(localStorage.getItem(ANNOUNCEMENT_HIDE_KEY) || '[]'); return Array.isArray(value) ? value.map(String) : []; }
+    catch { return []; }
+  }
+  function renderAnnouncementFeed(rows) {
+    const host = $('announcementFeed'); if (!host) return;
+    const hidden = hiddenAnnouncementIds();
+    const visible = (rows || []).filter(row => !hidden.includes(String(row.id)));
+    if (!visible.length) { host.hidden = true; host.innerHTML = ''; return; }
+    host.hidden = false;
+    host.innerHTML = '<div class="section-head"><h2>Объявления</h2><span class="tag">' + visible.length + '</span></div>' + visible.map(row =>
+      '<article class="announcement-item' + (row.important ? ' is-important' : '') + '"><div class="announcement-meta">' + (row.important ? '<span class="tag">ВАЖНО</span>' : '') + '<time>' + annEscape(new Date(row.created_at).toLocaleString('ru-RU', {dateStyle:'short',timeStyle:'short'})) + '</time></div><h3>' + annEscape(row.title) + '</h3><p>' + annEscape(row.body).replace(/\n/g,'<br>') + '</p><button class="btn secondary small" type="button" data-ann-hide="' + annEscape(row.id) + '">Скрыть</button></article>'
+    ).join('');
+  }
+  async function loadPublicAnnouncements() {
+    const host = $('announcementFeed');
+    if (!Auth?.user || !window.lumaCloud) { if (host) host.hidden = true; return; }
+    try {
+      const result = await announcementApi('list_announcements', {}, 'GET');
+      announcementCache = Array.isArray(result.announcements) ? result.announcements : [];
+      renderAnnouncementFeed(announcementCache);
+      renderAnnouncementManager();
+    } catch (error) {
+      console.warn('Announcements unavailable:', error);
+      if (host && !announcementCache.length) host.hidden = true;
+    }
+  }
+  function renderAnnouncementManager() {
+    const list = $('announcementManagerList'); if (!list) return;
+    const manageable = DEV_ON ? announcementCache : announcementCache.filter(row => row.created_by === Auth.user?.id);
+    if (!manageable.length) { list.innerHTML = '<p class="notice">Пока нет твоих опубликованных объявлений.</p>'; return; }
+    list.innerHTML = manageable.map(row => '<div class="announcement-admin-row"><div><b>' + annEscape(row.title) + '</b><small>' + (row.important ? 'Важное · ' : '') + annEscape(new Date(row.created_at).toLocaleString('ru-RU')) + '</small></div><div class="form-actions"><button class="btn secondary small" type="button" data-ad="announcementEdit" data-id="' + annEscape(row.id) + '">Изменить</button><button class="btn danger small" type="button" data-ad="announcementDelete" data-id="' + annEscape(row.id) + '">Удалить</button></div></div>').join('');
+  }
+  document.addEventListener('click', e => {
+    const hide = e.target.closest('[data-ann-hide]'); if (!hide) return;
+    const ids = hiddenAnnouncementIds(); const id = String(hide.dataset.annHide);
+    if (!ids.includes(id)) ids.push(id);
+    localStorage.setItem(ANNOUNCEMENT_HIDE_KEY, JSON.stringify(ids));
+    renderAnnouncementFeed(announcementCache);
+  });
+
   function grantRole(role, tok) {
     data.auth = data.auth || { a: null, c: null };
     data.auth[role === 'admin' ? 'a' : 'c'] = tok;
@@ -3022,6 +3125,15 @@
   function panelHTML(role) {
     const cr = role === 'creator', st = data.stats;
     let h = '<div class="admin-card"><div class="admin-top"><div><div class="eyebrow">' + (cr ? 'CREATOR' : 'ADMIN') + '</div><h2>' + (cr ? 'Панель создателя' : 'Админ-панель') + '</h2></div></div>';
+    h += pSec('Объявления Luma', 'ОБЛАКО',
+      '<p class="notice" style="margin-top:0">Публикации увидят все вошедшие пользователи на главной странице. Изменения сохраняются в Supabase.</p>' +
+      '<input type="hidden" id="announcementId" value="">' +
+      '<div class="fields"><div class="field full"><label for="announcementTitle">Заголовок</label><input id="announcementTitle" maxlength="100" placeholder="Например: Обновление Luma"></div>' +
+      '<div class="field full"><label for="announcementBody">Текст сообщения</label><textarea id="announcementBody" maxlength="3000" rows="4" placeholder="Напиши сообщение для пользователей"></textarea></div></div>' +
+      '<label class="announcement-check"><input type="checkbox" id="announcementImportant"> Важное объявление</label>' +
+      '<div class="form-actions"><button class="btn" type="button" data-ad="announcementPublish">Опубликовать</button><button class="btn secondary" type="button" data-ad="announcementReset">Очистить форму</button><button class="btn secondary" type="button" data-ad="announcementRefresh">Обновить список</button></div>' +
+      '<div id="announcementManagerList" class="announcement-manager-list"><p class="notice">Загружаем объявления…</p></div>' +
+      '<p class="notice" id="announcementStatus" aria-live="polite">Создавать и удалять объявления могут admin и developer.</p>');
     /* Управление серверными ролями: доступно только создателю */
     if (cr) {
       h += pSec('Роли пользователей · Supabase', 'СЕРВЕР',
@@ -3092,6 +3204,7 @@
     }
     try { window.scrollTo(0, top); } catch {}
     try { updateWallet(); } catch {}
+    if (role === 'creator' || role === 'admin') { loadPublicAnnouncements(); }
   }
   const mountCreator = () => mountRolePage(creatorEl, 'creator', DEV_ON);
   const mountAdmin = () => mountRolePage(adminEl, 'admin', ADM_ON);
@@ -3153,7 +3266,7 @@
     toast('Добавлено ' + fmtN(n) + ' ✧');
     return true;
   }
-  function panelClick(e, role) {
+  async function panelClick(e, role) {
     const b = e.target.closest('[data-ad]'); if (!b) return;
     if (!role || !panelCan(role)) { goTab('home'); return; }
     const host = role === 'creator' ? creatorEl : adminEl;
@@ -3161,6 +3274,61 @@
     const cr = role === 'creator', act = b.dataset.ad;
     const only = () => { if (cr) return true; toast('Недоступно для администратора'); return false; };
     switch (act) {
+      case 'announcementRefresh': {
+        b.disabled = true;
+        loadPublicAnnouncements().finally(() => { b.disabled = false; });
+        return;
+      }
+      case 'announcementReset': {
+        const id = host.querySelector('#announcementId'); if (id) id.value = '';
+        const title = host.querySelector('#announcementTitle'); if (title) title.value = '';
+        const body = host.querySelector('#announcementBody'); if (body) body.value = '';
+        const important = host.querySelector('#announcementImportant'); if (important) important.checked = false;
+        const status = host.querySelector('#announcementStatus'); if (status) status.textContent = 'Форма очищена. Можно создать новое объявление.';
+        return;
+      }
+      case 'announcementEdit': {
+        const row = announcementCache.find(item => String(item.id) === String(b.dataset.id));
+        if (!row) { toast('Объявление не найдено. Обнови список.'); return; }
+        host.querySelector('#announcementId').value = row.id;
+        host.querySelector('#announcementTitle').value = row.title || '';
+        host.querySelector('#announcementBody').value = row.body || '';
+        host.querySelector('#announcementImportant').checked = !!row.important;
+        host.querySelector('#announcementTitle').focus();
+        toast('Объявление загружено в форму');
+        return;
+      }
+      case 'announcementPublish': {
+        const title = (host.querySelector('#announcementTitle')?.value || '').trim();
+        const body = (host.querySelector('#announcementBody')?.value || '').trim();
+        const id = host.querySelector('#announcementId')?.value || '';
+        const important = !!host.querySelector('#announcementImportant')?.checked;
+        if (!title || !body) { toast('Заполни заголовок и текст'); return; }
+        b.disabled = true;
+        try {
+          await announcementApi(id ? 'update_announcement' : 'create_announcement', { ...(id ? {id:Number(id)} : {}), title, body, important });
+          const status = host.querySelector('#announcementStatus');
+          if (status) status.textContent = id ? 'Изменения сохранены.' : 'Объявление опубликовано.';
+          host.querySelector('[data-ad="announcementReset"]')?.click();
+          await loadPublicAnnouncements();
+          toast(id ? 'Объявление обновлено' : 'Объявление опубликовано');
+        } catch (error) {
+          console.error('Announcement publish failed', error);
+          toast(error.message || 'Не удалось опубликовать объявление');
+        } finally { b.disabled = false; }
+        return;
+      }
+      case 'announcementDelete': {
+        if (!confirm('Удалить это объявление у всех пользователей?')) return;
+        b.disabled = true;
+        try {
+          await announcementApi('delete_announcement', { id:Number(b.dataset.id) });
+          await loadPublicAnnouncements();
+          toast('Объявление удалено');
+        } catch (error) { console.error(error); toast(error.message || 'Не удалось удалить объявление'); }
+        finally { b.disabled = false; }
+        return;
+      }
       case 'loadRoles': {
         if (!cr || !ROLE.creator || !Auth.user) { toast('Недостаточно прав'); return; }
         b.disabled = true;
@@ -4755,6 +4923,7 @@ const Auth = {
       await LumaCloudSync.start();
     }
     this.updateUI();
+    loadPublicAnnouncements();
 
     lumaCloud.auth.onAuthStateChange(async (event, session) => {
       this.user = session?.user || null;
@@ -4768,6 +4937,7 @@ const Auth = {
         this.isAdmin = false;
       }
       this.updateUI();
+      loadPublicAnnouncements();
     });
 
     // Кнопки
@@ -5046,6 +5216,18 @@ const LumaCloudSync = (() => {
   return { start, stop, schedule, syncNow };
 })();
 window.LumaCloudSync = LumaCloudSync;
+
+// Nova Research Beta — пока только интерфейсный прототип, без реального веб-поиска.
+(function initNovaResearchBeta(){
+  const form=document.getElementById('researchForm');
+  const input=document.getElementById('researchQuery');
+  const bottom=document.getElementById('researchBottomInput');
+  const notifyResearch=()=>{ if(typeof toast==='function') toast('Nova Research Beta: интерфейс готов. Подключение поиска будет следующим этапом.'); };
+  document.querySelectorAll('[data-research-query]').forEach(btn=>btn.addEventListener('click',()=>{ if(input){input.value=btn.dataset.researchQuery||'';input.focus();} }));
+  if(form) form.addEventListener('submit',e=>{e.preventDefault();if(!input||!input.value.trim())return;notifyResearch();});
+  const send=document.getElementById('researchBottomSend');
+  if(send) send.addEventListener('click',()=>{if(input&&bottom&&bottom.value.trim()){input.value=bottom.value.trim();bottom.value='';notifyResearch();}});
+})();
 
 // Запускаем после загрузки
 document.addEventListener('DOMContentLoaded', () => {

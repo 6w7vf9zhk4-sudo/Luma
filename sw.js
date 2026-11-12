@@ -1,5 +1,5 @@
-/* Luma service worker v38 — offline-first, resilient cache */
-const CACHE = 'luma-v45-cloud';
+/* Luma service worker v44 — Nova Research Beta */
+const CACHE = 'luma-v48-nova-research-beta';
 const ASSETS = [
   './',
   './index.html',
