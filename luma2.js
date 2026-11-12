@@ -16,8 +16,11 @@
     catch { return fallback; }
   };
   const write = (key, value) => {
-    try { localStorage.setItem(key, JSON.stringify(value)); return true; }
-    catch { notify('Не удалось сохранить данные. Проверь свободное место браузера.'); return false; }
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      window.LumaCloudSync?.schedule('extra');
+      return true;
+    } catch { notify('Не удалось сохранить данные. Проверь свободное место браузера.'); return false; }
   };
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const notify = (msg) => {

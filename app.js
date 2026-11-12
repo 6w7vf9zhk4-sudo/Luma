@@ -45,7 +45,7 @@
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '38';
+  const BUILD = '41';
 
   /* Локальная память v34: резервная копия IndexedDB + переносимый Luma ID.
      Это не облачная синхронизация: каждый браузер имеет собственное хранилище. */
@@ -334,8 +334,11 @@
     return d;
   }
   function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(data)); scheduleDeviceSnapshot(); }
-    catch { toast('Не удалось сохранить'); }
+    try {
+      localStorage.setItem(KEY, JSON.stringify(data));
+      scheduleDeviceSnapshot();
+      if (!window.__lumaCloudApplying) window.LumaCloudSync?.schedule('core');
+    } catch { toast('Не удалось сохранить'); }
   }
 
   function toast(msg) {
@@ -4749,13 +4752,17 @@ const Auth = {
     if (session?.user) {
       this.user = session.user;
       await this.loadProfile();
+      await LumaCloudSync.start();
     }
     this.updateUI();
 
     lumaCloud.auth.onAuthStateChange(async (event, session) => {
       this.user = session?.user || null;
-      if (this.user) await this.loadProfile();
-      else {
+      if (this.user) {
+        await this.loadProfile();
+        await LumaCloudSync.start();
+      } else {
+        LumaCloudSync.stop();
         this.profile = null;
         this.isDeveloper = false;
         this.isAdmin = false;
@@ -4877,6 +4884,7 @@ const Auth = {
 
   async logout() {
     await lumaCloud.auth.signOut();
+    LumaCloudSync.stop();
     this.user = null;
     this.profile = null;
     this.isDeveloper = false;
@@ -4884,6 +4892,160 @@ const Auth = {
     this.updateUI();
   }
 };
+
+
+/* ===== Luma Cloud 2.0 =====
+   Локальное хранилище остаётся основным кэшем.
+   В облако отправляются только данные Luma, а не произвольные ключи браузера.
+*/
+const LumaCloudSync = (() => {
+  const TABLE = 'luma_data';
+  const LOCAL_UPDATED_KEY = 'luma-cloud-local-updated-v1';
+  const EXTRA_KEYS = ['luma2-calendar-v1', 'luma2-focus-v1', 'luma2-pet-room-v1'];
+  let timer = null, busy = false, pending = false, startedFor = null, applying = false;
+
+  const status = (message, state = '') => {
+    const el = document.getElementById('lumaCloudStatus');
+    if (el) { el.textContent = 'Облако: ' + message; el.dataset.state = state; }
+  };
+  const userId = () => Auth?.user?.id || null;
+  const localStamp = () => Number(localStorage.getItem(LOCAL_UPDATED_KEY) || 0) || 0;
+  const setLocalStamp = (n = Date.now()) => {
+    try { localStorage.setItem(LOCAL_UPDATED_KEY, String(n)); } catch {}
+  };
+  const readExtras = () => {
+    const result = {};
+    EXTRA_KEYS.forEach(key => {
+      try { const raw = localStorage.getItem(key); if (raw !== null) result[key] = JSON.parse(raw); } catch {}
+    });
+    return result;
+  };
+  const writeExtras = extras => {
+    if (!extras || typeof extras !== 'object') return;
+    EXTRA_KEYS.forEach(key => {
+      if (Object.prototype.hasOwnProperty.call(extras, key)) {
+        try { localStorage.setItem(key, JSON.stringify(extras[key])); } catch {}
+      }
+    });
+  };
+  const schedule = () => {
+    if (applying || !userId()) return;
+    setLocalStamp();
+    pending = true;
+    clearTimeout(timer);
+    timer = setTimeout(() => push().catch(err => {
+      console.warn('Luma Cloud autosync:', err);
+      status('ошибка сохранения · ' + (err.message || 'проверьте настройки'), 'error');
+    }), 1300);
+  };
+  async function push() {
+    const id = userId();
+    if (!id || !window.lumaCloud) return false;
+    if (busy) { pending = true; return false; }
+    busy = true; pending = false;
+    status('сохранение…', 'busy');
+    try {
+      const stamp = Date.now();
+      const payload = {
+        schemaVersion: 1,
+        localUpdatedAt: stamp,
+        core: data,
+        extras: readExtras()
+      };
+      const { error } = await window.lumaCloud.from(TABLE).upsert({
+        user_id: id,
+        data: payload,
+        updated_at: new Date(stamp).toISOString()
+      }, { onConflict: 'user_id' });
+      if (error) throw error;
+      setLocalStamp(stamp);
+      status('синхронизировано · ' + new Date().toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'}), 'ok');
+      return true;
+    } finally {
+      busy = false;
+      if (pending) {
+        clearTimeout(timer);
+        timer = setTimeout(() => push().catch(err => status('ошибка синхронизации · ' + (err.message || ''), 'error')), 500);
+      }
+    }
+  }
+  async function pullOrMerge() {
+    const id = userId();
+    if (!id || !window.lumaCloud) return false;
+    status('проверка данных…', 'busy');
+    const { data: row, error } = await window.lumaCloud.from(TABLE)
+      .select('data, updated_at').eq('user_id', id).maybeSingle();
+    if (error) throw error;
+
+    if (!row || !row.data || typeof row.data !== 'object') {
+      // Первая синхронизация: сохраняем существующие данные с устройства.
+      setLocalStamp();
+      return await push();
+    }
+    const cloud = row.data;
+    const cloudStamp = Number(cloud.localUpdatedAt || Date.parse(row.updated_at) || 0);
+    const deviceStamp = localStamp();
+
+    // Более новые локальные изменения не затираются более старой облачной копией.
+    if (deviceStamp > cloudStamp && deviceStamp > 0) return await push();
+    // Если версии совпадают, ничего не перезаписываем и не перезагружаем страницу.
+    if (deviceStamp > 0 && deviceStamp === cloudStamp) {
+      status('актуально · синхронизировано');
+      return true;
+    }
+    if (!cloud.core || typeof cloud.core !== 'object') {
+      status('неизвестный формат облачных данных', 'error');
+      return false;
+    }
+
+    applying = true;
+    window.__lumaCloudApplying = true;
+    try {
+      data = normalizeData(cloud.core);
+      localStorage.setItem(KEY, JSON.stringify(data));
+      writeExtras(cloud.extras);
+      setLocalStamp(cloudStamp || Date.now());
+    } finally {
+      applying = false;
+      window.__lumaCloudApplying = false;
+    }
+    status('данные восстановлены · обновляю страницу…', 'ok');
+    setTimeout(() => location.reload(), 350);
+    return true;
+  }
+  async function start() {
+    const id = userId();
+    if (!id || !window.lumaCloud) { status('войдите в аккаунт для синхронизации'); return false; }
+    if (startedFor === id) return true;
+    startedFor = id;
+    try { return await pullOrMerge(); }
+    catch (err) {
+      startedFor = null;
+      console.warn('Luma Cloud init:', err);
+      const msg = /luma_data/i.test(String(err.message || err))
+        ? 'таблица luma_data не настроена в Supabase'
+        : (err.message || 'ошибка подключения');
+      status(msg, 'error');
+      return false;
+    }
+  }
+  async function syncNow() {
+    if (!userId()) { status('сначала войдите в аккаунт', 'error'); return false; }
+    try { return await push(); }
+    catch (err) {
+      console.warn('Luma Cloud manual sync:', err);
+      status('ошибка · ' + (err.message || 'проверьте таблицу'), 'error');
+      return false;
+    }
+  }
+  function stop() {
+    clearTimeout(timer); timer = null; startedFor = null; pending = false;
+    status('локальные данные сохранены на устройстве');
+  }
+  document.getElementById('cloudSyncNow')?.addEventListener('click', syncNow);
+  return { start, stop, schedule, syncNow };
+})();
+window.LumaCloudSync = LumaCloudSync;
 
 // Запускаем после загрузки
 document.addEventListener('DOMContentLoaded', () => {

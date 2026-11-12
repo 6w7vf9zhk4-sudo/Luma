@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Luma 2.0",
   "short_name": "Luma",
-  "description": "Luma 2.0: календарь, фокус, статистика, питомец и локальный помощник",
+  "description": "Luma 2.0: календарь, фокус, статистика, питомец и облачная синхронизация",
   "lang": "ru",
   "start_url": "./index.html",
   "scope": "./",
@@ -30,5 +30,5 @@
       "purpose": "maskable"
     }
   ],
-  "version": "40.0"
+  "version": "41.0"
 }

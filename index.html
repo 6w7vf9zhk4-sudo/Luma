@@ -29,7 +29,7 @@
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v40</span>
+      <span class="pill" id="topPill">v41</span>
     </header>
 
     <!-- AUTH (вверху страницы, всегда видна) -->
@@ -59,8 +59,10 @@
 
       <div id="authLoggedIn" style="display:none">
         <p class="muted" id="authUserEmail" style="margin-bottom:6px"></p>
-        <p class="notice" id="authRoleInfo" style="margin:0 0 10px"></p>
+        <p class="notice" id="authRoleInfo" style="margin:0 0 8px"></p>
+        <p class="notice" id="lumaCloudStatus" style="margin:0 0 8px">Облако: ожидание входа</p>
         <div class="form-actions" style="margin-top:0">
+          <button class="btn secondary small" type="button" id="cloudSyncNow">Синхронизировать</button>
           <button class="btn secondary small" type="button" id="authLogoutBtn">Выйти</button>
         </div>
       </div>
