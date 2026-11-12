@@ -202,11 +202,34 @@ module.exports = async function handler(req, res) {
       return send(res, 200, { announcement: data });
     }
 
+    if (action === 'update_announcement') {
+      const id = Number(input.id);
+      const title = String(input.title || '').trim().slice(0, 100);
+      const body = String(input.body || '').trim().slice(0, 3000);
+      if (!Number.isSafeInteger(id) || id <= 0 || !title || !body) {
+        return send(res, 400, { error: 'Valid id, title and body are required' });
+      }
+      let updateQuery = db.from('luma_announcements')
+        .update({ title, body, important: input.important === true })
+        .eq('id', id);
+      if (actorRole !== 'developer') updateQuery = updateQuery.eq('created_by', actor.id);
+      const { data, error } = await updateQuery
+        .select('id, title, body, important, active, created_at, created_by')
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return send(res, 404, { error: 'Announcement not found' });
+      await audit(db, actor.id, 'update_announcement', null, { announcement_id: id, title });
+      return send(res, 200, { announcement: data });
+    }
+
     if (action === 'delete_announcement') {
       const id = Number(input.id);
       if (!Number.isSafeInteger(id) || id <= 0) return send(res, 400, { error: 'Invalid announcement id' });
-      const { error } = await db.from('luma_announcements').delete().eq('id', id);
+      let deleteQuery = db.from('luma_announcements').delete().eq('id', id);
+      if (actorRole !== 'developer') deleteQuery = deleteQuery.eq('created_by', actor.id);
+      const { data: deleted, error } = await deleteQuery.select('id').maybeSingle();
       if (error) throw error;
+      if (!deleted) return send(res, 404, { error: 'Announcement not found or not owned by this admin' });
       await audit(db, actor.id, 'delete_announcement', null, { announcement_id: id });
       return send(res, 200, { ok: true });
     }
