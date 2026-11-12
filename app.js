@@ -434,6 +434,7 @@
   function goTab(name) {
     if (!name) return;
     name = String(name);
+    if (name === 'creator' && !DEV_ON) name = 'home';
     document.querySelectorAll('.nav-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.tab === name);
       if (b.dataset.tab === name) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
@@ -454,6 +455,7 @@
       if (name === 'games') { exitGame(); }
       if (name === 'settings') { updateNotifUI(); renderBackupInfo(); }
       if (name === 'shop') renderShop();
+      if (name === 'creator') mountCreator();
       if (name === 'nova') { /* Nova uses current local data */ }
     } catch (e) { console.error(e); }
     try { window.scrollTo(0, 0); } catch {}
@@ -2971,6 +2973,7 @@
 
   /* ----- Панели: админ (урезанная, с лимитами) и создатель (полная). Разметка строится только после входа ----- */
   const adminEl = $('adminPanel');
+  const creatorEl = $('page-creator');
   const ADMIN_LIM = { grant: 500, day: 2000, priceMin: 10, priceMax: 5000 };
   const LOCK_KEY = 'luma-lk';
   const lockLeft = () => { try { const o = JSON.parse(localStorage.getItem(LOCK_KEY) || '{}'); return Math.max(0, (o.until || 0) - Date.now()); } catch { return 0; } };
@@ -3043,7 +3046,7 @@
 
   function panelHTML(role) {
     const cr = role === 'creator', st = data.stats;
-    let h = '<div class="admin-card"><div class="admin-top"><div><div class="eyebrow">' + (cr ? 'CREATOR' : 'ADMIN') + '</div><h2>' + (cr ? 'Панель создателя' : 'Админ-панель') + '</h2></div><button class="btn secondary small" type="button" data-ad="close">Выйти</button></div>';
+    let h = '<div class="admin-card"><div class="admin-top"><div><div class="eyebrow">' + (cr ? 'CREATOR' : 'ADMIN') + '</div><h2>' + (cr ? 'Панель создателя' : 'Админ-панель') + '</h2></div>' + (cr ? '' : '<button class="btn secondary small" type="button" data-ad="close">Выйти</button>') + '</div>';
     /* монеты */
     if (cr) {
       h += pSec('Монеты', '<span id="adBal">' + fmtN(data.coins.bal) + ' ✧</span>',
@@ -3083,23 +3086,37 @@
     /* нормы */
     h += pSec('Нормы по возрасту', 'НОРМА', '<p class="notice" style="margin-top:0">Реакция и память — «не больше», остальное — «не меньше». Прогулка: пусто = авто.</p><div id="adNorms">' + normsHTML() + '</div><div class="form-actions"><button class="btn" type="button" data-ad="norms">Сохранить нормы</button><button class="btn secondary" type="button" data-ad="resetnorms">Стандартные</button></div>');
     /* доступ */
-    h += pSec('Доступ', '', '<p class="notice" style="margin-top:0">Роль хранится на этом устройстве и переезжает вместе с бэкапом. Пароль нигде не сохраняется.</p><div class="form-actions"><button class="btn danger" type="button" data-ad="revoke">Отозвать доступ на этом устройстве</button></div>');
+    h += cr
+      ? pSec('Доступ', '', '<p class="notice" style="margin-top:0">Роль выдаётся аккаунтом (role = developer в Supabase) и пропадает при выходе из аккаунта. Эта вкладка видна только тебе.</p>')
+      : pSec('Доступ', '', '<p class="notice" style="margin-top:0">Роль хранится на этом устройстве и переезжает вместе с бэкапом. Пароль нигде не сохраняется.</p><div class="form-actions"><button class="btn danger" type="button" data-ad="revoke">Отозвать доступ на этом устройстве</button></div>');
     h += pSec('Эксклюзивный питомец', cr ? '🐉 ДРАКОН' : '🔥 ФЕНИКС',
       '<div class="pet-preview"><div class="pet-emoji">'+(cr ? '🐉' : '🔥')+'</div><div class="pet-info"><b>'+(cr ? 'Дракон Создателя' : 'Феникс Администратора')+'</b><small>Особый питомец, доступный только этой роли. Его можно выбрать в магазине → Питомцы.</small></div></div>');
     return h + '</div>';
   }
 
   let panelRole = null;
-  function mountPanel() {
+  function mountAdminPanel() {
     const top = adminEl.scrollTop;
     adminEl.innerHTML = panelHTML(panelRole);
     adminEl.scrollTop = top;
     updateWallet();
   }
+  /* вкладка «Создатель»: обычная страница, не оверлей */
+  function mountCreator() {
+    if (!creatorEl) return;
+    if (!DEV_ON) { creatorEl.innerHTML = ''; return; }
+    const top = window.scrollY;
+    creatorEl.innerHTML = panelHTML('creator');
+    try { window.scrollTo(0, top); } catch {}
+    updateWallet();
+  }
+  function syncCreatorTab() {
+    const nb = $('navCreator'); if (nb) nb.style.display = DEV_ON ? '' : 'none';
+  }
   function openPanel(role) {
     if (!panelCan(role)) return;
     closeSheets(true);
-    panelRole = role; mountPanel();
+    panelRole = role; mountAdminPanel();
     adminEl.classList.add('show'); adminEl.setAttribute('aria-hidden', 'false'); adminEl.scrollTop = 0;
     document.body.classList.add('noscroll');
   }
@@ -3112,12 +3129,16 @@
   /* роль разработчика по аккаунту Supabase */
   function setDeveloperRole(on) {
     on = !!on;
-    if (on === DEV_ON) return;
+    if (on === DEV_ON) { syncCreatorTab(); return; }
     DEV_ON = on;
     if (on) grantRole('creator', null);
-    else { if (panelRole === 'creator') closePanel(); revokeRole('creator'); }
+    else {
+      revokeRole('creator');
+      if (creatorEl) creatorEl.innerHTML = '';
+      if (creatorEl && creatorEl.classList.contains('active')) goTab('home');
+    }
+    syncCreatorTab();
   }
-  function openDeveloperPanel() { if (DEV_ON) openPanel('creator'); }
   const pInt = id => { const el = $(id); return el ? Math.round(+el.value) : NaN; };
   const pOpt = id => { const v = $(id).value.trim(); if (v === '') return null; const n = Math.round(+v); return Number.isFinite(n) && n >= 0 ? n : NaN; };
   function giveCoins(n, cr) {
@@ -3136,10 +3157,11 @@
     toast('Добавлено ' + fmtN(n) + ' ✧');
     return true;
   }
-  adminEl.addEventListener('click', e => {
+  function panelClick(e, role) {
     const b = e.target.closest('[data-ad]'); if (!b) return;
-    const role = panelRole;
-    if (!role || !panelCan(role)) { closePanel(); return; }
+    if (!role || !panelCan(role)) { if (role === 'creator') goTab('home'); else closePanel(); return; }
+    const host = role === 'creator' ? creatorEl : adminEl;
+    const mountPanel = () => role === 'creator' ? mountCreator() : mountAdminPanel();
     const cr = role === 'creator', act = b.dataset.ad;
     const only = () => { if (cr) return true; toast('Недоступно для администратора'); return false; };
     switch (act) {
@@ -3185,7 +3207,7 @@
       }
       case 'prices': {
         const out = {}; let bad = false;
-        adminEl.querySelectorAll('[data-pid]').forEach(i => {
+        host.querySelectorAll('[data-pid]').forEach(i => {
           const n = Math.round(+i.value), it = PRICE_ITEMS().find(x => x.id === i.dataset.pid);
           if (i.value.trim() === '' || !(n >= 0) || n > 1000000 || (!cr && (n < ADMIN_LIM.priceMin || n > ADMIN_LIM.priceMax))) { bad = true; return; }
           if (it && n !== it.price) out[it.id] = n;
@@ -3214,7 +3236,7 @@
       case 'resetrec': { if (!only()) return; if (!confirm('Сбросить все рекорды и статистику игр?')) return; data.stats = defaultStats(); save(); mountPanel(); toast('Рекорды сброшены'); return; }
       case 'norms': {
         const out = {}; let bad = false;
-        adminEl.querySelectorAll('#adNorms input').forEach(i => {
+        host.querySelectorAll('#adNorms input').forEach(i => {
           const g = i.dataset.g, k = i.dataset.k, raw = i.value.trim();
           (out[g] = out[g] || {});
           if (raw === '') { if (k === 'walk') out[g][k] = null; else bad = true; return; }
@@ -3231,7 +3253,9 @@
         revokeRole(role); closePanel(); toast('Доступ отозван'); return;
       }
     }
-  });
+  }
+  adminEl.addEventListener('click', e => panelClick(e, panelRole));
+  if (creatorEl) creatorEl.addEventListener('click', e => panelClick(e, 'creator'));
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && adminEl.classList.contains('show')) closePanel(); });
   /* скрытый вход: админ — 5 нажатий по подписи в «Ещё» */
   (function () {
@@ -3241,7 +3265,7 @@
       if (taps >= 5) { taps = 0; askPassword('admin'); }
     });
   })();
-  /* вход создателя по паролю убран: панель разработчика открывается только для аккаунтов с ролью developer */
+  /* вкладка «Создатель» появляется только у аккаунтов с ролью developer */
 
   /* ----- Games ----- */
   function startGame(name) {
@@ -4721,7 +4745,6 @@ const Auth = {
     $('authLoginBtn')?.addEventListener('click', () => this.login());
     $('authRegisterBtn')?.addEventListener('click', () => this.register());
     $('authLogoutBtn')?.addEventListener('click', () => this.logout());
-    $('devPanelBtn')?.addEventListener('click', () => openDeveloperPanel());
   },
 
   async loadProfile() {
@@ -4749,10 +4772,8 @@ const Auth = {
     const emailEl = $('authUserEmail');
     const roleEl = $('authRoleInfo');
     const msg = $('authMessage');
-    const devBtn = $('devPanelBtn');
 
     setDeveloperRole(!!(this.user && this.isDeveloper));
-    if (devBtn) devBtn.style.display = (this.user && this.isDeveloper) ? '' : 'none';
 
     if (this.user) {
       if (loggedOut) loggedOut.style.display = 'none';
@@ -4761,7 +4782,7 @@ const Auth = {
       if (emailEl) emailEl.textContent = this.user.email;
       if (roleEl) {
         roleEl.textContent = this.isDeveloper
-          ? 'Роль: Разработчик'
+          ? 'Роль: Разработчик · вкладка «Создатель» внизу'
           : 'Роль: Пользователь';
       }
       if (msg) msg.textContent = '';

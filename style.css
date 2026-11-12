@@ -1974,3 +1974,9 @@ html[data-ui="beta"] .footer {color:#766c84!important}
 @keyframes l2PetFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @media(max-width:380px){.luma2-shortcut-grid{gap:7px}.luma2-shortcut{padding:11px}.l2-day{min-height:37px}.l2-form-row{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.l2-room-pet{animation:none}.luma2-shortcut{transition:none}}
+
+/* ===== Вкладка «Создатель» ===== */
+#page-creator .admin-card { max-width: none; padding: 0 0 8px; }
+#page-creator.active > * { animation: none; }
+.bottom-nav .nav-inner { grid-auto-flow: column; grid-auto-columns: 1fr; grid-template-columns: none; }
+.bottom-nav .nav-btn { min-width: 0; }
