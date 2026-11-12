@@ -4688,5 +4688,132 @@
   window.addEventListener('pagehide', onLeaveBackground);
   window.addEventListener('pageshow', onBackForeground);
   document.addEventListener('resume', onBackForeground); // some webviews
+  /* ===== Auth + Developer role ===== */
+const Auth = {
+  user: null,
+  profile: null,
+  isDeveloper: false,
+
+  async init() {
+    const { data: { session } } = await lumaCloud.auth.getSession();
+    if (session?.user) {
+      this.user = session.user;
+      await this.loadProfile();
+    }
+    this.updateUI();
+
+    lumaCloud.auth.onAuthStateChange(async (event, session) => {
+      this.user = session?.user || null;
+      if (this.user) await this.loadProfile();
+      else {
+        this.profile = null;
+        this.isDeveloper = false;
+      }
+      this.updateUI();
+    });
+
+    // Кнопки
+    $('authLoginBtn')?.addEventListener('click', () => this.login());
+    $('authRegisterBtn')?.addEventListener('click', () => this.register());
+    $('authLogoutBtn')?.addEventListener('click', () => this.logout());
+  },
+
+  async loadProfile() {
+    if (!this.user) return;
+    const { data, error } = await lumaCloud
+      .from('profiles')
+      .select('*')
+      .eq('id', this.user.id)
+      .single();
+
+    if (error) {
+      console.warn('Profile load error', error);
+      this.profile = null;
+      this.isDeveloper = false;
+      return;
+    }
+    this.profile = data;
+    this.isDeveloper = data?.role === 'developer';
+  },
+
+  updateUI() {
+    const loggedOut = $('authLoggedOut');
+    const loggedIn = $('authLoggedIn');
+    const tag = $('authStatusTag');
+    const emailEl = $('authUserEmail');
+    const roleEl = $('authRoleInfo');
+    const msg = $('authMessage');
+
+    if (this.user) {
+      if (loggedOut) loggedOut.style.display = 'none';
+      if (loggedIn) loggedIn.style.display = 'block';
+      if (tag) tag.textContent = 'Вошёл';
+      if (emailEl) emailEl.textContent = this.user.email;
+      if (roleEl) {
+        roleEl.textContent = this.isDeveloper
+          ? 'Роль: Разработчик'
+          : 'Роль: Пользователь';
+      }
+      if (msg) msg.textContent = '';
+    } else {
+      if (loggedOut) loggedOut.style.display = 'block';
+      if (loggedIn) loggedIn.style.display = 'none';
+      if (tag) tag.textContent = 'Не вошёл';
+    }
+  },
+
+  async login() {
+    const email = $('authEmail')?.value.trim();
+    const password = $('authPassword')?.value;
+    const msg = $('authMessage');
+
+    if (!email || !password) {
+      if (msg) msg.textContent = 'Введите email и пароль';
+      return;
+    }
+
+    const { error } = await lumaCloud.auth.signInWithPassword({ email, password });
+    if (error) {
+      if (msg) msg.textContent = error.message;
+      return;
+    }
+    if (msg) msg.textContent = 'Успешный вход';
+  },
+
+  async register() {
+    const email = $('authEmail')?.value.trim();
+    const password = $('authPassword')?.value;
+    const msg = $('authMessage');
+
+    if (!email || !password) {
+      if (msg) msg.textContent = 'Введите email и пароль';
+      return;
+    }
+    if (password.length < 6) {
+      if (msg) msg.textContent = 'Пароль должен быть не меньше 6 символов';
+      return;
+    }
+
+    const { error } = await lumaCloud.auth.signUp({ email, password });
+    if (error) {
+      if (msg) msg.textContent = error.message;
+      return;
+    }
+    if (msg) msg.textContent = 'Аккаунт создан. Теперь можно войти.';
+  },
+
+  async logout() {
+    await lumaCloud.auth.signOut();
+    this.user = null;
+    this.profile = null;
+    this.isDeveloper = false;
+    this.updateUI();
+  }
+};
+
+// Запускаем после загрузки
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.lumaCloud) Auth.init();
+}); 
 })();
   
