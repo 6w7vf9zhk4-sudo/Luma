@@ -960,7 +960,16 @@
   <div class="toast" id="toast"></div>
 
 
-  <script src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  window.lumaCloud = window.supabase.createClient(
+    "https://onraegpedsvqufnyptvw.supabase.co/rest/v1/",
+    "sb_publishable_9VoMytJ1YEaVaNrErFKDpw_GEUCvt1N"
+  );
+</script>
+
+<script src="app.js"></script>
 <script src="luma2.js"></script>
 </body>
 </html>
