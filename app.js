@@ -157,7 +157,8 @@
   const authCheck = (role, tok) => typeof tok === 'string' && tok.length === 64 && sha256('v|' + tok + '|' + role) === AUTH_VERIFY[role];
   const AUTH_VERIFY = { admin: '4a4100653fc1cc6aee0ccbd57a294abb7414f3a9ffc27d306faf26ccf523615b', creator: '92311f78b41023fc19e1ac1489673564d44d2b823928879bc5a42c797df1b004' };
   let ROLE = { admin: false, creator: false };
-  const rolesOf = d => ({ admin: !!(d && d.auth && authCheck('admin', d.auth.a)), creator: !!(d && d.auth && authCheck('creator', d.auth.c)) });
+  let DEV_ON = false; /* роль «Разработчик» выдаётся только после входа по почте с role = developer в Supabase */
+  const rolesOf = d => ({ admin: !!(d && d.auth && authCheck('admin', d.auth.a)), creator: DEV_ON });
   const SPECIAL_IDS = ['th_creator', 'av_creator', 'fr_creator', 'bd_creator', 'sn_aurora', 'bd_admin'];
   /* роль нельзя получить правкой хранилища или импортом: нужен токен, выводимый из пароля */
   function enforceRoles(d) {
@@ -3108,6 +3109,15 @@
     document.body.classList.remove('noscroll');
     try { renderHome(); renderWalk(); } catch {}
   }
+  /* роль разработчика по аккаунту Supabase */
+  function setDeveloperRole(on) {
+    on = !!on;
+    if (on === DEV_ON) return;
+    DEV_ON = on;
+    if (on) grantRole('creator', null);
+    else { if (panelRole === 'creator') closePanel(); revokeRole('creator'); }
+  }
+  function openDeveloperPanel() { if (DEV_ON) openPanel('creator'); }
   const pInt = id => { const el = $(id); return el ? Math.round(+el.value) : NaN; };
   const pOpt = id => { const v = $(id).value.trim(); if (v === '') return null; const n = Math.round(+v); return Number.isFinite(n) && n >= 0 ? n : NaN; };
   function giveCoins(n, cr) {
@@ -3223,7 +3233,7 @@
     }
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && adminEl.classList.contains('show')) closePanel(); });
-  /* скрытые входы: админ — 5 нажатий по подписи в «Ещё»; создатель — 9 быстрых нажатий по логотипу */
+  /* скрытый вход: админ — 5 нажатий по подписи в «Ещё» */
   (function () {
     let taps = 0, tm = null;
     $('appFooter').addEventListener('click', () => {
@@ -3231,14 +3241,7 @@
       if (taps >= 5) { taps = 0; askPassword('admin'); }
     });
   })();
-  (function () {
-    const logo = document.querySelector('.logo'); if (!logo) return;
-    let taps = 0, tm = null;
-    logo.addEventListener('click', () => {
-      taps++; clearTimeout(tm); tm = setTimeout(() => { taps = 0; }, 1100);
-      if (taps >= 9) { taps = 0; askPassword('creator'); }
-    });
-  })();
+  /* вход создателя по паролю убран: панель разработчика открывается только для аккаунтов с ролью developer */
 
   /* ----- Games ----- */
   function startGame(name) {
@@ -4718,6 +4721,7 @@ const Auth = {
     $('authLoginBtn')?.addEventListener('click', () => this.login());
     $('authRegisterBtn')?.addEventListener('click', () => this.register());
     $('authLogoutBtn')?.addEventListener('click', () => this.logout());
+    $('devPanelBtn')?.addEventListener('click', () => openDeveloperPanel());
   },
 
   async loadProfile() {
@@ -4745,6 +4749,10 @@ const Auth = {
     const emailEl = $('authUserEmail');
     const roleEl = $('authRoleInfo');
     const msg = $('authMessage');
+    const devBtn = $('devPanelBtn');
+
+    setDeveloperRole(!!(this.user && this.isDeveloper));
+    if (devBtn) devBtn.style.display = (this.user && this.isDeveloper) ? '' : 'none';
 
     if (this.user) {
       if (loggedOut) loggedOut.style.display = 'none';

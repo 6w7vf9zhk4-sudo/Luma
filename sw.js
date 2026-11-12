@@ -1,5 +1,5 @@
 /* Luma service worker v38 — offline-first, resilient cache */
-const CACHE = 'luma-v40-luma2';
+const CACHE = 'luma-v42-dev';
 const ASSETS = [
   './',
   './index.html',
