@@ -26,16 +26,6 @@
     <button class="btn" type="button" id="welcomeClose">Продолжить</button>
   </div>
 </div>
-<script>
-/* приветствие закрывается независимо от app.js: даже если основной скрипт не загрузился, экран не зависнет */
-(function () {
-  var o = document.getElementById('welcomeOverlay'); if (!o) return;
-  function c() { o.classList.add('hide'); setTimeout(function () { if (o.parentNode) o.parentNode.removeChild(o); }, 380); }
-  var b = document.getElementById('welcomeClose'); if (b) b.addEventListener('click', c);
-  o.addEventListener('click', function (e) { if (e.target === o) c(); });
-  setTimeout(c, 3500);
-})();
-</script>
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>

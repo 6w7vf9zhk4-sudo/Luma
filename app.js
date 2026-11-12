@@ -3019,6 +3019,17 @@
   function panelHTML(role) {
     const cr = role === 'creator', st = data.stats;
     let h = '<div class="admin-card"><div class="admin-top"><div><div class="eyebrow">' + (cr ? 'CREATOR' : 'ADMIN') + '</div><h2>' + (cr ? 'Панель создателя' : 'Админ-панель') + '</h2></div></div>';
+    /* Управление серверными ролями: доступно только создателю */
+    if (cr) {
+      h += pSec('Роли пользователей · Supabase', 'СЕРВЕР',
+        '<p class="notice" style="margin-top:0">Введи email зарегистрированного пользователя. Роль admin выдаётся или снимается на сервере Supabase.</p>' +
+        '<div class="fields"><div class="field full"><label for="serverRoleUsers">Пользователь из базы</label><select id="serverRoleUsers"><option value="">Нажми «Загрузить пользователей»</option></select></div>' +
+        '<div class="field full"><label for="serverRoleEmail">Или введи email вручную</label><input type="email" id="serverRoleEmail" autocomplete="off" placeholder="user@example.com"></div>' +
+        '<div class="field full"><label for="serverRoleValue">Ранг</label><select id="serverRoleValue"><option value="admin">Администратор (admin)</option><option value="user">Обычный пользователь (user)</option></select></div></div>' +
+        '<div class="form-actions"><button class="btn secondary" type="button" data-ad="loadRoles">Загрузить пользователей</button><button class="btn" type="button" data-ad="serverRole">Сохранить ранг</button></div>' +
+        '<p class="notice" id="serverRoleStatus">Роли сохраняются в Supabase. После изменения пользователь должен обновить сайт или войти заново.</p>' +
+        '<p class="notice">Назначать и снимать администраторов может только аккаунт с ролью developer.</p>');
+    }
     /* монеты */
     if (cr) {
       h += pSec('Монеты', '<span id="adBal">' + fmtN(data.coins.bal) + ' ✧</span>',
@@ -3147,6 +3158,50 @@
     const cr = role === 'creator', act = b.dataset.ad;
     const only = () => { if (cr) return true; toast('Недоступно для администратора'); return false; };
     switch (act) {
+      case 'loadRoles': {
+        if (!cr || !ROLE.creator || !Auth.user) { toast('Недостаточно прав'); return; }
+        b.disabled = true;
+        lumaCloud.rpc('list_luma_profiles')
+          .then(({ data: rows, error }) => {
+            b.disabled = false;
+            if (error) { console.error('Role list failed', error); toast('Ошибка загрузки: ' + (error.message || 'Supabase')); return; }
+            const select = host.querySelector('#serverRoleUsers');
+            if (!select) return;
+            select.replaceChildren(new Option('Выбери пользователя', ''));
+            (Array.isArray(rows) ? rows : []).forEach(row => {
+              const option = new Option((row.email || row.id) + ' · ' + (row.role || 'user'), row.email || '');
+              select.add(option);
+            });
+            const status = host.querySelector('#serverRoleStatus');
+            if (status) status.textContent = 'Загружено пользователей: ' + (Array.isArray(rows) ? rows.length : 0) + '. Выбери пользователя и сохрани ранг.';
+            toast('Список пользователей обновлён');
+          })
+          .catch(err => { b.disabled = false; console.error(err); toast('Не удалось связаться с Supabase'); });
+        return;
+      }
+      case 'serverRole': {
+        if (!cr || !ROLE.creator || !Auth.user) { toast('Недостаточно прав'); return; }
+        const selectedEmail = host.querySelector('#serverRoleUsers')?.value || '';
+        const manualEmail = (host.querySelector('#serverRoleEmail')?.value || '').trim().toLowerCase();
+        const email = (manualEmail || selectedEmail).trim().toLowerCase();
+        const targetRole = host.querySelector('#serverRoleValue')?.value;
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast('Выбери пользователя или введи корректный email'); return; }
+        if (!['admin', 'user'].includes(targetRole)) { toast('Недопустимый ранг'); return; }
+        b.disabled = true;
+        lumaCloud.rpc('set_luma_user_role', { p_email: email, p_role: targetRole })
+          .then(async ({ data: result, error }) => {
+            b.disabled = false;
+            if (error) { console.error('Role update failed', error); toast('Ошибка Supabase: ' + (error.message || 'не удалось изменить ранг')); return; }
+            const status = host.querySelector('#serverRoleStatus');
+            if (status) status.textContent = 'Сохранено на сервере: ' + email + ' → ' + targetRole + '.';
+            toast(targetRole === 'admin' ? 'Ранг admin сохранён в Supabase' : 'Ранг user сохранён в Supabase');
+            const listButton = host.querySelector('[data-ad="loadRoles"]');
+            if (listButton) listButton.click();
+            if (email === String(Auth.user.email || '').toLowerCase()) { await Auth.loadProfile(); Auth.updateUI(); }
+          })
+          .catch(err => { b.disabled = false; console.error(err); toast('Не удалось связаться с Supabase'); });
+        return;
+      }
       case 'petcreator': { if(!cr || !ROLE.creator)return; data.pets.active='dragon';data.pets.mood='awake';save();renderPets();mountPanel();toast('Дракон активирован');return; }
       case 'petadmin': { if(cr || !ROLE.admin)return; data.pets.active='phoenix';data.pets.mood='awake';save();renderPets();mountPanel();toast('Феникс активирован');return; }
       case 'coinadd': { const n = pInt('adCoinAmt'); if (giveCoins(n, cr)) { mountPanel(); } return; }
