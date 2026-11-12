@@ -627,6 +627,9 @@
     <!-- CREATOR (виден только аккаунтам с role = developer) -->
     <section class="page" id="page-creator"></section>
 
+    <!-- ADMIN (виден только аккаунтам с role = admin) -->
+    <section class="page" id="page-admin"></section>
+
     <section class="page" id="page-settings">
       <div class="hero center">
         <div class="eyebrow">SETTINGS</div>
@@ -893,6 +896,7 @@
       <button type="button" class="nav-btn" data-tab="games" onclick="window.goTab && goTab('games')"><span aria-hidden="true">🎮</span>Игры</button>
       <button type="button" class="nav-btn" data-tab="settings" onclick="window.goTab && goTab('settings')"><span aria-hidden="true">⚙️</span>Ещё</button>
       <button type="button" class="nav-btn" data-tab="creator" id="navCreator" style="display:none" onclick="window.goTab && goTab('creator')"><span aria-hidden="true">🛠️</span>Создатель</button>
+      <button type="button" class="nav-btn" data-tab="admin" id="navAdmin" style="display:none" onclick="window.goTab && goTab('admin')"><span aria-hidden="true">🛡️</span>Админ</button>
     </div>
   </nav>
 
@@ -983,8 +987,6 @@
 
     </div>
   </div>
-
-  <div class="admin" id="adminPanel" aria-hidden="true"></div>
 
   <div class="coin-pop" id="coinPop" aria-live="polite"></div>
   <div class="wn-back" id="whatsNew" hidden>

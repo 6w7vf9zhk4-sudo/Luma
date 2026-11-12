@@ -1980,3 +1980,5 @@ html[data-ui="beta"] .footer {color:#766c84!important}
 #page-creator.active > * { animation: none; }
 .bottom-nav .nav-inner { grid-auto-flow: column; grid-auto-columns: 1fr; grid-template-columns: none; }
 .bottom-nav .nav-btn { min-width: 0; }
+#page-admin .admin-card { max-width: none; padding: 0 0 8px; }
+#page-admin.active > * { animation: none; }

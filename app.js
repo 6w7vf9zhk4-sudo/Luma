@@ -157,12 +157,14 @@
   const authCheck = (role, tok) => typeof tok === 'string' && tok.length === 64 && sha256('v|' + tok + '|' + role) === AUTH_VERIFY[role];
   const AUTH_VERIFY = { admin: '4a4100653fc1cc6aee0ccbd57a294abb7414f3a9ffc27d306faf26ccf523615b', creator: '92311f78b41023fc19e1ac1489673564d44d2b823928879bc5a42c797df1b004' };
   let ROLE = { admin: false, creator: false };
+  let ADM_ON = false; /* роль «Админ» — только по почте с role = admin в Supabase */
   let DEV_ON = false; /* роль «Разработчик» выдаётся только после входа по почте с role = developer в Supabase */
-  const rolesOf = d => ({ admin: !!(d && d.auth && authCheck('admin', d.auth.a)), creator: DEV_ON });
+  const rolesOf = d => ({ admin: ADM_ON, creator: DEV_ON });
   const SPECIAL_IDS = ['th_creator', 'av_creator', 'fr_creator', 'bd_creator', 'sn_aurora', 'bd_admin'];
   /* роль нельзя получить правкой хранилища или импортом: нужен токен, выводимый из пароля */
   function enforceRoles(d) {
     ROLE = rolesOf(d);
+    d.auth = { a: null, c: null };
     const t = d.titles, e = d.equip;
     d.pets = d.pets || { owned: ['sprout'], active: 'sprout' };
     d.pets.owned = Array.isArray(d.pets.owned) ? d.pets.owned : ['sprout'];
@@ -435,6 +437,7 @@
     if (!name) return;
     name = String(name);
     if (name === 'creator' && !DEV_ON) name = 'home';
+    if (name === 'admin' && !ADM_ON) name = 'home';
     document.querySelectorAll('.nav-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.tab === name);
       if (b.dataset.tab === name) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
@@ -456,6 +459,7 @@
       if (name === 'settings') { updateNotifUI(); renderBackupInfo(); }
       if (name === 'shop') renderShop();
       if (name === 'creator') mountCreator();
+      if (name === 'admin') mountAdmin();
       if (name === 'nova') { /* Nova uses current local data */ }
     } catch (e) { console.error(e); }
     try { window.scrollTo(0, 0); } catch {}
@@ -2972,13 +2976,9 @@
   function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
   /* ----- Панели: админ (урезанная, с лимитами) и создатель (полная). Разметка строится только после входа ----- */
-  const adminEl = $('adminPanel');
+  const adminEl = $('page-admin');
   const creatorEl = $('page-creator');
   const ADMIN_LIM = { grant: 500, day: 2000, priceMin: 10, priceMax: 5000 };
-  const LOCK_KEY = 'luma-lk';
-  const lockLeft = () => { try { const o = JSON.parse(localStorage.getItem(LOCK_KEY) || '{}'); return Math.max(0, (o.until || 0) - Date.now()); } catch { return 0; } };
-  const lockFail = () => { try { const o = JSON.parse(localStorage.getItem(LOCK_KEY) || '{}'); o.n = (o.n || 0) + 1; if (o.n >= 5) o.until = Date.now() + Math.min(3600000, 60000 * Math.pow(2, o.n - 5)); localStorage.setItem(LOCK_KEY, JSON.stringify(o)); } catch {} };
-  const lockClear = () => { try { localStorage.removeItem(LOCK_KEY); } catch {} };
   const panelCan = r => r === 'creator' ? ROLE.creator : (r === 'admin' ? ROLE.admin : false);
 
   function grantRole(role, tok) {
@@ -3002,34 +3002,6 @@
     save(); applyTheme(data.theme); syncThemeSwatches(); checkTitles(); updateWallet();
   }
 
-  function askPassword(role) {
-    closeSheets(true);
-    const old = $('sheetAuth'); if (old) old.remove();
-    const back = document.createElement('div');
-    back.className = 'sheet-back'; back.id = 'sheetAuth'; back.setAttribute('aria-hidden', 'true');
-    back.innerHTML = '<div class="sheet" role="dialog" aria-modal="true" aria-label="Вход"><div class="grab"></div><div class="sheet-head"><h3>🔒 Доступ</h3><button type="button" class="sheet-close" data-close aria-label="Закрыть">✕</button></div><div class="fields"><div class="field full"><label>Пароль</label><input id="authPw" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="40"></div></div><div class="form-actions"><button class="btn" type="button" id="authOk">Войти</button></div></div>';
-    document.body.appendChild(back);
-    const drop = () => { closeSheets(); setTimeout(() => back.remove(), 350); };
-    back.addEventListener('click', e => { if (e.target === back || e.target.closest('[data-close]')) drop(); });
-    const inp = back.querySelector('#authPw');
-    const go = () => {
-      const left = lockLeft();
-      if (left) { toast('Слишком много попыток. Подожди ' + Math.ceil(left / 60000) + ' мин.'); inp.value = ''; return; }
-      const pw = inp.value; inp.value = '';
-      if (!pw) return;
-      if (authCheck(role, authToken(role, pw))) {
-        lockClear(); grantRole(role, authToken(role, pw)); drop(); setTimeout(() => openPanel(role), 120);
-      } else {
-        lockFail(); toast('Неверный пароль');
-        inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake'); inp.focus();
-      }
-    };
-    back.querySelector('#authOk').onclick = go;
-    inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); go(); } });
-    openSheet('sheetAuth');
-    setTimeout(() => { try { inp.focus(); } catch {} }, 350);
-  }
-
   const grantLeft = () => { const g = data.admin.grant; return g && g.date === todayStr() ? Math.max(0, ADMIN_LIM.day - g.sum) : ADMIN_LIM.day; };
   const pSec = (title, tag, inner) => '<div class="glass section"><div class="section-head"><h2>' + title + '</h2>' + (tag ? '<span class="tag">' + tag + '</span>' : '') + '</div>' + inner + '</div>';
   const pNum = (id, label, val, min, max) => '<div class="field"><label>' + label + '</label><input type="number" id="' + id + '" min="' + min + '" max="' + max + '" inputmode="numeric" value="' + (val == null ? '' : val) + '"></div>';
@@ -3046,7 +3018,7 @@
 
   function panelHTML(role) {
     const cr = role === 'creator', st = data.stats;
-    let h = '<div class="admin-card"><div class="admin-top"><div><div class="eyebrow">' + (cr ? 'CREATOR' : 'ADMIN') + '</div><h2>' + (cr ? 'Панель создателя' : 'Админ-панель') + '</h2></div>' + (cr ? '' : '<button class="btn secondary small" type="button" data-ad="close">Выйти</button>') + '</div>';
+    let h = '<div class="admin-card"><div class="admin-top"><div><div class="eyebrow">' + (cr ? 'CREATOR' : 'ADMIN') + '</div><h2>' + (cr ? 'Панель создателя' : 'Админ-панель') + '</h2></div></div>';
     /* монеты */
     if (cr) {
       h += pSec('Монеты', '<span id="adBal">' + fmtN(data.coins.bal) + ' ✧</span>',
@@ -3086,50 +3058,37 @@
     /* нормы */
     h += pSec('Нормы по возрасту', 'НОРМА', '<p class="notice" style="margin-top:0">Реакция и память — «не больше», остальное — «не меньше». Прогулка: пусто = авто.</p><div id="adNorms">' + normsHTML() + '</div><div class="form-actions"><button class="btn" type="button" data-ad="norms">Сохранить нормы</button><button class="btn secondary" type="button" data-ad="resetnorms">Стандартные</button></div>');
     /* доступ */
-    h += cr
-      ? pSec('Доступ', '', '<p class="notice" style="margin-top:0">Роль выдаётся аккаунтом (role = developer в Supabase) и пропадает при выходе из аккаунта. Эта вкладка видна только тебе.</p>')
-      : pSec('Доступ', '', '<p class="notice" style="margin-top:0">Роль хранится на этом устройстве и переезжает вместе с бэкапом. Пароль нигде не сохраняется.</p><div class="form-actions"><button class="btn danger" type="button" data-ad="revoke">Отозвать доступ на этом устройстве</button></div>');
+    h += pSec('Доступ', '', '<p class="notice" style="margin:0">Роль выдаётся аккаунтом (role = ' + (cr ? 'developer' : 'admin') + ' в Supabase) и пропадает при выходе из аккаунта. Эта вкладка видна только тебе.</p>');
     h += pSec('Эксклюзивный питомец', cr ? '🐉 ДРАКОН' : '🔥 ФЕНИКС',
       '<div class="pet-preview"><div class="pet-emoji">'+(cr ? '🐉' : '🔥')+'</div><div class="pet-info"><b>'+(cr ? 'Дракон Создателя' : 'Феникс Администратора')+'</b><small>Особый питомец, доступный только этой роли. Его можно выбрать в магазине → Питомцы.</small></div></div>');
     return h + '</div>';
   }
 
-  let panelRole = null;
-  function mountAdminPanel() {
-    const top = adminEl.scrollTop;
-    adminEl.innerHTML = panelHTML(panelRole);
-    adminEl.scrollTop = top;
-    updateWallet();
-  }
-  /* вкладка «Создатель»: обычная страница, не оверлей */
-  function mountCreator() {
-    if (!creatorEl) return;
-    if (!DEV_ON) { creatorEl.innerHTML = ''; return; }
+  /* вкладки «Создатель» и «Админ» — обычные страницы, не оверлеи */
+  function mountRolePage(el, role, on) {
+    if (!el) return;
+    if (!on) { el.innerHTML = ''; return; }
     const top = window.scrollY;
-    creatorEl.innerHTML = panelHTML('creator');
+    try {
+      el.innerHTML = panelHTML(role);
+    } catch (err) {
+      console.error('panel ' + role, err);
+      el.innerHTML = '<div class="glass section"><div class="section-head"><h2>Ошибка панели</h2></div><p class="notice" style="margin:0">' + String((err && err.message) || err).replace(/</g, '&lt;') + '</p></div>';
+      return;
+    }
     try { window.scrollTo(0, top); } catch {}
-    updateWallet();
+    try { updateWallet(); } catch {}
   }
-  function syncCreatorTab() {
-    const nb = $('navCreator'); if (nb) nb.style.display = DEV_ON ? '' : 'none';
-  }
-  function openPanel(role) {
-    if (!panelCan(role)) return;
-    closeSheets(true);
-    panelRole = role; mountAdminPanel();
-    adminEl.classList.add('show'); adminEl.setAttribute('aria-hidden', 'false'); adminEl.scrollTop = 0;
-    document.body.classList.add('noscroll');
-  }
-  function closePanel() {
-    panelRole = null;
-    adminEl.classList.remove('show'); adminEl.setAttribute('aria-hidden', 'true'); adminEl.innerHTML = '';
-    document.body.classList.remove('noscroll');
-    try { renderHome(); renderWalk(); } catch {}
+  const mountCreator = () => mountRolePage(creatorEl, 'creator', DEV_ON);
+  const mountAdmin = () => mountRolePage(adminEl, 'admin', ADM_ON);
+  function syncRoleTabs() {
+    const c = $('navCreator'); if (c) c.style.display = DEV_ON ? '' : 'none';
+    const m = $('navAdmin'); if (m) m.style.display = ADM_ON ? '' : 'none';
   }
   /* роль разработчика по аккаунту Supabase */
   function setDeveloperRole(on) {
     on = !!on;
-    if (on === DEV_ON) { syncCreatorTab(); return; }
+    if (on === DEV_ON) { syncRoleTabs(); return; }
     DEV_ON = on;
     if (on) grantRole('creator', null);
     else {
@@ -3137,7 +3096,30 @@
       if (creatorEl) creatorEl.innerHTML = '';
       if (creatorEl && creatorEl.classList.contains('active')) goTab('home');
     }
-    syncCreatorTab();
+    syncRoleTabs();
+  }
+  /* роль администратора по аккаунту Supabase (profiles.role = 'admin') */
+  function setAdminRole(on) {
+    on = !!on;
+    if (on === ADM_ON) { syncRoleTabs(); return; }
+    ADM_ON = on;
+    if (on) grantRole('admin', null);
+    else {
+      revokeRole('admin');
+      if (adminEl) adminEl.innerHTML = '';
+      if (adminEl && adminEl.classList.contains('active')) goTab('home');
+    }
+    syncRoleTabs();
+  }
+  /* у кого нет роли admin/developer на сервере — забираем всё, что осталось от прежних входов */
+  function stripPrivileges() {
+    if (ROLE.admin || ROLE.creator) return;
+    const before = JSON.stringify([data.titles, data.equip, data.owned, data.pets, data.theme, data.admin, data.auth]);
+    enforceRoles(data);
+    data.admin.prices = {}; data.admin.norms = {}; data.admin.tapSeconds = 10; data.admin.grant = { date: '', sum: 0 }; data.admin.mult = 1;
+    if (JSON.stringify([data.titles, data.equip, data.owned, data.pets, data.theme, data.admin, data.auth]) === before) return;
+    save(); applyTheme(data.theme); syncThemeSwatches(); checkTitles(); updateWallet();
+    try { renderHome(); renderPets(); } catch {}
   }
   const pInt = id => { const el = $(id); return el ? Math.round(+el.value) : NaN; };
   const pOpt = id => { const v = $(id).value.trim(); if (v === '') return null; const n = Math.round(+v); return Number.isFinite(n) && n >= 0 ? n : NaN; };
@@ -3159,13 +3141,12 @@
   }
   function panelClick(e, role) {
     const b = e.target.closest('[data-ad]'); if (!b) return;
-    if (!role || !panelCan(role)) { if (role === 'creator') goTab('home'); else closePanel(); return; }
+    if (!role || !panelCan(role)) { goTab('home'); return; }
     const host = role === 'creator' ? creatorEl : adminEl;
-    const mountPanel = () => role === 'creator' ? mountCreator() : mountAdminPanel();
+    const mountPanel = () => role === 'creator' ? mountCreator() : mountAdmin();
     const cr = role === 'creator', act = b.dataset.ad;
     const only = () => { if (cr) return true; toast('Недоступно для администратора'); return false; };
     switch (act) {
-      case 'close': closePanel(); return;
       case 'petcreator': { if(!cr || !ROLE.creator)return; data.pets.active='dragon';data.pets.mood='awake';save();renderPets();mountPanel();toast('Дракон активирован');return; }
       case 'petadmin': { if(cr || !ROLE.admin)return; data.pets.active='phoenix';data.pets.mood='awake';save();renderPets();mountPanel();toast('Феникс активирован');return; }
       case 'coinadd': { const n = pInt('adCoinAmt'); if (giveCoins(n, cr)) { mountPanel(); } return; }
@@ -3248,24 +3229,11 @@
         data.admin.norms = out; save(); toast('Нормы сохранены ✓'); return;
       }
       case 'resetnorms': { if (!confirm('Вернуть стандартные нормы для всех возрастов?')) return; data.admin.norms = {}; save(); mountPanel(); toast('Стандартные нормы возвращены'); return; }
-      case 'revoke': {
-        if (!confirm('Отозвать доступ на этом устройстве? Чтобы вернуть, понадобится пароль.')) return;
-        revokeRole(role); closePanel(); toast('Доступ отозван'); return;
-      }
     }
   }
-  adminEl.addEventListener('click', e => panelClick(e, panelRole));
+  if (adminEl) adminEl.addEventListener('click', e => panelClick(e, 'admin'));
   if (creatorEl) creatorEl.addEventListener('click', e => panelClick(e, 'creator'));
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && adminEl.classList.contains('show')) closePanel(); });
-  /* скрытый вход: админ — 5 нажатий по подписи в «Ещё» */
-  (function () {
-    let taps = 0, tm = null;
-    $('appFooter').addEventListener('click', () => {
-      taps++; clearTimeout(tm); tm = setTimeout(() => { taps = 0; }, 2500);
-      if (taps >= 5) { taps = 0; askPassword('admin'); }
-    });
-  })();
-  /* вкладка «Создатель» появляется только у аккаунтов с ролью developer */
+  /* вкладки «Создатель» и «Админ» появляются только у аккаунтов с role = developer / admin в Supabase */
 
   /* ----- Games ----- */
   function startGame(name) {
@@ -4358,14 +4326,11 @@
     const reader = new FileReader();
     reader.onload = ev => {
       try {
-        const old = data.auth || {};
         const parsed = JSON.parse(ev.target.result);
         if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('bad');
         const isFull = parsed.format === 'luma-full-backup' && parsed.data && typeof parsed.data === 'object';
         const nd = isFull ? parsed.data : parsed;
-        nd.auth = (nd.auth && typeof nd.auth === 'object') ? nd.auth : {};
-        if (!authCheck('admin', nd.auth.a)) nd.auth.a = old.a || null;
-        if (!authCheck('creator', nd.auth.c)) nd.auth.c = old.c || null;
+        nd.auth = { a: null, c: null };
         data = normalizeData(nd);
         if (isFull && parsed.storage && typeof parsed.storage === 'object') {
           Object.entries(parsed.storage).forEach(([k,v]) => {
@@ -4722,6 +4687,7 @@ const Auth = {
   user: null,
   profile: null,
   isDeveloper: false,
+  isAdmin: false,
 
   async init() {
     const { data: { session } } = await lumaCloud.auth.getSession();
@@ -4737,6 +4703,7 @@ const Auth = {
       else {
         this.profile = null;
         this.isDeveloper = false;
+        this.isAdmin = false;
       }
       this.updateUI();
     });
@@ -4759,10 +4726,12 @@ const Auth = {
       console.warn('Profile load error', error);
       this.profile = null;
       this.isDeveloper = false;
+      this.isAdmin = false;
       return;
     }
     this.profile = data;
     this.isDeveloper = data?.role === 'developer';
+    this.isAdmin = data?.role === 'admin';
   },
 
   updateUI() {
@@ -4774,6 +4743,8 @@ const Auth = {
     const msg = $('authMessage');
 
     setDeveloperRole(!!(this.user && this.isDeveloper));
+    setAdminRole(!!(this.user && this.isAdmin));
+    if (!this.user || this.profile) stripPrivileges();
 
     if (this.user) {
       if (loggedOut) loggedOut.style.display = 'none';
@@ -4783,7 +4754,9 @@ const Auth = {
       if (roleEl) {
         roleEl.textContent = this.isDeveloper
           ? 'Роль: Разработчик · вкладка «Создатель» внизу'
-          : 'Роль: Пользователь';
+          : this.isAdmin
+            ? 'Роль: Админ · вкладка «Админ» внизу'
+            : 'Роль: Пользователь';
       }
       if (msg) msg.textContent = '';
     } else {
@@ -4852,6 +4825,7 @@ const Auth = {
     this.user = null;
     this.profile = null;
     this.isDeveloper = false;
+    this.isAdmin = false;
     this.updateUI();
   }
 };
