@@ -4825,6 +4825,7 @@
   updateNotifUI();
   renderHome();
   (function showWelcome() {
+    const overlay = $('welcomeOverlay');
     const h = new Date().getHours();
     const title = h < 5 ? 'Доброй ночи' : h < 12 ? 'Доброе утро' : h < 18 ? 'Добрый день' : 'Добрый вечер';
     const tips = [
@@ -4835,13 +4836,14 @@
       'Запиши важное напоминание, чтобы не держать всё в голове.',
       'Регулярный сон помогает восстановиться после насыщенного дня.'
     ];
-    const t = $('welcomeTitle'), a = $('welcomeAdvice'), overlay = $('welcomeOverlay');
+    const t = $('welcomeTitle'), a = $('welcomeAdvice');
     if (t) t.textContent = title + (data.profile.name ? ', ' + data.profile.name : '') + '!';
     if (a) a.textContent = tips[(new Date().getDate() + h) % tips.length];
-    const close = () => { if (!overlay) return; overlay.classList.add('hide'); setTimeout(() => overlay.remove(), 380); };
+    // Если ранний скрипт уже закрыл — ничего не делаем
+    if (!overlay || overlay.classList.contains('hide')) return;
+    const close = () => { if (!overlay) return; overlay.classList.add('hide'); setTimeout(() => { try { overlay.remove(); } catch(e){} }, 380); };
     $('welcomeClose')?.addEventListener('click', close);
-    setTimeout(close, 3500); /* приветствие закрывается само и не мешает входу */
-    overlay?.addEventListener('click', e => { if (e.target === overlay) close(); });
+    overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
   })();
   initDeviceMemoryUI();
   renderBackupInfo(); backupNudge();

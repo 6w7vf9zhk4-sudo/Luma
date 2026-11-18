@@ -26,6 +26,22 @@
     <button class="btn" type="button" id="welcomeClose">Продолжить</button>
   </div>
 </div>
+<script>
+/* Раннее закрытие приветствия — не ждём тяжёлый app.js */
+(function(){
+  var overlay = document.getElementById('welcomeOverlay');
+  var btn = document.getElementById('welcomeClose');
+  if (!overlay) return;
+  function closeWelcome(){
+    if (!overlay || overlay.classList.contains('hide')) return;
+    overlay.classList.add('hide');
+    setTimeout(function(){ try { overlay.remove(); } catch(e){} }, 380);
+  }
+  if (btn) btn.addEventListener('click', closeWelcome);
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) closeWelcome(); });
+  setTimeout(closeWelcome, 3500);
+})();
+</script>
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
