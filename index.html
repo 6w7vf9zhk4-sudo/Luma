@@ -589,15 +589,15 @@
 
     <section class="page" id="page-chat">
       <div class="hero">
-        <div class="eyebrow">SPORTS CHAT</div>
-        <h1>Чат<br><span>про спорт</span></h1>
-        <p class="muted">Вопросы про тренировки, упражнения и активность. Если нет в подсказках — найдёт ответ в Википедии прямо в чате.</p>
+        <div class="eyebrow">НОВА</div>
+        <h1>Нова<br><span>спорт</span></h1>
+        <p class="muted">Отдельный чат с Новой про тренировки, упражнения и активность.</p>
       </div>
-      <div class="glass section">
+      <div class="glass section sport-chat-card">
         <div class="nova-head">
           <div class="nova-orb" aria-hidden="true" style="background:linear-gradient(135deg,#34d399,#059669)">🏃</div>
-          <div><b>Спорт-чат Luma</b><small>Не планнер · отвечает про спорт и активность</small></div>
-          <span class="tag">Онлайн-поиск</span>
+          <div><b>Нова</b><small>Спорт · тренировки и активность</small></div>
+          <span class="tag">Чат</span>
         </div>
         <div class="nova-quick" id="sportQuick">
           <button class="btn secondary small" type="button" data-sport="warmup">Разминка</button>
@@ -606,14 +606,16 @@
           <button class="btn secondary small" type="button" data-sport="water">Вода и спорт</button>
           <button class="btn secondary small" type="button" data-sport="rest">Восстановление</button>
         </div>
-        <div class="nova-chat" id="sportChat" aria-live="polite">
-          <div class="nova-msg bot">Привет! Спроси про разминку, кардио, силовые, шаги или восстановление. Для редких тем найду ответ в интернете и покажу здесь.</div>
+        <div class="nova-chat sport-chat-messages" id="sportChat" aria-live="polite">
+          <div class="nova-msg bot">Привет! Я Нова. Спроси про разминку, кардио, силовые, шаги или восстановление — отвечу здесь.</div>
         </div>
-        <form class="nova-input-row" id="sportForm" style="margin-top:10px">
-          <input id="sportInput" maxlength="200" placeholder="Например: как разминаться перед бегом" autocomplete="off">
-          <button class="btn" type="submit">Спросить</button>
+        <form class="nova-input-row sport-chat-input" id="sportForm" style="margin-top:12px">
+          <input id="sportInput" maxlength="200" placeholder="Напиши Нове…" autocomplete="off">
+          <button class="btn" type="submit">Отправить</button>
         </form>
-        <button class="btn secondary small" type="button" id="sportClear" style="margin-top:8px">Очистить чат</button>
+        <div class="form-actions" style="margin-top:8px">
+          <button class="btn secondary small" type="button" id="sportClear">Очистить чат</button>
+        </div>
         <p class="notice">Это не медицинская консультация. При травмах и заболеваниях обращайся к врачу.</p>
       </div>
     </section>
@@ -822,9 +824,18 @@
         <div class="section-head"><h2>Чаты</h2><span class="tag">Помощь</span></div>
         <div class="form-actions" style="flex-direction:column;align-items:stretch;gap:8px">
           <button class="btn" type="button" onclick="goTab('support')">🛟 Поддержка</button>
-          <button class="btn secondary" type="button" onclick="goTab('chat')">💬 Чат про спорт</button>
+          <button class="btn secondary" type="button" onclick="goTab('chat')">💬 Нова · Спорт</button>
         </div>
-        <p class="notice" style="margin-top:10px">Поддержка — вопросы по приложению и связь с автором. Чат про спорт — тренировки и поиск в интернете. Планы — у Новы (кнопка «Спросить Нову» на главной).</p>
+        <p class="notice" style="margin-top:10px">Поддержка — вопросы по приложению. Нова · Спорт — отдельный чат про тренировки и активность.</p>
+      </div>
+
+      <!-- Аккаунт: выход (показывается только когда вошёл) -->
+      <div class="glass section" id="settingsAccountSection" style="display:none">
+        <div class="section-head"><h2>Аккаунт</h2><span class="tag" id="settingsAuthTag">Вошёл</span></div>
+        <p class="muted" id="settingsUserEmail" style="margin-bottom:10px"></p>
+        <div class="form-actions">
+          <button class="btn secondary" type="button" id="settingsLogoutBtn">Выйти</button>
+        </div>
       </div>
 
       <div class="glass section">
@@ -835,7 +846,7 @@
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v38</p>
+      <p class="footer" id="appFooter">Luma · v44</p>
     </section>
   </main>
 

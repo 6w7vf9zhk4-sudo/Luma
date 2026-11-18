@@ -4944,6 +4944,7 @@ const Auth = {
     $('authLoginBtn')?.addEventListener('click', () => this.login());
     $('authRegisterBtn')?.addEventListener('click', () => this.register());
     $('authLogoutBtn')?.addEventListener('click', () => this.logout());
+    $('settingsLogoutBtn')?.addEventListener('click', () => this.logout());
   },
 
   async loadProfile() {
@@ -4973,14 +4974,20 @@ const Auth = {
     const emailEl = $('authUserEmail');
     const roleEl = $('authRoleInfo');
     const msg = $('authMessage');
+    const section = $('authSection');
+    const settingsAccount = $('settingsAccountSection');
+    const settingsEmail = $('settingsUserEmail');
+    const settingsTag = $('settingsAuthTag');
 
     setDeveloperRole(!!(this.user && this.isDeveloper));
     setAdminRole(!!(this.user && this.isAdmin));
     if (!this.user || this.profile) stripPrivileges();
 
     if (this.user) {
+      // Вошёл — скрываем верхний блок аккаунта
+      if (section) section.style.display = 'none';
       if (loggedOut) loggedOut.style.display = 'none';
-      if (loggedIn) loggedIn.style.display = 'block';
+      if (loggedIn) loggedIn.style.display = 'none';
       if (tag) tag.textContent = 'Вошёл';
       if (emailEl) emailEl.textContent = this.user.email;
       if (roleEl) {
@@ -4991,10 +4998,17 @@ const Auth = {
             : 'Роль: Пользователь';
       }
       if (msg) msg.textContent = '';
+      // В настройках показываем email + «Выйти»
+      if (settingsAccount) settingsAccount.style.display = '';
+      if (settingsEmail) settingsEmail.textContent = this.user.email || '';
+      if (settingsTag) settingsTag.textContent = 'Вошёл';
     } else {
+      // Не вошёл — показываем форму входа
+      if (section) section.style.display = '';
       if (loggedOut) loggedOut.style.display = 'block';
       if (loggedIn) loggedIn.style.display = 'none';
       if (tag) tag.textContent = 'Не вошёл';
+      if (settingsAccount) settingsAccount.style.display = 'none';
     }
   },
 
