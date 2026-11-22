@@ -45,7 +45,7 @@
   };
 
   const KEY = 'luma-v2';
-  const BUILD = '44';
+  const BUILD = '45';
 
   /* Локальная память v34: резервная копия IndexedDB + переносимый Luma ID.
      Это не облачная синхронизация: каждый браузер имеет собственное хранилище. */
@@ -2473,8 +2473,8 @@
     const rows=buildNovaPlan();
     return rows.length?'План на сегодня:\n'+rows.map(r=>(r.time?r.time+' — ':'')+r.title+(r.note?' ('+r.note+')':'')).join('\n'):'На сегодня пока нет записанных дел. Добавь напоминания или укажи расписание.';
   }
-  const NOVA_FALLBACK='Я могу: план на сегодня/неделю, задачи, свободное время, калории в еде, сводку дня или создать напоминание. А ещё отвечаю на вопросы из интернета: напиши «что такое …» или «найди …». Для точного плана заполни профиль Новы.';
-  const NOVA_FOOD_MISS='Не нашла продукт ни в локальной базе, ни онлайн. Добавь его в «Мои блюда» (раздел «Рацион») — тогда я смогу отвечать и офлайн.';
+  const NOVA_FALLBACK='Я работаю локально, без внешней ИИ-модели. Могу разобрать расписание и профиль, составить план на день или неделю, проверить напоминания, оценить свободные промежутки и найти сведения в локальной базе Luma. Для произвольных вопросов из интернета нужен отдельный источник данных, которого в этой версии нет.';
+  const NOVA_FOOD_MISS='Не нашла этот продукт в локальной базе Luma. Добавь его в «Мои блюда» в разделе «Рацион» — тогда смогу использовать сохранённые данные и офлайн.';
   const NOVA_KNOW=/^(что такое|что значит|кто такой|кто такая|кто такие|найди|поиск|расскажи|объясни|погугли|узнай|как работает|почему|зачем)(\s|$)/;
   function novaReply(kind,query=''){
     const pending=novaPending();
@@ -2504,7 +2504,24 @@
       renderNovaWeekPlan();
       return 'План на 7 дней:\n'+days.map(d=>d.label+': '+(d.rows.length?d.rows.slice(0,3).map(r=>(r.time?r.time+' ':'')+r.title).join(', '):'пусто')).join('\n');
     }
-    if(kind==='plan'||/план|расписан|сегодня/.test(query))return novaPlanText();
+    if(kind==='plan'||/план|расписан|сегодня|составь|распредели|успеть/.test(query)){
+      const n=novaProfileData();
+      if(!n.setup)return 'Сначала заполни профиль Новы. Я учитываю режим дня, учебное/рабочее время, активность, тренировки, подъём, сон и напоминания. Данные регистрации Luma также остаются частью профиля.';
+      const rows=buildNovaPlan();
+      const timed=rows.map(r=>({r,m:novaTimeMinutes(String(r.time||'').slice(0,5))})).filter(x=>x.m!=null).sort((a,b)=>a.m-b.m);
+      const conflicts=[];
+      for(let i=1;i<timed.length;i++) if(timed[i].m===timed[i-1].m) conflicts.push(timed[i-1].r.title+' и '+timed[i].r.title+' начинаются одновременно');
+      const modeLabel={study:'учёба',work:'работа',free:'свободный режим'}[n.mode]||'обычный режим';
+      let result='Разбор запроса по данным Luma\n';
+      result+='Режим профиля: '+modeLabel+'. Активность: '+(n.activity||'не указана')+'.\n';
+      if(n.wake)result+='Подъём: '+n.wake+'. ';
+      if(n.sleep)result+='Завершение дня: '+n.sleep+'.\n';
+      result+=rows.length?'\nПредварительный план на сегодня:\n'+rows.map(r=>(r.time?r.time+' — ':'')+r.title+(r.note?' · '+r.note:'')).join('\n'):'\nВ расписании пока нет записанных дел.';
+      if(conflicts.length)result+='\n\nВозможные совпадения:\n• '+conflicts.join('\n• ');
+      else result+='\n\nЯвных совпадений по указанному времени не обнаружено.';
+      result+='\n\nЭто локальный расчёт по сохранённому профилю, календарю и напоминаниям. Новые задачи из сообщения не сохраняются автоматически — их нужно добавить в календарь или напоминания.';
+      return result;
+    }
     if(kind==='tasks'||/задач|напоминан|дела/.test(query)) return pending.length?'У тебя '+pending.length+' активных напоминаний:\n'+pending.slice(0,8).map(r=>'• '+new Date(r.when).toLocaleString('ru-RU',{weekday:'short',hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'})+' — '+r.text).join('\n'):'Активных напоминаний пока нет. Можешь добавить новое — я помогу открыть форму.';
     if(kind==='free'||/свободн|окно/.test(query)) {const next=pending.find(r=>r.when>Date.now());if(!next)return 'Впереди нет активных напоминаний. По данным Luma, расписание свободно.';const mins=Math.max(0,Math.round((next.when-Date.now())/60000));return 'Следующее напоминание: «'+next.text+'» в '+new Date(next.when).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'. До него примерно '+(mins>=60?Math.floor(mins/60)+' ч '+mins%60+' мин':mins+' мин')+'.';}
     if(kind==='tip'||/совет/.test(query)) {
@@ -2526,27 +2543,23 @@
     };
   }
   async function novaRequestAI(message){
+    // Nova Planner v45: локальный алгоритм, без внешней ИИ-модели и платного API.
+    const q=String(message||'').trim();
     const chat=$('novaChat');
-    const pending=document.createElement('div');pending.className='nova-msg bot';pending.textContent='Нова формирует ответ…';
+    const pending=document.createElement('div');pending.className='nova-msg bot';pending.textContent='Нова анализирует профиль и расписание…';
     if(chat){chat.appendChild(pending);chat.scrollTop=chat.scrollHeight;}
     try{
-      if(!window.lumaCloud)throw new Error('Supabase не подключён.');
-      const sessionResult=await window.lumaCloud.auth.getSession();
-      const session=sessionResult?.data?.session;
-      if(!session?.access_token)throw new Error('Для ИИ-чата войдите в аккаунт Luma. Локальные функции остаются доступны.');
-      const history=novaChatHistory().slice(0,-1).slice(-10).map(x=>({role:x.who==='user'?'user':'assistant',content:String(x.text||'').slice(0,1000)}));
-      const share=$('novaShareContext')?.checked===true;
-      const response=await fetch('/api/nova',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({message:String(message||'').slice(0,1200),history,context:share?novaAIContext():null})});
-      let payload={};try{payload=await response.json();}catch{}
-      if(!response.ok)throw new Error(payload.error||('Ошибка сервера Nova: '+response.status));
-      if(!payload.answer)throw new Error('Сервер не вернул ответ.');
-      novaSay(payload.answer);
+      await Promise.resolve();
+      const answer=novaReply('chat',q);
+      novaSay(answer);
       return true;
     }catch(error){
-      novaSay('Не удалось получить ответ от ИИ. '+(error?.message||'Проверь подключение и настройки API.'));
+      novaSay('Не удалось обработать запрос локально. Проверь заполнение профиля Новы и попробуй ещё раз.');
+      console.error('Nova local planner:',error);
       return false;
     }finally{pending.remove();}
   }
+
   const novaPage=$('page-nova'); if(novaPage){
     novaPage.addEventListener('click',e=>{const b=e.target.closest('[data-nova]');if(b)novaAction(b.dataset.nova);});
     const f=$('novaForm');if(f)f.addEventListener('submit',async e=>{e.preventDefault();const input=$('novaInput'),q=(input.value||'').trim();if(!q)return;novaSay(q,'user');input.value='';await novaRequestAI(q);});

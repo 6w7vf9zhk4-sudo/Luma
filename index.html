@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Luma">
   <meta name="description" content="Рацион, напоминания и мини-игры в стиле жидкого стекла">
-  <meta name="luma-build" content="44.0-luma2-research"><title>Luma — время для себя</title>
+  <meta name="luma-build" content="45.0-nova-planner-local"><title>Luma — время для себя</title>
   <script>try{var _d=JSON.parse(localStorage.getItem('luma-v2')||'{}');var _m=_d.mode||'dark';if(_m==='auto')_m=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-mode',_m);if(_d.ui==='beta')document.documentElement.setAttribute('data-ui','beta');}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -45,7 +45,7 @@
   <main class="app">
     <header class="top">
       <div class="brand"><div class="logo">✧</div><span>luma</span></div>
-      <span class="pill" id="topPill">v44</span>
+      <span class="pill" id="topPill">v45</span>
     </header>
 
     <!-- AUTH (вверху страницы, всегда видна) -->
@@ -563,7 +563,7 @@
         </div>
         <div class="nova-chat" id="novaChat" aria-live="polite"><div class="nova-msg bot">Выбери действие или напиши вопрос. Для ИИ-ответов войди в аккаунт Luma.</div></div>
         <form id="novaForm" class="nova-input-row"><input id="novaInput" maxlength="1200" placeholder="Спроси что-нибудь…" autocomplete="off"><button class="btn" type="submit">Отправить</button></form>
-        <label class="notice" style="display:flex;align-items:flex-start;gap:9px;margin-top:10px"><input id="novaShareContext" type="checkbox" style="margin-top:3px;flex:0 0 auto"><span>Разрешить передавать Нове ограниченный контекст Luma: расписание, ближайшие напоминания и план дня. Без галочки отправляются только текст сообщений и история этого чата.</span></label>
+        <p class="notice" style="margin-top:10px">Нова v45 работает локально: анализирует профиль, расписание, календарь и напоминания на устройстве. Сообщения не отправляются во внешний ИИ-сервис.</p>
         <p class="notice">Сообщения отправляются во внешний ИИ-сервис для обработки. Не отправляй пароли, платёжные данные и другую конфиденциальную информацию. Подключение API и расходы должен одобрить и контролировать родитель или опекун. Локальные планы и кнопки работают отдельно от ИИ.</p>
       </div>
     </section>
@@ -862,7 +862,7 @@
         </p>
       </div>
 
-      <p class="footer" id="appFooter">Luma · v44</p>
+      <p class="footer" id="appFooter">Luma · v45</p>
     </section>
   </main>
 

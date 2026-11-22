@@ -1,5 +1,5 @@
-/* Luma service worker v44 — Nova Research Beta */
-const CACHE = 'luma-v48-nova-research-beta';
+/* Luma service worker v45 — Nova Planner Local */
+const CACHE = 'luma-v45-nova-planner-local';
 const ASSETS = [
   './',
   './index.html',
